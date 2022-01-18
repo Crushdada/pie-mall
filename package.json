@@ -1,0 +1,17 @@
+{
+  "name": "pie-mall",
+  "version": "1.0.0",
+  "repository": "git@gitee.com:Crushdada/pie-mall.git",
+  "author": "David <crushdada@foxmail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^17.0.9",
+    "@types/webpack-env": "^1.16.3",
+    "husky": "^7.0.2",
+    "vue-cli-plugin-quasar": "~4.0.2"
+  }
+}
