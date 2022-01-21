@@ -7,7 +7,6 @@ import * as chalk from 'chalk';
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
     use(req: Request, res: Response, next: NextFunction) {
-        // const userId = (req['session'] || {}).userId;
         let log = '';
         // IP info
         let ip;
@@ -15,10 +14,6 @@ export class LoggerMiddleware implements NestMiddleware {
             ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         } catch (err) { }
         if (ip) log += chalk.yellow(`[${ip}]`);
-
-        // User Info
-        // if (userId) log += `[${chalk.italic.green(userId)}]`;
-        // else log += `[${chalk.red('Not Logined')}]`;
 
         // Method
         const method = req.method;

@@ -16,7 +16,14 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      //配置文件路径，也可以配置为数组如['/config/.env1','.env']。
       envFilePath: '.env',
+      //忽略配置文件，为true则仅读取操作系统环境变量，常用于生产环境
+      ignoreEnvFile: false,
+      ignoreEnvVars: false,
+      //配置为全局可见，否则需要在每个模块中单独导入ConfigModule
+      isGlobal: true,
+
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule.forFeature(dbConfig)],
@@ -25,11 +32,11 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
       useFactory: (_cfgSrv: ConfigService) => {
         const cfg: TypeOrmModuleOptions = {
           type: 'mysql',
-          host: _cfgSrv.get<string>('db.host'),
-          port: _cfgSrv.get<number>('db.port'),
-          username: _cfgSrv.get<string>('db.username'),
-          password: _cfgSrv.get<string>('db.password'),
-          database: _cfgSrv.get<string>('db.db'),
+          host: _cfgSrv.get<string>('db.host') || "localhost",
+          port: _cfgSrv.get<number>('db.port') || 3306,
+          username: "root",
+          password: _cfgSrv.get<string>('db.password') || "root",
+          database: _cfgSrv.get<string>('db.db') || "piemall",
           extra: {
             connectionLimit: 100,
           },
@@ -38,6 +45,7 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
           autoLoadEntities: true,
           synchronize: process.env.NODE_ENV !== 'production',
         };
+
         return cfg;
       },
     }),
