@@ -1,6 +1,11 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
+
+// 配置NProgress选项
+NProgress.configure({ easing: "ease", speed: 500, minimum: 0.1 });
 
 Vue.use(VueRouter);
 
@@ -28,4 +33,12 @@ const router = new VueRouter({
   routes,
 });
 
+// 加载中显示进度条
+router.beforeEach((to, from, next) => {
+  NProgress.start();
+  next();
+});
+router.afterEach(() => {
+  NProgress.done();
+});
 export default router;

@@ -12,7 +12,7 @@ function resolve(dir) {
 try {
   // 根据环境变量加载环境变量文件
   const file = dotenv.parse(
-    fs.readFileSync(`.env.${process.env.NODE_ENV || "local"}`)
+    fs.readFileSync(`.env.${process.env.NODE_ENV || "development"}`)
   );
   // 根据获取的key给对应的环境变量赋值
   for (const key in file) {
@@ -38,8 +38,8 @@ export default defineConfig({
       vendor: resolve("src/vendor"),
       "@": resolve("src"),
       "~@": resolve("src"),
-      "~component": resolve("src/components"),
-      "~config": resolve("config"),
+      "@component": resolve("src/components"),
+      "@types": resolve("types"),
     },
   },
   plugins: [
