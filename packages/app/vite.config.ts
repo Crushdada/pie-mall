@@ -40,6 +40,7 @@ export default defineConfig({
       "~@": resolve("src"),
       "~component": resolve("src/components"),
       "~config": resolve("config"),
+      "@types": resolve("types"),
     },
   },
   plugins: [
