@@ -67,7 +67,7 @@ export default defineConfig({
     port: process.env.PORT || 8081,
     proxy: {
       [API_LOCATION]: {
-        target: "http://127.0.0.1:8001",
+        target: "http://127.0.0.1:3000",
         rewrite: (path) => path.replace(API_LOCATION, ""),
       },
     },

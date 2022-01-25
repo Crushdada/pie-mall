@@ -12,7 +12,7 @@ function resolve(dir) {
 try {
   // 根据环境变量加载环境变量文件
   const file = dotenv.parse(
-    fs.readFileSync(`.env.${process.env.NODE_ENV || "local"}`)
+    fs.readFileSync(`.env.${process.env.NODE_ENV || "development"}`)
   );
   // 根据获取的key给对应的环境变量赋值
   for (const key in file) {
@@ -68,7 +68,7 @@ export default defineConfig({
     port: process.env.PORT || 8080,
     proxy: {
       [API_LOCATION]: {
-        target: "http://127.0.0.1:8001",
+        target: "http://127.0.0.1:3000",
         rewrite: (path) => path.replace(API_LOCATION, ""),
       },
     },
