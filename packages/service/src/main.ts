@@ -6,12 +6,14 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 // DocumentBuilder是一个辅助类，有助于结构的基本文件SwaggerModule
 // 它包含几种方法，可用于设置诸如标题、描述、版本等属性
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: { origin: 'http://localhost:8081', credentials: true },
+  });
   const options = new DocumentBuilder()
     .setTitle('Pie-Mall API Interface') // 标题
     .setDescription('测试接口') // 描述
     .setVersion('1.00') //版本
-    .addTag('用户,安全') // 每个tag标签都可以对应几个@ApiUseTags('用户,安全')，
+    .addTag('pie-mall-service') // 每个tag标签都可以对应几个@ApiUseTags('用户,安全')，
     // 然后被ApiUseTags注释，字符串一致的都会变成同一个标签下的
     // .setBasePath('http://localhost:5000')
     .build();
