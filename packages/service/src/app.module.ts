@@ -11,7 +11,8 @@ import dbConfig from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import TypeOrmModuleOptions from './config/interfaces/db.interface';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
-
+import { GoodsModule } from './modules/admin_service/goods/goods.module';
+import { ResponseModule } from './modules/response/response-module';
 
 @Module({
   imports: [
@@ -23,7 +24,6 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
       ignoreEnvVars: false,
       //配置为全局可见，否则需要在每个模块中单独导入ConfigModule
       isGlobal: true,
-
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule.forFeature(dbConfig)],
@@ -32,11 +32,11 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
       useFactory: (_cfgSrv: ConfigService) => {
         const cfg: TypeOrmModuleOptions = {
           type: 'mysql',
-          host: _cfgSrv.get<string>('db.host') || "localhost",
+          host: _cfgSrv.get<string>('db.host') || 'localhost',
           port: _cfgSrv.get<number>('db.port') || 3306,
-          username: "root",
-          password: _cfgSrv.get<string>('db.password') || "root",
-          database: _cfgSrv.get<string>('db.db') || "piemall",
+          username: 'root',
+          password: _cfgSrv.get<string>('db.password') || 'root',
+          database: _cfgSrv.get<string>('db.db') || 'piemall',
           extra: {
             connectionLimit: 100,
           },
@@ -49,6 +49,8 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
         return cfg;
       },
     }),
+    GoodsModule,
+    ResponseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

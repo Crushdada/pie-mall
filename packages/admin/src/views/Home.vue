@@ -35,10 +35,24 @@ export default class Home extends Vue {
       const rawData = new Uint8Array(data as any);
       const processedData = uint8Array2JSON(rawData);
       try {
-        const response: any = await addGoods(processedData);
+        // 数据规范化
+        const goodsData = processedData.map(el => {
+          if (!el.G_stock) {
+            el.G_stock = 100;
+          }
+          el.price = parseInt(el.price);
+          return el;
+        });
+        // 商品数据入库
+        const response: any = await addGoods(goodsData);
         if (response.status !== 0) throw Error(JSON.stringify(response));
-        // notify add success;
-        console.log('add success');
+        // notify;
+        this.$message({
+          showClose: true,
+          message: 'Added successfully',
+          type: 'success',
+          center: true,
+        });
       } catch (err) {
         console.log(err);
       }
