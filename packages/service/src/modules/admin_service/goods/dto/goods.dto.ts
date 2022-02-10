@@ -1,4 +1,4 @@
-import { IsString, IsUrl } from 'class-validator';
+import { IsInt, IsString, IsUrl } from 'class-validator';
 /**
  * 商品数据批量入库
  */
@@ -21,5 +21,10 @@ export class AddGoodsDto {
   readonly G_info: string;
 
   @IsString()
-  readonly G_price: string;
+  readonly G_price: number;
+  /**
+   * 商品库存
+   */
+  @IsInt()
+  readonly G_stock: number;
 }

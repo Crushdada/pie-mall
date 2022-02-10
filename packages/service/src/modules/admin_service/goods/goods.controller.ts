@@ -11,8 +11,9 @@ export class GoodsController {
   @ApiOperation({
     summary: '商品数据批量入库',
   })
-  public async addGoods(@Body() AddGoodsPayload: AddGoodsDto) {
-    console.log('访问了goods接口');
+  public async addGoods(
+    @Body() AddGoodsPayload: Array<AddGoodsDto> & AddGoodsDto,
+  ) {
     return await this._goodsSrv.addGoods(AddGoodsPayload);
   }
 }

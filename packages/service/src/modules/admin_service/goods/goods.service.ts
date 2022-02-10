@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Goods } from './entities/goods.entity';
 import { Repository } from 'typeorm';
 import { ResponseService } from '../../response/response-service';
-import { GoodsInterface } from '../../../../../types/goods/goods.interface';
 import { ResponseBody } from '../../../../../types/response/response-body.interface';
 import { ERROR_TYPE } from '../../../../../types/response/error-type.enum';
+import { AddGoodsDto } from './dto/goods.dto';
 
 @Injectable()
 export class GoodsService {
@@ -17,13 +17,12 @@ export class GoodsService {
 
   /**
    * 商品上架/入库
-   * @param {Array<GoodsInterface> | GoodsInterface} goodsData
+   * @param {Array<AddGoodsDto> | AddGoodsDto} goodsData
    * @returns ResponseBody
    */
   public async addGoods(
-    goodsData: Array<GoodsInterface> | GoodsInterface,
+    goodsData: Array<AddGoodsDto> & AddGoodsDto,
   ): Promise<ResponseBody<any>> {
-    console.log(goodsData);
     try {
       const rec = await this._goodsRepo.save(goodsData);
       return this._responseSrv.success(rec);
