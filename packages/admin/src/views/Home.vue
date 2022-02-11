@@ -27,7 +27,7 @@ export default class Home extends Vue {
   // Methods
   // ===================================================================
   //读取Excel数据
-  uploadFile(file) {
+  uploadFile(file): void {
     const realFile = file.raw;
     const reader = new FileReader();
     reader.onload = async e => {
