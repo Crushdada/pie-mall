@@ -1,5 +1,10 @@
 import XLSX from 'xlsx';
 
+/**
+ *
+ * @param {*} uint8Array
+ * @returns JSON
+ */
 export const uint8Array2JSON = rawData => {
   if (!rawData) return undefined;
   // 如果是已经处理后的

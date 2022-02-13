@@ -13,6 +13,7 @@ import TypeOrmModuleOptions from './config/interfaces/db.interface';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { GoodsModule } from './modules/admin_service/goods/goods.module';
 import { ResponseModule } from './modules/response/response-module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { ResponseModule } from './modules/response/response-module';
       },
     }),
     GoodsModule,
+    UserModule,
     ResponseModule,
   ],
   controllers: [AppController],
