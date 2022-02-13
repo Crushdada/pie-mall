@@ -57,8 +57,15 @@ export class UserService {
     adminUserProfile: SignDto,
   ): Promise<ResponseBody<any>> {
     try {
+      const { account } = adminUserProfile;
+      const user = await this._adminRepo.findOne({ account });
+      // 账号已存在
+      if (user) {
+        return this._responseSrv.error(ERROR_TYPE.ALREADY_EXIST, null);
+      }
       const rec = await this._adminRepo.save(adminUserProfile);
-      return this._responseSrv.success(rec);
+      const { name } = rec;
+      return this._responseSrv.success({ name });
     } catch (err) {
       console.log(err);
       return this._responseSrv.error(ERROR_TYPE.UNKNOW, null, {

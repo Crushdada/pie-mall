@@ -5,10 +5,10 @@ export abstract class UserProfile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
-  @Column()
+  @Column({ unique: true })
   account: string;
 
   @Column()

@@ -22,7 +22,7 @@ export class UserController {
         return await this._userSrv.adminLogin(userProfile);
       }
       // 注册
-      if (userProfile.signType === 'in') {
+      if (userProfile.signType === 'up') {
         return await this._userSrv.adminRegister(userProfile);
       }
     }

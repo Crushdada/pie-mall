@@ -5,17 +5,19 @@
     style="width: 355px; height: 80px"
   >
     <span v-show="showLabel" class="p-label">{{ label }}</span>
-    <el-input
-      :type="type"
-      :value="value"
-      :placeholder="placeholder"
-      @input="handleInput"
-      @focus="showLabel = true"
-      :show-password="showPassword"
-      :min="min"
-      :max="max"
-      clearable
-    ></el-input>
+    <form>
+      <el-input
+        :type="type"
+        :value="value"
+        :placeholder="placeholder"
+        @input="handleInput"
+        @focus="showLabel = true"
+        :show-password="showPassword"
+        :min="min"
+        :max="max"
+        clearable
+      ></el-input>
+    </form>
     <span v-show="!showLabel" class="p-label text-xs mt-2.5">{{ desc }}</span>
   </div>
 </template>

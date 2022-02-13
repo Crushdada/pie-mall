@@ -1,7 +1,7 @@
 <template>
   <div class="loginpage flex flex-row flex-nowrap">
     <!-- Left Thumb -->
-    <div class="login-thumb h-full" style="width: 30vw; height: 100vh">
+    <div class="login-thumb h-full" style="width: 24.5vw; height: 100vh">
       <img
         class="h-full"
         alt="login page thumb"
@@ -192,28 +192,44 @@ export default class LoginPage extends Vue {
       const response: any = await signUser({
         account: this.accountNumber,
         password: this.passWord,
-        signType,
+        signType: signType,
       });
       if (response.status === ERROR_TYPE.NOT_FOUND) {
         this.verifyFailedTip = '账号密码错误，请重新输入';
         return;
       }
+      if (response.status === ERROR_TYPE.ALREADY_EXIST) {
+        this.verifyFailedTip = '账号已存在';
+        return;
+      }
       if (response.status !== 0) {
         throw Error(JSON.stringify(response));
       }
-      this.$message({
-        message: '登录成功', // login | register Msg
-        type: 'success',
-        center: true,
-      });
-      // 用户信息前端持久化
-      // const userProfile = response;
-      // this.$stock.commit(SAVE_USER_PROFILE, userProfile);
+      // 登录/注册成功的情况
+      if (signType === 'up') {
+        this.$message({
+          message: '注册成功,请登录',
+          type: 'success',
+          center: true,
+        });
+        this.activeTab = 'Sign in';
+      } else {
+        this.$message({
+          message: '登录成功',
+          type: 'success',
+          center: true,
+        });
 
-      // 路由跳转
-      this.$router.replace({
-        name: 'home',
-      });
+        // 用户信息前端持久化
+        const { data: userProfile } = response;
+        console.log(userProfile);
+        // this.$stock.commit(SAVE_USER_PROFILE, userProfile);
+
+        // 路由跳转
+        this.$router.replace({
+          name: 'home',
+        });
+      }
     } catch (err) {
       console.log(err);
     }
