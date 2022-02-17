@@ -1,19 +1,19 @@
-// import { foo, FOO } from "./mutations/bar.mutation";
-// ...
-// import { bar, BAR } from "./actions/foo.action";
-// ...
-// import { DEFAULT_STATE2 } from "./constants/default-init-state2.constant";
+// mutations
+import {
+  SET_USER_PROFILE,
+  setUserProfile,
+} from './mutations/set-user-profile.mutation';
 
-// export default {
-//     namespaced: false,
-//     state: {
-//         state1: 123,
-//         state2: DEFAULT_STATE2,
-//     },
-//     mutations: {
-//         [FOO]: foo,
-//     },
-//     actions: {
-//         [BAR]: bar,
-//     }
-// }
+// constants
+import { USER_PROFILE } from './constants/user-profile.constant';
+
+export default {
+  namespaced: false,
+  state: {
+    userProfile: USER_PROFILE,
+  },
+  mutations: {
+    [SET_USER_PROFILE]: setUserProfile,
+  },
+  actions: {},
+};
