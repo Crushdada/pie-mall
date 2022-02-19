@@ -151,9 +151,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { signUser } from '@/api/user/sign-user';
 import { checkSpecialCharacter } from '@/utils/string-validation';
 import { ERROR_TYPE } from '../../../types/response/error-type.enum';
-import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
-import { getUserProfile } from '@/api/user/get-user-profile';
-import { UPDATE_AUTH_TICKET } from '@/store/auth.module/mutations/set-auth-ticket.mutation';
+import { SET_AUTH_TICKET } from '@/store/auth.module/mutations/set-auth-ticket.mutation';
 import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
 
 @Component({
@@ -169,45 +167,8 @@ export default class LoginPage extends Vue {
   private activeTab = 'Sign in';
   private verifyFailedTip = '';
 
-  /** Computed*/
-  // ===================================================================
-
-  get userTicket(): string | undefined {
-    return this.$store.state[VuexModuleName.AUTH].ticket;
-  }
-  /** Hooks */
-  // ===================================================================
-  mounted() {
-    // 身份认证 & 获取用户信息
-    this.checkTicket();
-  }
-
   /** Methods */
   // ===================================================================
-  // 请求检查登录状态
-  checkTicket() {
-    if (this.userTicket) {
-      try {
-        const res = await getUserProfile(this.userTicket);
-        // 认证成功
-        if (res.status === 0) {
-          const { userProfile } = res;
-          // 更新用户信息
-          this.$stock.commit(SET_USER_PROFILE, userProfile);
-          // 跳过登录，路由跳转
-          this.$router.replace({
-            name: 'home',
-          });
-        }
-        // 认证失败
-        if (res.status === ERROR_TYPE.UNKNOW) {
-          console.log('🙈登录状态失效，请重新登录');
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  }
 
   handleClickTab() {
     this.verifyFailedTip = '';
@@ -232,10 +193,12 @@ export default class LoginPage extends Vue {
   /**
    * 登录成功后的业务逻辑
    */
-  handleSignIn(userProfile) {
+  handleSignIn(data) {
     // 用户信息前端持久化
-    console.log(userProfile);
+    const { userProfile, access_token: userTicket } = data;
     this.$stock.commit(SET_USER_PROFILE, userProfile);
+    // 存储ticket
+    this.$stock.commit(SET_AUTH_TICKET, userTicket);
     // 路由跳转
     this.$router.replace({
       name: 'home',
@@ -278,8 +241,7 @@ export default class LoginPage extends Vue {
           type: 'success',
           center: true,
         });
-        response.data.userProfile &&
-          this.handleSignIn(response.data.userProfile);
+        response.data.userProfile && this.handleSignIn(response.data);
       }
     } catch (err) {
       console.log(err);

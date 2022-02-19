@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import LoginPage from '../views/LoginPage.vue';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 
@@ -10,18 +9,19 @@ NProgress.configure({ easing: 'ease', speed: 500, minimum: 0.1 });
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
-  {
-    path: '/',
-    name: 'login',
-    component: LoginPage,
-  },
+  { path: '/', redirect: '/home' },
   {
     path: '/home',
     name: 'home',
+    component: () => import('../views/Home.vue'),
+  },
+  {
+    path: '/login',
+    name: 'login',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import('../views/Home.vue'),
+    component: () => import('../views/LoginPage.vue'),
   },
 ];
 
