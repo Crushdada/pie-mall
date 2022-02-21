@@ -128,6 +128,26 @@ export class UserService {
       });
     }
   }
+  /**
+   * 删除user session
+   * @param token
+   * @param session
+   * @returns ResponseBody
+   */
+  public async deleteUserSession(
+    token: string,
+    session: Record<string, any>,
+  ): Promise<ResponseBody<any>> {
+    try {
+      session.destroy();
+      return this._responseSrv.success({});
+    } catch (err) {
+      console.log(err);
+      return this._responseSrv.error(ERROR_TYPE.UNKNOW, null, {
+        detail: err.toString(),
+      });
+    }
+  }
 
   /**
    * app 登录

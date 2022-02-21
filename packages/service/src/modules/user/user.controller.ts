@@ -6,6 +6,7 @@ import {
   Get,
   Headers,
   Session,
+  Delete,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SignDto } from './dto/sign.dto';
@@ -53,5 +54,16 @@ export class UserController {
   ) {
     const { userId } = session;
     return await this._userSrv.getUserProfile(token, userId);
+  }
+
+  @Delete('userSession')
+  @ApiOperation({
+    summary: '用户退出登录，删除用户会话状态',
+  })
+  public async signOut(
+    @Headers('userTicket') token: string,
+    @Session() session: Record<string, any>,
+  ) {
+    return await this._userSrv.deleteUserSession(token, session);
   }
 }

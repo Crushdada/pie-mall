@@ -4,12 +4,17 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'; // API 文档插件
 
-// DocumentBuilder是一个辅助类，有助于结构的基本文件SwaggerModule
-// 它包含几种方法，可用于设置诸如标题、描述、版本等属性
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: { origin: 'http://localhost:8081', credentials: true },
   });
+
+  app.use(
+    session({ secret: 'crushdada', resave: false, uninitialized: false }),
+  );
+
+  // DocumentBuilder是一个辅助类，有助于结构的基本文件SwaggerModule
+  // 它包含几种方法，可用于设置诸如标题、描述、版本等属性
   const options = new DocumentBuilder()
     .setTitle('Pie-Mall API Interface') // 标题
     .setDescription('测试接口') // 描述
@@ -18,7 +23,7 @@ async function bootstrap() {
     // 然后被ApiUseTags注释，字符串一致的都会变成同一个标签下的
     // .setBasePath('http://localhost:5000')
     .build();
-  app.use(session({ secret: 'crushdada' }));
+
   // 为了创建完整的文档(具有定义的HTTP路由)
   // 我们使用类的SwaggerModule.createDocument()方法
   // 此方法有两个参数，分别是应用程序实例和基本Swagger options

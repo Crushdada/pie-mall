@@ -1,5 +1,8 @@
 <template>
   <div class="home">
+    <el-button size="small" type="primary" @click="logOut">
+      退出登录
+    </el-button>
     <img alt="Vue logo" src="../assets/logo.png" />
     <el-upload
       ref="loadFileBtn"
@@ -22,9 +25,10 @@ import { uint8Array2JSON } from '@/utils/data-utils';
 import { addGoods } from '@/api/goods/add-goods';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { getUserProfile } from '@/api/user/get-user-profile';
+import { signOut } from '@/api/user/sign-out';
 import { ERROR_TYPE } from '../../../types/response/error-type.enum';
 import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
-
+import { DELETE_AUTH_TICKET } from '@/store/auth.module/mutations/delete-auth-ticket.mutation';
 @Component({
   components: {},
 })
@@ -111,6 +115,33 @@ export default class Home extends Vue {
     };
     reader.readAsArrayBuffer(realFile);
     this.$refs.loadFileBtn.clearFiles();
+  }
+
+  // 退出登录
+  async logOut() {
+    try {
+      // 请求销毁session
+      const res = await signOut(this.userTicket);
+      // 请求失败
+      if (res.status !== 0) {
+        console.log(`🙈${res.detail}`);
+        this.$message({
+          showClose: true,
+          message: 'Log out failed',
+          type: 'error',
+          center: true,
+        });
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    // 成功退出登录
+    // 删除客户端存储的ticket，更改登录状态
+    this.$stock.commit(DELETE_AUTH_TICKET);
+    this.$router.replace({
+      name: 'login',
+    });
   }
 }
 </script>
