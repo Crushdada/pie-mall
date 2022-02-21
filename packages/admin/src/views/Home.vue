@@ -1,5 +1,8 @@
 <template>
   <div class="home">
+    <el-button size="small" type="primary" @click="logOut">
+      退出登录
+    </el-button>
     <img alt="Vue logo" src="../assets/logo.png" />
     <el-upload
       ref="loadFileBtn"
@@ -20,14 +23,67 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { uint8Array2JSON } from '@/utils/data-utils';
 import { addGoods } from '@/api/goods/add-goods';
+import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
+import { getUserProfile } from '@/api/user/get-user-profile';
+import { signOut } from '@/api/user/sign-out';
+import { ERROR_TYPE } from '../../../types/response/error-type.enum';
+import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
+import { DELETE_AUTH_TICKET } from '@/store/auth.module/mutations/delete-auth-ticket.mutation';
 @Component({
   components: {},
 })
 export default class Home extends Vue {
-  // Methods
+  /** Computed*/
   // ===================================================================
+
+  get userTicket(): string | undefined {
+    return this.$store.state[VuexModuleName.AUTH].ticket;
+  }
+
+  /** Hooks */
+  // ===================================================================
+  beforeMount() {
+    this.checkTicket();
+  }
+
+  // Methods
+  // ===================================================================\
+  /**
+   * 身份认证 & 获取用户信息
+   * @param { string } store.userTicket
+   */
+  async checkTicket() {
+    // 首次登录
+    if (!this.userTicket) {
+      console.log('🙈登录状态失效，请重新登录');
+      this.$router.replace({
+        name: 'login',
+      });
+      return;
+    }
+    // 二次登录
+    try {
+      const res = await getUserProfile(this.userTicket);
+      // 认证成功
+      if (res.status === 0) {
+        const { userProfile } = res;
+        // 更新用户信息
+        this.$stock.commit(SET_USER_PROFILE, userProfile);
+      }
+      // 认证失败
+      if (res.status === ERROR_TYPE.UNKNOW) {
+        console.log('🙈登录状态失效，请重新登录');
+        this.$router.replace({
+          name: 'login',
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   //读取Excel数据
-  uploadFile(file): void {
+  uploadFile(file) {
     const realFile = file.raw;
     const reader = new FileReader();
     reader.onload = async e => {
@@ -59,6 +115,33 @@ export default class Home extends Vue {
     };
     reader.readAsArrayBuffer(realFile);
     this.$refs.loadFileBtn.clearFiles();
+  }
+
+  // 退出登录
+  async logOut() {
+    try {
+      // 请求销毁session
+      const res = await signOut(this.userTicket);
+      // 请求失败
+      if (res.status !== 0) {
+        console.log(`🙈${res.detail}`);
+        this.$message({
+          showClose: true,
+          message: 'Log out failed',
+          type: 'error',
+          center: true,
+        });
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    // 成功退出登录
+    // 删除客户端存储的ticket，更改登录状态
+    this.$stock.commit(DELETE_AUTH_TICKET);
+    this.$router.replace({
+      name: 'login',
+    });
   }
 }
 </script>

@@ -54,8 +54,8 @@ import { UserModule } from './modules/user/user.module';
     UserModule,
     ResponseModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  // controllers: [AppController],
+  // providers: [AppService],
 })
 export class AppModule implements NestModule {
   // MiddlewareConsumer: 中间件消费者，指从provider那里接收、处理、应用中间件的对象

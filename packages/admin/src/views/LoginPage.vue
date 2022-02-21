@@ -151,6 +151,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { signUser } from '@/api/user/sign-user';
 import { checkSpecialCharacter } from '@/utils/string-validation';
 import { ERROR_TYPE } from '../../../types/response/error-type.enum';
+import { SET_AUTH_TICKET } from '@/store/auth.module/mutations/set-auth-ticket.mutation';
+import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
 
 @Component({
   components: {
@@ -158,16 +160,21 @@ import { ERROR_TYPE } from '../../../types/response/error-type.enum';
   },
 })
 export default class LoginPage extends Vue {
+  /** Setup */
+  // ===================================================================
   private accountNumber = '';
   private passWord = '';
   private activeTab = 'Sign in';
   private verifyFailedTip = '';
 
-  handleClickTab(): void {
+  /** Methods */
+  // ===================================================================
+
+  handleClickTab() {
     this.verifyFailedTip = '';
   }
 
-  handleSubmit(): void {
+  handleSubmit() {
     // 用户输入合法性校验
     if (!this.accountNumber || !this.passWord) {
       this.verifyFailedTip = '请输入账号密码';
@@ -184,10 +191,25 @@ export default class LoginPage extends Vue {
   }
 
   /**
+   * 登录成功后的业务逻辑
+   */
+  handleSignIn(data) {
+    // 用户信息前端持久化
+    const { userProfile, access_token: userTicket } = data;
+    this.$stock.commit(SET_USER_PROFILE, userProfile);
+    // 存储ticket
+    this.$stock.commit(SET_AUTH_TICKET, userTicket);
+    // 路由跳转
+    this.$router.replace({
+      name: 'home',
+    });
+  }
+
+  /**
    * 登录/注册
    * @param signType
    */
-  async sign(signType: 'in' | 'up'): void {
+  async sign(signType: 'in' | 'up') {
     try {
       const response: any = await signUser({
         account: this.accountNumber,
@@ -219,16 +241,7 @@ export default class LoginPage extends Vue {
           type: 'success',
           center: true,
         });
-
-        // 用户信息前端持久化
-        const { data: userProfile } = response;
-        console.log(userProfile);
-        // this.$stock.commit(SAVE_USER_PROFILE, userProfile);
-
-        // 路由跳转
-        this.$router.replace({
-          name: 'home',
-        });
+        response.data.userProfile && this.handleSignIn(response.data);
       }
     } catch (err) {
       console.log(err);

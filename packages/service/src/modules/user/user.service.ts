@@ -7,6 +7,8 @@ import { ResponseService } from '../response/response-service';
 import { ResponseBody } from '../../../../types/response/response-body.interface';
 import { ERROR_TYPE } from '../../../../types/response/error-type.enum';
 import { SignDto } from './dto/sign.dto';
+import { JwtAuthService } from '../jwt-auth/jwt-auth.service';
+import { UserProfileInterface } from '../../../../types/user/user-profile.interface';
 
 @Injectable()
 export class UserService {
@@ -16,7 +18,57 @@ export class UserService {
     // @InjectRepository(Guest)
     // private readonly __appUserRepo: Repository<Guest>,
     private readonly _responseSrv: ResponseService,
+    private readonly _jwtSrv: JwtAuthService,
   ) {}
+
+  /**
+   * 校验ticket并获取userProfile
+   * @param token
+   * @param userId
+   * @returns
+   */
+  public async getUserProfile(
+    token: string,
+    userId: string,
+  ): Promise<ResponseBody<any>> {
+    try {
+      // 验证session，只有二次登录，session中才有该字段
+      if (!userId) {
+        throw Error('身份认证失败, 您没有权限执行此操作');
+      }
+      // 1. 验证token
+      const verifyRes = await this._jwtSrv.verifyAccessToken(token);
+
+      if (!verifyRes) {
+        throw Error('身份认证失败, 您没有权限执行此操作');
+      }
+      // 通过身份认证校验
+      const userProfile = await this.getUserProfileById(userId);
+      if (!userProfile) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
+      }
+      const { name } = userProfile;
+      return this._responseSrv.success({ name });
+    } catch (err) {
+      return this._responseSrv.error(ERROR_TYPE.UNKNOW, err, {
+        detail: err.toString(),
+      });
+    }
+  }
+  /**
+   *
+   * @param userId
+   * @returns userProfile
+   */
+  public async getUserProfileById(
+    userId: string,
+    // project: 'B' | 'C',
+  ): Promise<UserProfileInterface> {
+    // return project === 'B'
+    //   ? this._adminRepo.findOne({ id: userId })
+    //   : this.__appUserRepo.findOne({ id: userId });
+    return this._adminRepo.findOne({ id: userId });
+  }
 
   /**
    * admin 登录
@@ -25,6 +77,7 @@ export class UserService {
    */
   public async adminLogin(
     adminUserProfile: SignDto,
+    session: Record<string, any>,
   ): Promise<ResponseBody<any>> {
     const { account, password } = adminUserProfile;
     try {
@@ -38,8 +91,10 @@ export class UserService {
       if (!user) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }
-      const { name } = user;
-      return this._responseSrv.success({ name });
+      const { name, id } = user;
+      session.userId = id;
+      const access_token = await this._jwtSrv.signAccessToken(id);
+      return this._responseSrv.success({ userProfile: { name }, access_token });
     } catch (err) {
       console.log(err);
       return this._responseSrv.error(ERROR_TYPE.UNKNOW, null, {
@@ -66,6 +121,26 @@ export class UserService {
       const rec = await this._adminRepo.save(adminUserProfile);
       const { name } = rec;
       return this._responseSrv.success({ name });
+    } catch (err) {
+      console.log(err);
+      return this._responseSrv.error(ERROR_TYPE.UNKNOW, null, {
+        detail: err.toString(),
+      });
+    }
+  }
+  /**
+   * 删除user session
+   * @param token
+   * @param session
+   * @returns ResponseBody
+   */
+  public async deleteUserSession(
+    token: string,
+    session: Record<string, any>,
+  ): Promise<ResponseBody<any>> {
+    try {
+      session.destroy();
+      return this._responseSrv.success({});
     } catch (err) {
       console.log(err);
       return this._responseSrv.error(ERROR_TYPE.UNKNOW, null, {

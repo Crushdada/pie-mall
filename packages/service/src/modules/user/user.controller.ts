@@ -1,9 +1,17 @@
-import { Controller, Post, Body, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  Get,
+  Headers,
+  Session,
+  Delete,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SignDto } from './dto/sign.dto';
 import { UserService } from './user.service';
 import { Request } from 'express';
-
 @Controller('user')
 @ApiTags('user')
 export class UserController {
@@ -13,13 +21,17 @@ export class UserController {
   @ApiOperation({
     summary: '用户登录/注册',
   })
-  public async signUser(@Body() userProfile: SignDto, @Req() req: Request) {
+  public async signUser(
+    @Body() userProfile: SignDto,
+    @Req() req: Request,
+    @Session() session: Record<string, any>,
+  ) {
     const ori = req.get('origin');
     // B端
     if (ori === 'http://localhost:8081') {
       // 登录
       if (userProfile.signType === 'in') {
-        return await this._userSrv.adminLogin(userProfile);
+        return await this._userSrv.adminLogin(userProfile, session);
       }
       // 注册
       if (userProfile.signType === 'up') {
@@ -30,5 +42,28 @@ export class UserController {
     // if (ori === 'http://localhost:8080') {
     //
     // }
+  }
+
+  @Get()
+  @ApiOperation({
+    summary: '校验ticket并获取userProfile',
+  })
+  public async getUserProfile(
+    @Headers('userTicket') token: string,
+    @Session() session: Record<string, any>,
+  ) {
+    const { userId } = session;
+    return await this._userSrv.getUserProfile(token, userId);
+  }
+
+  @Delete('userSession')
+  @ApiOperation({
+    summary: '用户退出登录，删除用户会话状态',
+  })
+  public async signOut(
+    @Headers('userTicket') token: string,
+    @Session() session: Record<string, any>,
+  ) {
+    return await this._userSrv.deleteUserSession(token, session);
   }
 }

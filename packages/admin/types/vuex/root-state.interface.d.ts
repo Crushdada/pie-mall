@@ -1,8 +1,6 @@
-// import { VuexModuleName } from "./enums/module-name.enum";
-// import { VuexAppBasicsModuleState } from "./modules/foo-bar/module-state.interface";
+import { VuexModuleName } from './enums/module-name.enum';
+import { AuthModuleState } from './modules/auth/module-state.interface';
 
-
-// declare interface VuexRootState {
-//   [VuexModuleName.WORKSPACE]: VuexWorkspaceModuleState;
-
-// }
+export declare interface VuexRootState {
+  [VuexModuleName.AUTH]: AuthModuleState;
+}

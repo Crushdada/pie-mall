@@ -1,19 +1,21 @@
-// import { foo, FOO } from "./mutations/bar.mutation";
-// ...
-// import { bar, BAR } from "./actions/foo.action";
-// ...
-// import { DEFAULT_STATE2 } from "./constants/default-init-state2.constant";
+import {
+  SET_AUTH_TICKET,
+  setAuthTicket,
+} from './mutations/set-auth-ticket.mutation';
 
-// export default {
-//     namespaced: false,
-//     state: {
-//         state1: 123,
-//         state2: DEFAULT_STATE2,
-//     },
-//     mutations: {
-//         [FOO]: foo,
-//     },
-//     actions: {
-//         [BAR]: bar,
-//     }
-// }
+import {
+  DELETE_AUTH_TICKET,
+  deleteAuthTicket,
+} from './mutations/delete-auth-ticket.mutation';
+
+export default {
+  namespaced: false,
+  state: {
+    ticket: '',
+  },
+  mutations: {
+    [SET_AUTH_TICKET]: setAuthTicket,
+    [DELETE_AUTH_TICKET]: deleteAuthTicket,
+  },
+  actions: {},
+};
