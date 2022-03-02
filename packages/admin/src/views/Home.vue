@@ -1,21 +1,46 @@
 <template>
   <div class="home">
-    <el-button size="small" type="primary" @click="logOut">
-      退出登录
-    </el-button>
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <el-upload
-      ref="loadFileBtn"
-      class="upload-demo"
-      :auto-upload="false"
-      :show-file-list="false"
-      action
-      accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-      :on-change="uploadFile"
-      :limit="1"
-    >
-      <el-button size="small" type="primary"> 点击上传 </el-button>
-    </el-upload>
+    <el-container class="h-screen">
+      <!-- asideMenu -->
+      <el-aside
+        width="210px"
+        style="background-color: #304156; overflow-x: hidden"
+      >
+        <home-menu ref="homeMenu" />
+      </el-aside>
+      <el-container>
+        <!-- header -->
+        <el-header
+          class="header flex flex-row justify-between items-center"
+          style="text-align: right"
+        >
+          <img
+            class="flex w-10"
+            src="@/assets/pie-mall-bk-logo.png"
+            alt="pie mall logo"
+            style="justify-self: end"
+          />
+          <div>
+            <el-dropdown>
+              <i
+                class="el-icon-setting px-2"
+                style="padding-top: 3px; font-size: 20px"
+              ></i>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>查看</el-dropdown-item>
+                <el-dropdown-item>新增</el-dropdown-item>
+                <el-dropdown-item @click.native="logOut">登出</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <span class="px-2 mr-5">王小虎</span>
+          </div>
+        </el-header>
+        <!-- body -->
+        <el-main>
+          <router-view></router-view>
+        </el-main>
+      </el-container>
+    </el-container>
   </div>
 </template>
 
@@ -29,8 +54,11 @@ import { signOut } from '@/api/user/sign-out';
 import { ERROR_TYPE } from '../../../types/response/error-type.enum';
 import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
 import { DELETE_AUTH_TICKET } from '@/store/auth.module/mutations/delete-auth-ticket.mutation';
+import HomeMenu from './menu/Menu.vue';
+import { initComRoute } from './menu/menu-list';
+
 @Component({
-  components: {},
+  components: { HomeMenu },
 })
 export default class Home extends Vue {
   /** Computed*/
@@ -46,8 +74,13 @@ export default class Home extends Vue {
     this.checkTicket();
   }
 
+  mounted() {
+    //暂定数据分析页面为初始页面
+    this.$refs.homeMenu.naviPage(initComRoute.PagePath, initComRoute.component);
+  }
   // Methods
-  // ===================================================================\
+  // ===================================================================
+
   /**
    * 身份认证 & 获取用户信息
    * @param { string } store.userTicket
@@ -145,3 +178,8 @@ export default class Home extends Vue {
   }
 }
 </script>
+<style lang="scss" scoped>
+.header {
+  box-shadow: 0 2px 5px 0 hsl(0deg 0% 24% / 10%);
+}
+</style>
