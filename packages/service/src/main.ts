@@ -10,7 +10,7 @@ async function bootstrap() {
   });
 
   app.use(
-    session({ secret: 'crushdada', resave: false, uninitialized: false }),
+    session({ secret: 'crushdada', resave: false, saveUninitialized: false }),
   );
 
   // DocumentBuilder是一个辅助类，有助于结构的基本文件SwaggerModule

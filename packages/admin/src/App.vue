@@ -14,4 +14,5 @@
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   color: $primary;
 }
+
 </style>
