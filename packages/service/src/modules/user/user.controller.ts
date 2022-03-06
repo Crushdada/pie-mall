@@ -2,20 +2,38 @@ import {
   Controller,
   Post,
   Body,
-  Req,
   Get,
   Headers,
   Session,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SignDto } from './dto/sign.dto';
 import { UserService } from './user.service';
-import { Request } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+
 @Controller('user')
 @ApiTags('user')
 export class UserController {
   constructor(private readonly _userSrv: UserService) {}
+
+  @Post('avatar')
+  @ApiBody({
+    description: 'user avatar',
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(
+    @Session() session: Record<string, any>,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this._userSrv.updateAvatar(
+      session.client,
+      file,
+      session.userId,
+    );
+  }
 
   @Post()
   @ApiOperation({
@@ -23,12 +41,10 @@ export class UserController {
   })
   public async signUser(
     @Body() userProfile: SignDto,
-    @Req() req: Request,
     @Session() session: Record<string, any>,
   ) {
-    const ori = req.get('origin');
     // B端
-    if (ori === 'http://localhost:8081') {
+    if (session.client === process.env.PIEMALL_ADMIN) {
       // 登录
       if (userProfile.signType === 'in') {
         return await this._userSrv.adminLogin(userProfile, session);
@@ -39,7 +55,7 @@ export class UserController {
       }
     }
     // C端
-    // if (ori === 'http://localhost:8080') {
+    // if (session.client === process.env.PIEMALL_APP) {
     //
     // }
   }

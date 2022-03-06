@@ -3,14 +3,29 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'; // API 文档插件
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: { origin: 'http://localhost:8081', credentials: true },
   });
 
+  // auto validate dtos
+  // 全局参数验证
+  app.useGlobalPipes(new ValidationPipe());
+
+  // express-session
+  const ExpirationTime = 3600000 * 8; // 8h
   app.use(
-    session({ secret: 'crushdada', resave: false, saveUninitialized: false }),
+    session({
+      secret: 'crushdada',
+      cookie: {
+        expires: new Date(Date.now() + ExpirationTime),
+        maxAge: ExpirationTime,
+      },
+      resave: false,
+      saveUninitialized: false,
+    }),
   );
 
   // DocumentBuilder是一个辅助类，有助于结构的基本文件SwaggerModule
@@ -30,7 +45,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   // 最后一步是setup()，参数：装入swagger的路径、应用程序实例、 描述Nest应用程序的文档
   SwaggerModule.setup('/docs', app, document);
-  // 当前加的path是/docs，则SwaggerGui部署在http://localhost:3000/docs
-  await app.listen(3000);
+  const _srvPort = process.env.PIEMALL_SERVICE_PORT;
+  // 当前加的path是/docs，则SwaggerGui部署在http://localhost:_srvPort/docs
+  await app.listen(_srvPort);
 }
 bootstrap();
