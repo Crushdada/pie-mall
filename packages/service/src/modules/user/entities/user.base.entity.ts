@@ -13,4 +13,7 @@ export abstract class UserProfile {
 
   @Column()
   password: string;
+
+  @Column({ nullable: true })
+  avatar: string;
 }

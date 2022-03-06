@@ -9,6 +9,8 @@ import { ERROR_TYPE } from '../../../../types/response/error-type.enum';
 import { SignDto } from './dto/sign.dto';
 import { JwtAuthService } from '../jwt-auth/jwt-auth.service';
 import { UserProfileInterface } from '../../../../types/user/user-profile.interface';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class UserService {
@@ -20,6 +22,54 @@ export class UserService {
     private readonly _responseSrv: ResponseService,
     private readonly _jwtSrv: JwtAuthService,
   ) {}
+
+  /**
+   *
+   * @param client
+   * @param file
+   * @param userId
+   * @returns
+   */
+  public async updateAvatar(
+    client: string,
+    file: Express.Multer.File,
+    userId: string,
+  ): Promise<ResponseBody<{ userAvatarUrl: string }>> {
+    const staticSrvDir = process.env.SSD; // 静态服务存储目录
+    const serviceRort = process.env.PIEMALL_SERVICE_PORT;
+    const avatarFileName = `${userId}.jpg`;
+    /**
+     * project-path\dist\service\public\upload\user-avatar
+     */
+    const avatarStorePath = join(
+      __dirname,
+      '../../../',
+      staticSrvDir,
+      '/user-avatar',
+    );
+
+    try {
+      // 创建静态资源存储服务路径(文件夹)
+      if (!existsSync(avatarStorePath))
+        mkdirSync(avatarStorePath, { recursive: true }); // 递归参数，否则只能建一层
+      // 存储图片到静态服务目录
+      writeFileSync(join(avatarStorePath, avatarFileName), file.buffer);
+      // 写入图片存储路径到DB(userProfile)
+      const _userRepo = {
+        [process.env.PIEMALL_APP]: '_appUserRepo',
+        [process.env.PIEMALL_ADMIN]: '_adminRepo',
+      }[client];
+      const userAvatarUrl = `http://localhost:${serviceRort}/user-avatar/${avatarFileName}`;
+      await this[_userRepo].update(userId, {
+        avatar: userAvatarUrl,
+      });
+      return this._responseSrv.success({ userAvatarUrl });
+    } catch (err) {
+      return this._responseSrv.error(ERROR_TYPE.UNKNOW, err, {
+        detail: err.toString(),
+      });
+    }
+  }
 
   /**
    * 校验ticket并获取userProfile
@@ -47,8 +97,7 @@ export class UserService {
       if (!userProfile) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }
-      const { name } = userProfile;
-      return this._responseSrv.success({ name });
+      return this._responseSrv.success(userProfile);
     } catch (err) {
       return this._responseSrv.error(ERROR_TYPE.UNKNOW, err, {
         detail: err.toString(),
@@ -67,7 +116,7 @@ export class UserService {
     // return project === 'B'
     //   ? this._adminRepo.findOne({ id: userId })
     //   : this.__appUserRepo.findOne({ id: userId });
-    return this._adminRepo.findOne({ id: userId });
+    return await this._adminRepo.findOne({ id: userId });
   }
 
   /**

@@ -32,6 +32,12 @@ const routes: Array<RouteConfig> = [
     children: menuRoutes,
   },
   {
+    path: '/personal/center',
+    name: 'PersonalCenter',
+    component: () => import('../views/PersonalCenter.vue'),
+    children: menuRoutes,
+  },
+  {
     path: '/login',
     name: 'login',
     // route level code-splitting
@@ -41,7 +47,6 @@ const routes: Array<RouteConfig> = [
   },
 ];
 
-console.log(routes);
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,

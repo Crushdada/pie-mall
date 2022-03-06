@@ -4,16 +4,17 @@ import {
   MiddlewareConsumer,
   RequestMethod,
 } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import dbConfig from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import TypeOrmModuleOptions from './config/interfaces/db.interface';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { checkClientMiddleware } from './middlewares/check-client.middleware';
 import { GoodsModule } from './modules/admin_service/goods/goods.module';
 import { ResponseModule } from './modules/response/response-module';
 import { UserModule } from './modules/user/user.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -50,6 +51,9 @@ import { UserModule } from './modules/user/user.module';
         return cfg;
       },
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', process.env.SSD),
+    }),
     GoodsModule,
     UserModule,
     ResponseModule,
@@ -60,7 +64,7 @@ import { UserModule } from './modules/user/user.module';
 export class AppModule implements NestModule {
   // MiddlewareConsumer: 中间件消费者，指从provider那里接收、处理、应用中间件的对象
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes({
+    consumer.apply(LoggerMiddleware, checkClientMiddleware).forRoutes({
       path: '*',
       method: RequestMethod.ALL, // 对所有类型的请求都应用LoggerMiddleware
     });

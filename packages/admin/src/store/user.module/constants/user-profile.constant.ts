@@ -5,6 +5,9 @@ import { UserProfileInterface } from '../../../../../types/user/user-profile.int
  */
 export const USER_PROFILE: UserProfileInterface = {
   id: '',
+  name: '',
+  avatar: '',
   account: '',
   password: '',
+  role: 'admin',
 };

@@ -8,33 +8,9 @@
       >
         <home-menu ref="homeMenu" />
       </el-aside>
-      <el-container>
+      <el-container direction="vertical">
         <!-- header -->
-        <el-header
-          class="header flex flex-row justify-between items-center"
-          style="text-align: right"
-        >
-          <img
-            class="flex w-10"
-            src="@/assets/pie-mall-bk-logo.png"
-            alt="pie mall logo"
-            style="justify-self: end"
-          />
-          <div>
-            <el-dropdown>
-              <i
-                class="el-icon-setting px-2"
-                style="padding-top: 3px; font-size: 20px"
-              ></i>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>查看</el-dropdown-item>
-                <el-dropdown-item>新增</el-dropdown-item>
-                <el-dropdown-item @click.native="logOut">登出</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-            <span class="px-2 mr-5">王小虎</span>
-          </div>
-        </el-header>
+        <header-bar />
         <!-- body -->
         <el-main>
           <router-view></router-view>
@@ -50,15 +26,13 @@ import { uint8Array2JSON } from '@/utils/data-utils';
 import { addGoods } from '@/api/goods/add-goods';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { getUserProfile } from '@/api/user/get-user-profile';
-import { signOut } from '@/api/user/sign-out';
 import { ERROR_TYPE } from '../../../types/response/error-type.enum';
 import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
-import { DELETE_AUTH_TICKET } from '@/store/auth.module/mutations/delete-auth-ticket.mutation';
 import HomeMenu from './menu/Menu.vue';
 import { initComRoute } from './menu/menu-list';
-
+import HeaderBar from '@/components/HeaderBar.vue';
 @Component({
-  components: { HomeMenu },
+  components: { HomeMenu, HeaderBar },
 })
 export default class Home extends Vue {
   /** Computed*/
@@ -99,9 +73,9 @@ export default class Home extends Vue {
       const res = await getUserProfile(this.userTicket);
       // 认证成功
       if (res.status === 0) {
-        const { userProfile } = res;
+        const { data } = res;
         // 更新用户信息
-        this.$stock.commit(SET_USER_PROFILE, userProfile);
+        this.$stock.commit(SET_USER_PROFILE, data);
       }
       // 认证失败
       if (res.status === ERROR_TYPE.UNKNOW) {
@@ -148,33 +122,6 @@ export default class Home extends Vue {
     };
     reader.readAsArrayBuffer(realFile);
     this.$refs.loadFileBtn.clearFiles();
-  }
-
-  // 退出登录
-  async logOut() {
-    try {
-      // 请求销毁session
-      const res = await signOut(this.userTicket);
-      // 请求失败
-      if (res.status !== 0) {
-        console.log(`🙈${res.detail}`);
-        this.$message({
-          showClose: true,
-          message: 'Log out failed',
-          type: 'error',
-          center: true,
-        });
-        return;
-      }
-    } catch (err) {
-      console.log(err);
-    }
-    // 成功退出登录
-    // 删除客户端存储的ticket，更改登录状态
-    this.$stock.commit(DELETE_AUTH_TICKET);
-    this.$router.replace({
-      name: 'login',
-    });
   }
 }
 </script>

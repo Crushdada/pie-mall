@@ -1,8 +1,5 @@
 <template>
   <div class="about">
-    <el-button size="small" type="primary" @click="logOut">
-      退出登录
-    </el-button>
     <el-upload
       ref="loadFileBtn"
       class="upload-demo"
