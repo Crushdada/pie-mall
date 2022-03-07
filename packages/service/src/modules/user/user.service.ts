@@ -24,7 +24,30 @@ export class UserService {
   ) {}
 
   /**
-   *
+   * 更新用户名称
+   * @param client
+   * @param name
+   * @param userId
+   */
+  public async setUserName(client: string, name: string, userId: string) {
+    const _userRepo = {
+      [process.env.PIEMALL_APP]: '_appUserRepo',
+      [process.env.PIEMALL_ADMIN]: '_adminRepo',
+    }[client];
+    try {
+      await this[_userRepo].update(userId, {
+        name: name,
+      });
+      return this._responseSrv.success({});
+    } catch (err) {
+      return this._responseSrv.error(ERROR_TYPE.UNKNOW, err, {
+        detail: err.toString(),
+      });
+    }
+  }
+
+  /**
+   * 更新用户头像
    * @param client
    * @param file
    * @param userId

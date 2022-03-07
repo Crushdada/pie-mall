@@ -3,10 +3,9 @@
     <!-- Left Thumb -->
     <div class="login-thumb h-full" style="width: 24.5vw; height: 100vh">
       <img
-        class="h-full"
+        class="h-full object-cover object-center"
         alt="login page thumb"
         src="@/assets/loginThumb.jpg"
-        style="object-fit: cover; object-position: center"
       />
     </div>
     <!-- Right Login Section -->
@@ -15,7 +14,7 @@
       <div class="login-header h-20 p-5">
         <div class="float-left flex flex-row flex-nowrap items-center">
           <img
-            class="w-10 mr-3"
+            class="w-10 mr-3 object-cover object-center"
             src="@/assets/pie-mall-bk-logo.png"
             alt="pie mall logo"
             style="display: inline-block"
