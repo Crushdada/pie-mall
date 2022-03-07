@@ -4,7 +4,7 @@
     style="text-align: right"
   >
     <img
-      class="flex w-10"
+      class="flex w-10 object-cover object-center"
       src="@/assets/pie-mall-bk-logo.png"
       alt="pie mall logo"
     />
@@ -20,17 +20,17 @@
         </el-dropdown-menu>
       </el-dropdown>
       <!-- 头像 & 个人中心 -->
-      <span class="px-2">王小虎</span>
+      <span class="px-2">{{userName}}</span>
       <img
         v-if="avatar"
-        class="w-9 h-9 ml-2 mr-5 rounded-full cursor-pointer"
+        class="w-9 h-9 ml-2 mr-5 rounded-full cursor-pointer object-cover object-center"
         :src="avatar"
         alt="用户头像"
         @click="() => $router.push({ name: 'PersonalCenter' })"
       />
       <img
         v-else
-        class="w-9 h-9 ml-2 mr-5"
+        class="w-9 h-9 ml-2 mr-5 object-cover object-center"
         src="@/assets/nav_icon_avatar_nor.png"
         alt="用户头像"
         @click="() => $router.push({ name: 'PersonalCenter' })"
@@ -53,7 +53,9 @@ export default class HeaderBar extends Vue {
   get avatar() {
     return this.$store.state[VuexModuleName.USER].userProfile.avatar;
   }
-
+  get userName() {
+    return this.$store.state[VuexModuleName.USER].userProfile.userName;
+  }
   // 退出登录
   async logOut() {
     try {

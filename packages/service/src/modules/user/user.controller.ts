@@ -19,6 +19,21 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class UserController {
   constructor(private readonly _userSrv: UserService) {}
 
+  @Post('name')
+  @ApiOperation({
+    summary: '修改用户昵称',
+  })
+  public async updateUserName(
+    @Body() { userName }: { userName: string },
+    @Session() session: Record<string, any>,
+  ) {
+    return await this._userSrv.setUserName(
+      session.client,
+      userName,
+      session.userId,
+    );
+  }
+
   @Post('avatar')
   @ApiBody({
     description: 'user avatar',
