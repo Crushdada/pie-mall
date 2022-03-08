@@ -78,6 +78,6 @@ export const moduleMenu = [
  * 初始页面(初始视图路由)
  */
 export const initComRoute = {
-  PagePath: '/dataAnalysis/goods',
-  component: 'GoodsDataAnalysis',
+  PagePath: '/user',
+  component: 'User',
 };

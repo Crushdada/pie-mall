@@ -1,5 +1,5 @@
 <template>
-  <div class="personal-center w-screen flex flex-col flex-nowrap relative">
+  <div class="personal-center">
     <img
       class="w-full h-48 object-cover object-center"
       src="@/assets/pie-mall-bk-personal-center.jpg"
@@ -40,7 +40,7 @@
       </span>
       <!--分割部分-->
       <div
-        class="sperate-line w-full mt-8 border-gray-200 text-center"
+        class="sperate-line w-full mt-7 border-gray-200 text-center"
         style="border-bottom-width: 1px"
       >
         <span style="font-size: 18px; color: #ff5f5f" class="font-bold">

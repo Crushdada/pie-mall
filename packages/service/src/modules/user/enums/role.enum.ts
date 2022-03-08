@@ -12,6 +12,6 @@ export enum AdminRole {
  * @enum {*} string
  */
 export enum GuestRole {
-  VIP_GUEST = 'vip_guest', // vip
+  VIP_GUEST = 'vip', // vip
   GUEST = 'guest',
 }

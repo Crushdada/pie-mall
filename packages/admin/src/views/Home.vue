@@ -37,7 +37,6 @@ import HeaderBar from '@/components/HeaderBar.vue';
 export default class Home extends Vue {
   /** Computed*/
   // ===================================================================
-
   get userTicket(): string | undefined {
     return this.$store.state[VuexModuleName.AUTH].ticket;
   }
