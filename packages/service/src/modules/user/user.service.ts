@@ -11,17 +11,39 @@ import { JwtAuthService } from '../jwt-auth/jwt-auth.service';
 import { UserProfileInterface } from '../../../../types/user/user-profile.interface';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import { Guest } from './entities/guest.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(Admin)
     private readonly _adminRepo: Repository<Admin>,
-    // @InjectRepository(Guest)
-    // private readonly __appUserRepo: Repository<Guest>,
+    @InjectRepository(Guest)
+    private readonly __guestRepo: Repository<Guest>,
     private readonly _responseSrv: ResponseService,
     private readonly _jwtSrv: JwtAuthService,
   ) {}
+
+  async getProfilesOfGuests() {
+    try {
+      const guests = await this.__guestRepo.find({
+        select: ['id', 'account', 'name', 'role'],
+        relations: ['receiving_address'],
+      });
+      const processAddressGuests = guests.map(guest => ({
+        ...guest,
+        receiving_address: guest.receiving_address.map(
+          addressRow => addressRow.address,
+        ),
+      }));
+
+      return this._responseSrv.success({ guests: processAddressGuests });
+    } catch (err) {
+      return this._responseSrv.error(ERROR_TYPE.UNKNOW, err, {
+        detail: err.toString(),
+      });
+    }
+  }
 
   /**
    * 更新用户名称
@@ -138,7 +160,7 @@ export class UserService {
   ): Promise<UserProfileInterface> {
     // return project === 'B'
     //   ? this._adminRepo.findOne({ id: userId })
-    //   : this.__appUserRepo.findOne({ id: userId });
+    //   : this.__guestRepo.findOne({ id: userId });
     return await this._adminRepo.findOne({ id: userId });
   }
 

@@ -19,6 +19,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class UserController {
   constructor(private readonly _userSrv: UserService) {}
 
+  @Get('guests')
+  @ApiOperation({
+    summary: '获取所有app用户信息',
+  })
+  public async getGuests() {
+    return await this._userSrv.getProfilesOfGuests();
+  }
+
   @Post('name')
   @ApiOperation({
     summary: '修改用户昵称',

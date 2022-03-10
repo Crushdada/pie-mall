@@ -18,4 +18,21 @@
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   color: $primary;
 }
+
+* {
+  touch-action: pan-x;
+}
+
+/* 
+ * 解决element-ui 表格篡位的问题 👇 
+ */
+body .el-table th.gutter {
+  display: table-cell !important;
+}
+.el-table th {
+  display: table-cell !important;
+}
+::v-deep .el-table th.gutter {
+  display: table-cell !important;
+}
 </style>
