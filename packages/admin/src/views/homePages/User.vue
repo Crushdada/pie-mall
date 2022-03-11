@@ -61,6 +61,25 @@
         show-overflow-tooltip
         align="center"
       >
+        <template slot-scope="scope">
+          <el-popover
+            trigger="hover"
+            placement="top"
+            :disabled="!scope.row.receiving_address.length"
+          >
+            <p
+              v-for="(address, i) in scope.row.receiving_address || []"
+              :key="i"
+            >
+              {{ address }}
+            </p>
+            <div slot="reference" class="name-wrapper">
+              <el-tag size="medium">{{
+                scope.row.receiving_address.length
+              }}</el-tag>
+            </div>
+          </el-popover>
+        </template>
       </el-table-column>
       <el-table-column fixed="right" align="center" width="150" label="操作">
         <template slot-scope="scope">
@@ -82,6 +101,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { getProfilesOfGuests } from '@/api/guest/get-guests';
+import { deleteGuests } from '@/api/guest/cancel-account';
 
 @Component({
   components: {},
@@ -211,7 +231,15 @@ export default class User extends Vue {
     try {
       // 获取商城用户信息
       const res = await getProfilesOfGuests();
-      if (res.status !== 0) throw Error(JSON.stringify(res));
+      if (res.status !== 0) {
+        this.$message({
+          showClose: true,
+          message: 'Get user profile failed,Please try again later.',
+          type: 'error',
+          center: true,
+        });
+        throw Error(JSON.stringify(res));
+      }
       const { guests } = res.data;
       this.userList = guests;
     } catch (err) {
@@ -229,8 +257,32 @@ export default class User extends Vue {
     this.$refs.userTable.clearSelection();
   }
 
-  handleDelete(index, user) {
-    console.log(index, user);
+  async handleDelete(index, user) {
+    console.log(user);
+    this.loading = true;
+    try {
+      // 注销商城用户
+      const res = await deleteGuests([user.id]);
+      if (res.status !== 0) {
+        this.$message({
+          showClose: true,
+          message: 'Delete account failed,Please try again later.',
+          type: 'error',
+          center: true,
+        });
+        throw Error(JSON.stringify(res));
+      }
+      this.userList.splice(index, 1);
+      this.$message({
+        showClose: true,
+        message: 'Delete user successfully',
+        type: 'success',
+        center: true,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+    this.loading = false;
   }
 }
 </script>

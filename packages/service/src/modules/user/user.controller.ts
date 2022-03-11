@@ -19,6 +19,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class UserController {
   constructor(private readonly _userSrv: UserService) {}
 
+  @Delete('guests')
+  @ApiOperation({
+    summary: '注销app用户',
+  })
+  public async deleteGuests(@Body() { ids }: { ids: string[] }) {
+    return await this._userSrv.deleteGuests(ids);
+  }
+
   @Get('guests')
   @ApiOperation({
     summary: '获取所有app用户信息',

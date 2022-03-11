@@ -70,20 +70,21 @@ export default class Home extends Vue {
     // 二次登录
     try {
       const res = await getUserProfile(this.userTicket);
-      // 认证成功
-      if (res.status === 0) {
-        const { data } = res;
-        // 更新用户信息
-        this.$stock.commit(SET_USER_PROFILE, data);
-      }
       // 认证失败
-      if (res.status === ERROR_TYPE.UNKNOW) {
-        console.log('🙈登录状态失效，请重新登录');
+      if (res.status !== 0) {
         this.$router.replace({
           name: 'login',
         });
+        throw Error('🙈登录状态失效，请重新登录');
       }
+      // 认证成功
+      const { data } = res;
+      // 更新用户信息
+      this.$stock.commit(SET_USER_PROFILE, data);
     } catch (err) {
+      this.$router.replace({
+        name: 'login',
+      });
       console.log(err);
     }
   }

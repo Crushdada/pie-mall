@@ -24,6 +24,30 @@ export class UserService {
     private readonly _jwtSrv: JwtAuthService,
   ) {}
 
+  /**
+   * 批量注销app端用户
+   * @param ids
+   * @returns
+   */
+  async deleteGuests(ids: string[]) {
+    try {
+      console.log(ids);
+      const exeResult = await this.__guestRepo.delete(ids);
+      console.log(exeResult);
+
+      return this._responseSrv.success({});
+    } catch (err) {
+      console.log(err.toString());
+      return this._responseSrv.error(ERROR_TYPE.UNKNOW, err, {
+        detail: err.toString(),
+      });
+    }
+  }
+
+  /**
+   * 获取app端全部用户信息
+   * @returns guestArray
+   */
   async getProfilesOfGuests() {
     try {
       const guests = await this.__guestRepo.find({
