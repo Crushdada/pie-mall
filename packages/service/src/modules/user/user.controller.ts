@@ -24,7 +24,7 @@ export class UserController {
     summary: '注销app用户',
   })
   public async deleteGuests(@Body() { ids }: { ids: string[] }) {
-    return await this._userSrv.deleteGuests(ids);
+    return await this._userSrv.deleteGuestsByIds(ids);
   }
 
   @Get('guests')
@@ -74,21 +74,14 @@ export class UserController {
     @Body() userProfile: SignDto,
     @Session() session: Record<string, any>,
   ) {
-    // B端
-    if (session.client === process.env.PIEMALL_ADMIN) {
-      // 登录
-      if (userProfile.signType === 'in') {
-        return await this._userSrv.adminLogin(userProfile, session);
-      }
-      // 注册
-      if (userProfile.signType === 'up') {
-        return await this._userSrv.adminRegister(userProfile);
-      }
+    // 登录
+    if (userProfile.signType === 'in') {
+      return await this._userSrv.userLogin(userProfile, session);
     }
-    // C端
-    // if (session.client === process.env.PIEMALL_APP) {
-    //
-    // }
+    // 注册
+    if (userProfile.signType === 'up') {
+      return await this._userSrv.userRegister(userProfile, session.client);
+    }
   }
 
   @Get()
