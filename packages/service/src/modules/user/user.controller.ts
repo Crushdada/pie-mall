@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SignDto } from './dto/sign.dto';
+import { addGuestDto } from './dto/add-guest.dto';
 import { UserService } from './user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -18,6 +19,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @ApiTags('user')
 export class UserController {
   constructor(private readonly _userSrv: UserService) {}
+
+  @Post('guest')
+  @ApiOperation({
+    summary: '后台添加app用户',
+  })
+  public async addGuest(@Body() { userProfile }: { userProfile: addGuestDto }) {
+    return await this._userSrv.addGuest(userProfile);
+  }
 
   @Delete('guests')
   @ApiOperation({

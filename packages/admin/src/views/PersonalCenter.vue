@@ -7,28 +7,14 @@
     <div class="header-avatar h-10">
       <img
         v-if="userProfile.avatar"
-        class="
-          w-40
-          h-40
-          rounded-full
-          mx-auto
-          object-cover object-center
-          border-solid border-white border-8
-        "
+        class="w-40 h-40 rounded-full mx-auto object-cover object-center border-solid border-white border-8"
         style="transform: translateY(-75%)"
         :src="userProfile.avatar"
         alt="用户头像"
       />
       <img
         v-else
-        class="
-          w-40
-          h-40
-          rounded-full
-          mx-auto
-          object-cover object-center
-          border-solid border-white border-8
-        "
+        class="w-40 h-40 rounded-full mx-auto object-cover object-center border-solid border-white border-8"
         style="transform: translateY(-75%)"
         src="@/assets/nav_icon_avatar_nor.png"
         alt="用户头像"
@@ -51,15 +37,7 @@
 
       <el-card
         shadow="always"
-        class="
-          profile-body
-          w-1/2
-          h-100
-          mx-auto
-          mt-4
-          flex flex-col flex-nowrap
-          items-center
-        "
+        class="profile-body w-1/2 h-100 mx-auto mt-4 flex flex-col flex-nowrap items-center"
       >
         <!-- 昵称 -->
         <div class="mb-2 flex flex-row flex-nowrap items-center">
@@ -145,7 +123,7 @@ export default class HeaderBar extends Vue {
           type: 'error',
           center: true,
         });
-        return;
+        throw Error('🙈修改昵称失败，请重试');
       }
       // 成功，更新用户信息
       this.$stock.commit(UPDATE_USER_PROFILE, {

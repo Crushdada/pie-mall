@@ -26,7 +26,6 @@ import { uint8Array2JSON } from '@/utils/data-utils';
 import { addGoods } from '@/api/goods/add-goods';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { getUserProfile } from '@/api/user/get-user-profile';
-import { ERROR_TYPE } from '../../../types/response/error-type.enum';
 import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
 import HomeMenu from './menu/Menu.vue';
 import { initComRoute } from './menu/menu-list';

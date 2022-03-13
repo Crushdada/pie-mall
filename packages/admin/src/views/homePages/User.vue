@@ -1,5 +1,7 @@
 <template>
   <div class="user">
+    <!-- Table Tool Bar -->
+    <table-tool-bar />
     <!-- Selected Tips -->
     <div
       class="my-2.5 px-2 rounded-md"
@@ -102,14 +104,14 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { getProfilesOfGuests } from '@/api/guest/get-guests';
 import { deleteGuests } from '@/api/guest/cancel-account';
-
+import TableToolBar from '@/components/TableToolBar.vue';
 @Component({
-  components: {},
+  components: { TableToolBar },
 })
 export default class User extends Vue {
-  private loading = true;
-  private userList = null;
-  private selectedUsers = [];
+  private loading = true; // 表格加载状态
+  private userList = null; // 表格数据
+  private selectedUsers = []; // 已选中的rows
 
   /** Hooks */
   // ===================================================================
@@ -257,11 +259,37 @@ export default class User extends Vue {
     this.$refs.userTable.clearSelection();
   }
 
-  async handleDelete(index, user) {
-    console.log(user);
+  // 编辑商城用户信息
+  async handleEdit(index, user) {
     this.loading = true;
     try {
-      // 注销商城用户
+      const res = await deleteGuests([user.id]);
+      if (res.status !== 0) {
+        // this.$message({
+        //   showClose: true,
+        //   message: 'Delete account failed,Please try again later.',
+        //   type: 'error',
+        //   center: true,
+        // });
+        // throw Error(JSON.stringify(res));
+      }
+      // this.userList.splice(index, 1);
+      // this.$message({
+      //   showClose: true,
+      //   message: 'Delete user successfully',
+      //   type: 'success',
+      //   center: true,
+      // });
+    } catch (err) {
+      console.log(err);
+    }
+    this.loading = false;
+  }
+
+  // 注销商城用户
+  async handleDelete(index, user) {
+    this.loading = true;
+    try {
       const res = await deleteGuests([user.id]);
       if (res.status !== 0) {
         this.$message({

@@ -19,6 +19,9 @@ $thirdColor: #9a9fa7;
  * 覆盖element-ui的样式 👇 
  */
 
+// 改变主题色变量
+$--color-primary: $primary;
+
 // 滚动条
 ::-webkit-scrollbar {
   width: 6px;
@@ -44,32 +47,6 @@ $thirdColor: #9a9fa7;
   border-radius: 15px;
   -webkit-border-radius: 15px;
   opacity: 0.2;
-}
-
-// 按钮
-.el-button--primary {
-  color: white;
-  background-color: $primary;
-  //   border-color: #8b83d2;
-}
-
-.el-button--primary:hover {
-  &:active {
-    transform: scale(0.9);
-  }
-  &:hover::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    outline: none;
-    background: rgba(241, 241, 241, 0.01);
-    border-radius: inherit;
-  }
 }
 
 /* 

@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 /**
- * 商品数据批量入库
+ * 用户登录/注册 DTO
  */
 export class SignDto {
   @IsString()

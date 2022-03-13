@@ -12,6 +12,7 @@ import { UserProfileInterface } from '../../../../types/user/user-profile.interf
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { Guest } from './entities/guest.entity';
+import { ReceivingAddress } from './entities/guest-address.entity';
 
 @Injectable()
 export class UserService {
@@ -20,15 +21,43 @@ export class UserService {
     private readonly _adminRepo: Repository<Admin>,
     @InjectRepository(Guest)
     private readonly __guestRepo: Repository<Guest>,
+    @InjectRepository(ReceivingAddress)
+    private readonly __guestAddressRepo: Repository<ReceivingAddress>,
     private readonly _responseSrv: ResponseService,
     private readonly _jwtSrv: JwtAuthService,
   ) {}
 
   /**
+   * 后台添加app端用户
+   * @param userProfile
+   * @returns
+   */
+  public async addGuest(userProfile: Partial<UserProfileInterface>) {
+    return this._responseSrv.tryExecute(async () => {
+      const guest = await this.addUser(userProfile, this.__guestRepo);
+      // 账号已存在
+      if (!guest) {
+        return this._responseSrv.error(ERROR_TYPE.ALREADY_EXIST, null);
+      }
+      const { address } = userProfile;
+      // userId 作为地址表的外键
+      const exeResult = await this.__guestAddressRepo.insert({
+        address,
+        user: guest,
+      });
+      if (!exeResult) {
+        return this._responseSrv.error(ERROR_TYPE.UNKNOW, null);
+      }
+      // 添加账户成功
+      return this._responseSrv.success({});
+    });
+  }
+
+  /**
    * 向指定user表添加一个用户的工具方法
    * @param userProfile
    * @param repo
-   * @returns entity | row false
+   * @returns row | false
    */
   public async addUser(
     userProfile: Partial<UserProfileInterface>,
@@ -40,6 +69,7 @@ export class UserService {
     if (user) {
       return false;
     }
+    // 添加账户成功
     return await repo.save(userProfile);
   }
 
@@ -153,13 +183,17 @@ export class UserService {
     return this._responseSrv.tryExecute(async () => {
       // 验证session，只有二次登录，session中才有该字段
       if (!userId) {
-        throw Error('身份认证失败, 您没有权限执行此操作');
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+          detail: '身份认证失败, 您没有权限执行此操作',
+        });
       }
       // 1. 验证token
       const verifyRes = await this._jwtSrv.verifyAccessToken(token);
 
       if (!verifyRes) {
-        throw Error('身份认证失败, 您没有权限执行此操作');
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+          detail: '身份认证失败, 您没有权限执行此操作',
+        });
       }
       // 通过身份认证校验
       const userProfile = await this.getUserProfileById(userId);
@@ -221,24 +255,23 @@ export class UserService {
    * @param {SignAdminDto} userProfile
    * @returns ResponseBody
    */
-  public async userRegister(
+  public userRegister(
     userProfile: SignDto,
     client: string,
   ): Promise<ResponseBody<any>> {
-    return this._responseSrv.tryExecute(async () => {
+    return this._responseSrv.tryExecute(() => {
       const _userRepo = {
         [process.env.PIEMALL_APP]: this.__guestRepo,
         [process.env.PIEMALL_ADMIN]: this._adminRepo,
       }[client];
       _userRepo;
-      const exeResult = await this.addUser(userProfile, _userRepo);
+      const exeResult = this.addUser(userProfile, _userRepo);
       // 账号已存在
       if (!exeResult) {
         return this._responseSrv.error(ERROR_TYPE.ALREADY_EXIST, null);
       }
       // 添加账户成功
-      const { name } = exeResult;
-      return this._responseSrv.success({ name });
+      return this._responseSrv.success({ userProfile: exeResult });
     });
   }
 
