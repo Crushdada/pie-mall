@@ -99,9 +99,10 @@ export class UserService {
       });
       const processAddressGuests = guests.map(guest => ({
         ...guest,
-        receiving_address: guest.receiving_address.map(
-          addressRow => addressRow.address,
-        ),
+        receiving_address: guest.receiving_address.map(addressRow => ({
+          address_id: addressRow.id,
+          address: addressRow.address,
+        })),
       }));
       return this._responseSrv.success({ guests: processAddressGuests });
     });

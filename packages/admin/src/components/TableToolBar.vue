@@ -86,6 +86,7 @@
           icon="el-icon-refresh"
           class="cursor-pointer"
           circle
+          @click="refreshTable"
         ></el-button>
       </el-tooltip>
       <!-- 关闭搜索 -->
@@ -100,6 +101,7 @@
           icon="el-icon-search"
           class="cursor-pointer"
           circle
+          @click="$emit('closeSearchBar')"
         ></el-button>
       </el-tooltip>
       <!-- 关闭提示 -->
@@ -114,6 +116,7 @@
           icon="el-icon-s-opportunity"
           class="cursor-pointer"
           circle
+          @click="$emit('closeShowTipBar')"
         ></el-button>
       </el-tooltip>
     </div>
@@ -139,7 +142,11 @@ export default class TableToolbar extends Vue {
     password: '',
     address: '',
   };
-
+  // 刷新表格
+  refreshTable() {
+    this.$parent.getGuests();
+  }
+  // 关闭新增用户按钮弹出的抽屉
   handleCloseAddUserDialog(done) {
     if (this.loadingAddUserDialog) {
       return;
@@ -180,7 +187,7 @@ export default class TableToolbar extends Vue {
       })
       .catch(_ => {});
   }
-
+  // 取消提交新增的用户信息
   cancelForm() {
     this.loadingAddUserDialog = false;
     this.showAddUserDialog = false;
