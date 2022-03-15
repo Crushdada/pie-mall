@@ -3,7 +3,7 @@
     <!-- Search Tool Bar -->
     <div
       v-show="showSearchBar"
-      class="serch-bar pt-2 pb-4 flex flex-row flex-nowrap justify-center items-center"
+      class="serch-bar py-2 flex flex-row flex-nowrap justify-center items-center"
     >
       用户名：
       <el-input
@@ -27,7 +27,7 @@
     </div>
     <!-- Table Tool Bar -->
     <table-tool-bar
-      class="mt-2 mb-4"
+      class="my-2"
       @handleDeleteGuests="handleDeleteGuests"
       @closeSearchBar="showSearchBar = !showSearchBar"
       @closeShowTipBar="showTipBar = !showTipBar"
@@ -70,26 +70,48 @@
         label="uid"
         width="280"
         align="center"
+        sortable
       ></el-table-column>
       <el-table-column
         prop="name"
         label="昵称"
         width="120"
         align="center"
+        sortable
       ></el-table-column>
       <el-table-column
         prop="account"
         label="账号"
         width="120"
         align="center"
+        sortable
       ></el-table-column>
       <el-table-column
-        prop="role"
         label="权限"
         width="80"
         align="center"
-      ></el-table-column>
-      <el-table-column label="地址" show-overflow-tooltip align="center">
+        :filters="[
+          { text: '普通用户', value: 'guest' },
+          { text: 'vip', value: 'vip' },
+        ]"
+        :filter-method="filterRole"
+        filter-placement="bottom-end"
+      >
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.role === 'vip' ? 'danger' : 'primary'"
+            disable-transitions
+          >
+            {{ scope.row.role }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="地址"
+        show-overflow-tooltip
+        align="center"
+        sortable
+      >
         <template slot-scope="scope">
           <el-popover
             trigger="hover"
@@ -159,7 +181,9 @@ export default class User extends Vue {
   handleClearSelected() {
     this.$refs.userTable.clearSelection();
   }
-
+  filterRole(value, row) {
+    return row.role === value;
+  }
   // 搜索表格数据
   filterTableData() {
     this.tableData = this.userList.filter(
