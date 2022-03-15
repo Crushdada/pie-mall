@@ -26,7 +26,6 @@ import { uint8Array2JSON } from '@/utils/data-utils';
 import { addGoods } from '@/api/goods/add-goods';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { getUserProfile } from '@/api/user/get-user-profile';
-import { ERROR_TYPE } from '../../../types/response/error-type.enum';
 import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
 import HomeMenu from './menu/Menu.vue';
 import { initComRoute } from './menu/menu-list';
@@ -37,7 +36,6 @@ import HeaderBar from '@/components/HeaderBar.vue';
 export default class Home extends Vue {
   /** Computed*/
   // ===================================================================
-
   get userTicket(): string | undefined {
     return this.$store.state[VuexModuleName.AUTH].ticket;
   }
@@ -71,20 +69,21 @@ export default class Home extends Vue {
     // 二次登录
     try {
       const res = await getUserProfile(this.userTicket);
-      // 认证成功
-      if (res.status === 0) {
-        const { data } = res;
-        // 更新用户信息
-        this.$stock.commit(SET_USER_PROFILE, data);
-      }
       // 认证失败
-      if (res.status === ERROR_TYPE.UNKNOW) {
-        console.log('🙈登录状态失效，请重新登录');
+      if (res.status !== 0) {
         this.$router.replace({
           name: 'login',
         });
+        throw Error('🙈登录状态失效，请重新登录');
       }
+      // 认证成功
+      const { data } = res;
+      // 更新用户信息
+      this.$stock.commit(SET_USER_PROFILE, data);
     } catch (err) {
+      this.$router.replace({
+        name: 'login',
+      });
       console.log(err);
     }
   }

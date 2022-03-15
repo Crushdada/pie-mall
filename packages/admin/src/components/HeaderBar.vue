@@ -9,32 +9,34 @@
       alt="pie mall logo"
     />
     <div class="flex flex-row flex-nowrap items-center">
+      <!-- 头像 & 个人中心 -->
+      <span class="px-2">{{ userName || '暂未设置' }}</span>
       <!-- 下拉菜单 -->
       <el-dropdown>
-        <i
-          class="el-icon-setting px-2"
-          style="padding-top: 3px; font-size: 20px"
-        ></i>
+        <img
+          v-if="avatar"
+          class="w-10 h-10 ml-2 mr-5 rounded-full cursor-pointer object-cover object-center"
+          :src="avatar"
+          alt="用户头像"
+        />
+        <img
+          v-else
+          class="w-10 h-10 ml-2 mr-5 object-cover object-center"
+          src="@/assets/nav_icon_avatar_nor.png"
+          alt="用户头像"
+        />
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="logOut">登出</el-dropdown-item>
+          <el-dropdown-item
+            icon="el-icon-s-custom"
+            @click.native="() => $router.push({ name: 'PersonalCenter' })"
+          >
+            个人中心
+          </el-dropdown-item>
+          <el-dropdown-item icon="el-icon-s-tools" @click.native="logOut">
+            登出
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <!-- 头像 & 个人中心 -->
-      <span class="px-2">{{userName}}</span>
-      <img
-        v-if="avatar"
-        class="w-9 h-9 ml-2 mr-5 rounded-full cursor-pointer object-cover object-center"
-        :src="avatar"
-        alt="用户头像"
-        @click="() => $router.push({ name: 'PersonalCenter' })"
-      />
-      <img
-        v-else
-        class="w-9 h-9 ml-2 mr-5 object-cover object-center"
-        src="@/assets/nav_icon_avatar_nor.png"
-        alt="用户头像"
-        @click="() => $router.push({ name: 'PersonalCenter' })"
-      />
     </div>
   </el-header>
 </template>
@@ -54,7 +56,7 @@ export default class HeaderBar extends Vue {
     return this.$store.state[VuexModuleName.USER].userProfile.avatar;
   }
   get userName() {
-    return this.$store.state[VuexModuleName.USER].userProfile.userName;
+    return this.$store.state[VuexModuleName.USER].userProfile.name;
   }
   // 退出登录
   async logOut() {
@@ -70,7 +72,7 @@ export default class HeaderBar extends Vue {
           type: 'error',
           center: true,
         });
-        return;
+        throw Error('🙈退出登录失败，请重试');
       }
     } catch (err) {
       console.log(err);

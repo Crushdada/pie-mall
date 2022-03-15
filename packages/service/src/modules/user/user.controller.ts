@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SignDto } from './dto/sign.dto';
+import { addGuestDto } from './dto/add-guest.dto';
 import { UserService } from './user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -18,6 +19,30 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @ApiTags('user')
 export class UserController {
   constructor(private readonly _userSrv: UserService) {}
+
+  @Post('guest')
+  @ApiOperation({
+    summary: '后台添加app用户',
+  })
+  public async addGuest(@Body() { userProfile }: { userProfile: addGuestDto }) {
+    return await this._userSrv.addGuest(userProfile);
+  }
+
+  @Delete('guests')
+  @ApiOperation({
+    summary: '注销app用户',
+  })
+  public async deleteGuests(@Body() { ids }: { ids: string[] }) {
+    return await this._userSrv.deleteGuestsByIds(ids);
+  }
+
+  @Get('guests')
+  @ApiOperation({
+    summary: '获取所有app用户信息',
+  })
+  public async getGuests() {
+    return await this._userSrv.getProfilesOfGuests();
+  }
 
   @Post('name')
   @ApiOperation({
@@ -58,21 +83,14 @@ export class UserController {
     @Body() userProfile: SignDto,
     @Session() session: Record<string, any>,
   ) {
-    // B端
-    if (session.client === process.env.PIEMALL_ADMIN) {
-      // 登录
-      if (userProfile.signType === 'in') {
-        return await this._userSrv.adminLogin(userProfile, session);
-      }
-      // 注册
-      if (userProfile.signType === 'up') {
-        return await this._userSrv.adminRegister(userProfile);
-      }
+    // 登录
+    if (userProfile.signType === 'in') {
+      return await this._userSrv.userLogin(userProfile, session);
     }
-    // C端
-    // if (session.client === process.env.PIEMALL_APP) {
-    //
-    // }
+    // 注册
+    if (userProfile.signType === 'up') {
+      return await this._userSrv.userRegister(userProfile, session.client);
+    }
   }
 
   @Get()

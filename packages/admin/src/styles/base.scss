@@ -2,8 +2,25 @@ $primary: #473c8d;
 $secondary: #1976d2;
 $thirdColor: #9a9fa7;
 
-// 覆盖element-ui的样式
-////////////////////////////////
+/* 
+ * 全局样式 👇 
+ */
+#app {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: 'MiSans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  color: $primary;
+}
+
+/* 
+ * 覆盖element-ui的样式 👇 
+ */
+
+// 改变主题色变量
+$--color-primary: $primary;
 
 // 滚动条
 ::-webkit-scrollbar {
@@ -32,28 +49,15 @@ $thirdColor: #9a9fa7;
   opacity: 0.2;
 }
 
-// 按钮
-.el-button--primary {
-  color: white;
-  background-color: $primary;
-  //   border-color: #8b83d2;
+/* 
+ * 解决element-ui 表格篡位的问题 👇 
+ */
+body .el-table th.gutter {
+  display: table-cell !important;
 }
-
-.el-button--primary:hover {
-  &:active {
-    transform: scale(0.9);
-  }
-  &:hover::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    outline: none;
-    background: rgba(241, 241, 241, 0.01);
-    border-radius: inherit;
-  }
+.el-table th {
+  display: table-cell !important;
+}
+::v-deep .el-table th.gutter {
+  display: table-cell !important;
 }

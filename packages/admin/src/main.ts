@@ -6,6 +6,7 @@ import VueLazyload from 'vue-lazyload';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import 'default-passive-events';
+import '../src/styles/index.css';
 
 Vue.config.productionTip = false;
 Vue.config.devtools = true;

@@ -11,17 +11,102 @@ import { JwtAuthService } from '../jwt-auth/jwt-auth.service';
 import { UserProfileInterface } from '../../../../types/user/user-profile.interface';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import { Guest } from './entities/guest.entity';
+import { ReceivingAddress } from './entities/guest-address.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(Admin)
     private readonly _adminRepo: Repository<Admin>,
-    // @InjectRepository(Guest)
-    // private readonly __appUserRepo: Repository<Guest>,
+    @InjectRepository(Guest)
+    private readonly __guestRepo: Repository<Guest>,
+    @InjectRepository(ReceivingAddress)
+    private readonly __guestAddressRepo: Repository<ReceivingAddress>,
     private readonly _responseSrv: ResponseService,
     private readonly _jwtSrv: JwtAuthService,
   ) {}
+
+  /**
+   * 后台添加app端用户
+   * @param userProfile
+   * @returns
+   */
+  public async addGuest(userProfile: Partial<UserProfileInterface>) {
+    return this._responseSrv.tryExecute(async () => {
+      const guest = await this.addUser(userProfile, this.__guestRepo);
+      // 账号已存在
+      if (!guest) {
+        return this._responseSrv.error(ERROR_TYPE.ALREADY_EXIST, null);
+      }
+      const { address } = userProfile;
+      // userId 作为地址表的外键
+      const exeResult = await this.__guestAddressRepo.insert({
+        address,
+        user: guest,
+      });
+      if (!exeResult) {
+        return this._responseSrv.error(ERROR_TYPE.UNKNOW, null);
+      }
+      // 添加账户成功
+      return this._responseSrv.success({});
+    });
+  }
+
+  /**
+   * 向指定user表添加一个用户的工具方法
+   * @param userProfile
+   * @param repo
+   * @returns row | false
+   */
+  public async addUser(
+    userProfile: Partial<UserProfileInterface>,
+    repo: Repository<any>,
+  ) {
+    const { account } = userProfile;
+    const user = await repo.findOne({ account });
+    // 账号已存在
+    if (user) {
+      return false;
+    }
+    // 添加账户成功
+    return await repo.save(userProfile);
+  }
+
+  /**
+   * 批量注销app端用户
+   * @param ids
+   * @returns
+   */
+  deleteGuestsByIds(ids: string[]) {
+    return this._responseSrv.tryExecute(async () => {
+      console.log(ids);
+      const exeResult = await this.__guestRepo.delete(ids);
+      console.log(exeResult);
+      return this._responseSrv.success({});
+    });
+  }
+
+  /**
+   * 获取app端全部用户信息
+   * @returns guestArray
+   */
+  async getProfilesOfGuests() {
+    return this._responseSrv.tryExecute(async () => {
+      const guests = await this.__guestRepo.find({
+        select: ['id', 'account', 'name', 'role'],
+        relations: ['receiving_address'],
+      });
+      const processAddressGuests = guests.map(guest => ({
+        ...guest,
+        receiving_address: guest.receiving_address.map(addressRow => ({
+          address_id: addressRow.id,
+          address: addressRow.address,
+        })),
+      }));
+      return this._responseSrv.success({ guests: processAddressGuests });
+    });
+  }
 
   /**
    * 更新用户名称
@@ -34,16 +119,13 @@ export class UserService {
       [process.env.PIEMALL_APP]: '_appUserRepo',
       [process.env.PIEMALL_ADMIN]: '_adminRepo',
     }[client];
-    try {
+
+    return this._responseSrv.tryExecute(async () => {
       await this[_userRepo].update(userId, {
         name: name,
       });
       return this._responseSrv.success({});
-    } catch (err) {
-      return this._responseSrv.error(ERROR_TYPE.UNKNOW, err, {
-        detail: err.toString(),
-      });
-    }
+    });
   }
 
   /**
@@ -70,8 +152,7 @@ export class UserService {
       staticSrvDir,
       '/user-avatar',
     );
-
-    try {
+    return this._responseSrv.tryExecute(async () => {
       // 创建静态资源存储服务路径(文件夹)
       if (!existsSync(avatarStorePath))
         mkdirSync(avatarStorePath, { recursive: true }); // 递归参数，否则只能建一层
@@ -87,11 +168,7 @@ export class UserService {
         avatar: userAvatarUrl,
       });
       return this._responseSrv.success({ userAvatarUrl });
-    } catch (err) {
-      return this._responseSrv.error(ERROR_TYPE.UNKNOW, err, {
-        detail: err.toString(),
-      });
-    }
+    });
   }
 
   /**
@@ -104,16 +181,20 @@ export class UserService {
     token: string,
     userId: string,
   ): Promise<ResponseBody<any>> {
-    try {
+    return this._responseSrv.tryExecute(async () => {
       // 验证session，只有二次登录，session中才有该字段
       if (!userId) {
-        throw Error('身份认证失败, 您没有权限执行此操作');
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+          detail: '身份认证失败, 您没有权限执行此操作',
+        });
       }
       // 1. 验证token
       const verifyRes = await this._jwtSrv.verifyAccessToken(token);
 
       if (!verifyRes) {
-        throw Error('身份认证失败, 您没有权限执行此操作');
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+          detail: '身份认证失败, 您没有权限执行此操作',
+        });
       }
       // 通过身份认证校验
       const userProfile = await this.getUserProfileById(userId);
@@ -121,11 +202,7 @@ export class UserService {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }
       return this._responseSrv.success(userProfile);
-    } catch (err) {
-      return this._responseSrv.error(ERROR_TYPE.UNKNOW, err, {
-        detail: err.toString(),
-      });
-    }
+    });
   }
   /**
    *
@@ -138,25 +215,26 @@ export class UserService {
   ): Promise<UserProfileInterface> {
     // return project === 'B'
     //   ? this._adminRepo.findOne({ id: userId })
-    //   : this.__appUserRepo.findOne({ id: userId });
+    //   : this.__guestRepo.findOne({ id: userId });
     return await this._adminRepo.findOne({ id: userId });
   }
 
   /**
-   * admin 登录
-   * @param {SignAdminDto} adminUserProfile
+   * 登录
+   * @param {SignAdminDto} userProfile
    * @returns ResponseBody
    */
-  public async adminLogin(
-    adminUserProfile: SignDto,
+  public async userLogin(
+    userProfile: SignDto,
     session: Record<string, any>,
   ): Promise<ResponseBody<any>> {
-    const { account, password } = adminUserProfile;
-    try {
-      // const user = await this._adminRepo.findOne({
-      //   where: { account: account, password: password },
-      // });
-      const user = await this._adminRepo.findOne({
+    const { account, password } = userProfile;
+    return this._responseSrv.tryExecute(async () => {
+      const _userRepo = {
+        [process.env.PIEMALL_APP]: '_guestRepo',
+        [process.env.PIEMALL_ADMIN]: '_adminRepo',
+      }[session.client];
+      const user = await this[_userRepo].findOne({
         account,
         password,
       });
@@ -166,40 +244,38 @@ export class UserService {
       const { name, id } = user;
       session.userId = id;
       const access_token = await this._jwtSrv.signAccessToken(id);
-      return this._responseSrv.success({ userProfile: { name }, access_token });
-    } catch (err) {
-      console.log(err);
-      return this._responseSrv.error(ERROR_TYPE.UNKNOW, null, {
-        detail: err.toString(),
+      return this._responseSrv.success({
+        userProfile: { name },
+        access_token,
       });
-    }
+    });
   }
 
   /**
-   * admin 注册
-   * @param {SignAdminDto} adminUserProfile
+   * 注册
+   * @param {SignAdminDto} userProfile
    * @returns ResponseBody
    */
-  public async adminRegister(
-    adminUserProfile: SignDto,
+  public userRegister(
+    userProfile: SignDto,
+    client: string,
   ): Promise<ResponseBody<any>> {
-    try {
-      const { account } = adminUserProfile;
-      const user = await this._adminRepo.findOne({ account });
+    return this._responseSrv.tryExecute(() => {
+      const _userRepo = {
+        [process.env.PIEMALL_APP]: this.__guestRepo,
+        [process.env.PIEMALL_ADMIN]: this._adminRepo,
+      }[client];
+      _userRepo;
+      const exeResult = this.addUser(userProfile, _userRepo);
       // 账号已存在
-      if (user) {
+      if (!exeResult) {
         return this._responseSrv.error(ERROR_TYPE.ALREADY_EXIST, null);
       }
-      const rec = await this._adminRepo.save(adminUserProfile);
-      const { name } = rec;
-      return this._responseSrv.success({ name });
-    } catch (err) {
-      console.log(err);
-      return this._responseSrv.error(ERROR_TYPE.UNKNOW, null, {
-        detail: err.toString(),
-      });
-    }
+      // 添加账户成功
+      return this._responseSrv.success({ userProfile: exeResult });
+    });
   }
+
   /**
    * 删除user session
    * @param token
@@ -210,52 +286,9 @@ export class UserService {
     token: string,
     session: Record<string, any>,
   ): Promise<ResponseBody<any>> {
-    try {
+    return this._responseSrv.tryExecute(async () => {
       session.destroy();
       return this._responseSrv.success({});
-    } catch (err) {
-      console.log(err);
-      return this._responseSrv.error(ERROR_TYPE.UNKNOW, null, {
-        detail: err.toString(),
-      });
-    }
+    });
   }
-
-  /**
-   * app 登录
-   * @param {SignAdminDto} appUserProfile
-   * @returns ResponseBody
-   */
-  // public async appUserLogin(
-  //   appUserProfile: SignDto,
-  // ): Promise<ResponseBody<any>> {
-  //   try {
-  //     const rec = await this._appUserRepo.save(appUserProfile);
-  //     return this._responseSrv.success(rec);
-  //   } catch (err) {
-  //     console.log(err);
-  //     return this._responseSrv.error(ERROR_TYPE.UNKNOW, null, {
-  //       detail: err.toString(),
-  //     });
-  //   }
-  // }
-
-  /**
-   * app 注册
-   * @param {SignAdminDto} appUserProfile
-   * @returns ResponseBody
-   */
-  // public async appUserRegister(
-  //   appUserProfile: SignDto,
-  // ): Promise<ResponseBody<any>> {
-  //   try {
-  //     const rec = await this._appUserRepo.save(appUserProfile);
-  //     return this._responseSrv.success(rec);
-  //   } catch (err) {
-  //     console.log(err);
-  //     return this._responseSrv.error(ERROR_TYPE.UNKNOW, null, {
-  //       detail: err.toString(),
-  //     });
-  //   }
-  // }
 }
