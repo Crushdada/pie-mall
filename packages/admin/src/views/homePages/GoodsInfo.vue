@@ -28,6 +28,7 @@
     <!-- Table Tool Bar -->
     <table-tool-bar
       class="my-2"
+      :createRowBtnLabel="`新增用户`"
       @handleDeleteGuests="handleDeleteGuests"
       @closeSearchBar="showSearchBar = !showSearchBar"
       @closeShowTipBar="showTipBar = !showTipBar"
@@ -155,6 +156,8 @@ import { getProfilesOfGuests } from '@/api/guest/get-guests';
 import { deleteGuests } from '@/api/guest/cancel-account';
 import TableToolBar from '@/components/TableToolBar.vue';
 import { cloneDeep } from 'lodash';
+import { Ref } from 'vue-property-decorator';
+import { Table } from 'element-ui';
 @Component({
   components: { TableToolBar },
 })
@@ -167,6 +170,7 @@ export default class User extends Vue {
   private showSearchBar = true; // 是否展示搜索栏
   private showTipBar = true; // 是否展示提示栏
 
+  @Ref('userTable') readonly userTable!: Table;
   /** Hooks */
   // ===================================================================
   async mounted() {
@@ -179,7 +183,7 @@ export default class User extends Vue {
     this.selectedUsers = selectedUsers;
   }
   handleClearSelected() {
-    this.$refs.userTable.clearSelection();
+    this.userTable.clearSelection();
   }
   filterRole(value, row) {
     return row.role === value;
@@ -189,7 +193,9 @@ export default class User extends Vue {
     this.tableData = this.userList.filter(
       data =>
         !this.searchKeyWord.name ||
-        data.G_info.toLowerCase().includes(this.searchKeyWord.name.toLowerCase()),
+        data.G_info.toLowerCase().includes(
+          this.searchKeyWord.name.toLowerCase(),
+        ),
     );
   }
 

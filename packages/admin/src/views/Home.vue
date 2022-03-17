@@ -30,10 +30,15 @@ import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile
 import HomeMenu from './menu/Menu.vue';
 import { initComRoute } from './menu/menu-list';
 import HeaderBar from '@/components/HeaderBar.vue';
+import { Ref } from 'vue-property-decorator';
+import { Button } from 'element-ui';
 @Component({
   components: { HomeMenu, HeaderBar },
 })
 export default class Home extends Vue {
+  @Ref('homeMenu') readonly homeMenu!: HomeMenu;
+  @Ref('loadFileBtn') readonly loadFileBtn!: Button;
+
   /** Computed*/
   // ===================================================================
   get userTicket(): string | undefined {
@@ -48,7 +53,7 @@ export default class Home extends Vue {
 
   mounted() {
     //暂定数据分析页面为初始页面
-    this.$refs.homeMenu.naviPage(initComRoute.PagePath, initComRoute.component);
+    this.homeMenu.naviPage(initComRoute.PagePath, initComRoute.component);
   }
   // Methods
   // ===================================================================
@@ -120,7 +125,7 @@ export default class Home extends Vue {
       }
     };
     reader.readAsArrayBuffer(realFile);
-    this.$refs.loadFileBtn.clearFiles();
+    this.loadFileBtn.clearFiles();
   }
 }
 </script>

@@ -1,23 +1,21 @@
 <template>
-  <div
-    class="p-input py-2.5 flex flex-col flex-nowrap"
-    style="width: 355px; height: 80px"
-  >
-    <span v-show="showLabel" class="p-label">{{ label }}</span>
+  <div class="p-input flex flex-row items-center">
+    <span v-if="label" class="p-label">{{ label }}</span>
     <form>
       <el-input
+        :style="{ width: `${width}px` }"
         :type="type"
         :value="value"
-        :placeholder="placeholder"
         @input="handleInput"
-        @focus="showLabel = true"
+        :placeholder="placeholder"
         :show-password="showPassword"
         :min="min"
         :max="max"
+        :disabled="disabled"
+        :required="required"
         clearable
       ></el-input>
     </form>
-    <span v-show="!showLabel" class="p-label text-xs mt-2.5">{{ desc }}</span>
   </div>
 </template>
 
@@ -27,22 +25,19 @@ import Component from 'vue-class-component';
 import { Prop, Model, Emit } from 'vue-property-decorator';
 
 @Component()
-export default class PInput extends Vue {
+export default class PInputPure extends Vue {
+  @Prop({ type: Number, default: 300 }) readonly width!: number;
   @Prop({ type: String, default: 'text' }) readonly type!: string;
   @Prop({ type: String }) readonly label!: string;
-  @Prop({ type: String }) readonly desc!: string; // 提示描述
+  @Prop({ type: String, default: '请输入' }) readonly placeholder!: string;
   @Prop({ type: Boolean, default: false }) readonly disabled!: boolean;
   @Prop({ type: Number, default: 0 }) readonly min!: number;
   @Prop({ type: Number, default: 100 }) readonly max!: number;
   @Prop({ type: Boolean, default: false }) readonly showPassword!: boolean; // 是否显示密码
+  @Prop({ type: Boolean, default: false }) readonly required!: boolean;
 
   @Model('change', { type: String }) readonly value!: string;
 
-  private showLabel = false;
-
-  get placeholder() {
-    return this.showLabel ? '' : this.label;
-  }
   @Emit('change')
   handleInput(value) {
     return value;

@@ -72,7 +72,15 @@ export const moduleMenu = [
 /**
  * 初始页面(初始视图路由)
  */
+// export const initComRoute = {
+//   PagePath: '/goods/info',
+//   component: 'GoodsInfo',
+// };
+
+/**
+ * 初始页面(初始视图路由)
+ */
 export const initComRoute = {
-  PagePath: '/goods/info',
-  component: 'GoodsInfo',
+  PagePath: '/user',
+  component: 'User',
 };
