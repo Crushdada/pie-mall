@@ -20,10 +20,13 @@ export class GoodsController {
   @ApiOperation({
     summary: '商品数据批量入库',
   })
-  public async addGoods(
-    @Body() AddGoodsPayload: Array<AddGoodsDto> | AddGoodsDto,
-  ) {
-    return await this._goodsSrv.create(AddGoodsPayload);
+  public addGoods(@Body() AddGoodsPayload: Array<AddGoodsDto> | AddGoodsDto) {
+    return this._goodsSrv.create(AddGoodsPayload);
+  }
+
+  @Get('categories')
+  getAllCategories() {
+    return this._goodsSrv.findAllCategories();
   }
 
   @Get()

@@ -5,5 +5,5 @@ import { ResponseBody } from '../../../../types/response/response-body.interface
 export const getAllGoods = async (): Promise<
   ResponseBody<Partial<GoodsInterface>[]>
 > => {
-  return ApiService.baseAction(`user/guests`, {}, 'GET');
+  return ApiService.baseAction(`goods`, {}, 'GET');
 };

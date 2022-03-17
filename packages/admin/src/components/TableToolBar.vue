@@ -13,7 +13,7 @@
       <el-button
         icon="el-icon-circle-plus-outline"
         size="medium"
-        @click="$emit('handleDeleteGuests')"
+        @click="$emit('handleDeleteRows')"
       >
         批量删除
       </el-button>

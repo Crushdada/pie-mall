@@ -16,6 +16,24 @@ export class GoodsService {
   ) {}
 
   /**
+   * 查询全部商品类别
+   * @returns ResponseBody<false | allGoodsCategories>
+   */
+  findAllCategories(): Promise<ResponseBody<any>> {
+    const tryExecution = async () => {
+      const allGoodsCategories = await this._goodsRepo
+        .createQueryBuilder('goods')
+        .distinctOn(['goods.G_category'])
+        .orderBy('goods.id');
+      console.log('allGoodsCategories=', allGoodsCategories);
+      return this._responseSrv.success({
+        allGoodsCategories: allGoodsCategories,
+      });
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
    * 查询全部商品
    * @returns ResponseBody<false | allGoods>
    */

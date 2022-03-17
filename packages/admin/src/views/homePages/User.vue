@@ -30,7 +30,7 @@
       class="my-2"
       :createRowBtnLabel="`新增用户`"
       @handleAddNewRow="handleShowDrawer"
-      @handleDeleteGuests="handleDeleteGuests"
+      @handleDeleteRows="handleDeleteGuests"
       @handleRefreshTable="getGuests"
       @closeSearchBar="showSearchBar = !showSearchBar"
       @closeShowTipBar="showTipBar = !showTipBar"
@@ -398,4 +398,3 @@ export default class User extends Vue {
   }
 }
 </script>
-<style lang="scss" scoped></style>

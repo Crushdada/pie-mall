@@ -1,5 +1,5 @@
 <template>
-  <div class="user">
+  <div class="goods">
     <!-- Search Tool Bar -->
     <div
       v-show="showSearchBar"
@@ -23,15 +23,26 @@
         >搜 索</el-button
       >
       <!-- 重置按钮 -->
-      <el-button size="medium" @click="tableData = userList">重 置</el-button>
+      <el-button size="medium" @click="tableData = goodsList">重 置</el-button>
     </div>
     <!-- Table Tool Bar -->
     <table-tool-bar
       class="my-2"
-      :createRowBtnLabel="`新增用户`"
-      @handleDeleteGuests="handleDeleteGuests"
+      :createRowBtnLabel="`上架商品`"
+      @handleAddNewRow="handleShowDrawer"
+      @handleDeleteRows="handleDeleteGoods"
+      @handleRefreshTable="getGoods"
       @closeSearchBar="showSearchBar = !showSearchBar"
       @closeShowTipBar="showTipBar = !showTipBar"
+    />
+    <!-- drawer抽屉 -->
+    <create-row-drawer
+      title="请填写商品信息"
+      ref="drawer"
+      :loading="loadingAddGoodDialog"
+      :formComs="addGoodFormItems"
+      @beforeCloseDrawer="beforeCloseAddGoodDialog"
+      @cancelForm="cancelForm"
     />
     <!-- Selected Tips -->
     <div
@@ -42,7 +53,7 @@
       <i class="el-icon-warning" style="color: #409eff"></i>
       已选择
       <span class="font-bold" style="color: #409eff">
-        {{ selectedUsers.length }}
+        {{ selectedGoods.length }}
       </span>
       项
       <el-button type="text" @click="handleClearSelected">清空</el-button>
@@ -51,7 +62,7 @@
     <el-table
       stripe
       border
-      ref="userTable"
+      ref="goodsTable"
       tooltip-effect="dark"
       style="width: 100%"
       header-align="center"
@@ -74,65 +85,60 @@
         sortable
       ></el-table-column>
       <el-table-column
-        prop="name"
-        label="昵称"
-        width="120"
-        align="center"
-        sortable
-      ></el-table-column>
-      <el-table-column
-        prop="account"
-        label="账号"
-        width="120"
-        align="center"
-        sortable
-      ></el-table-column>
-      <el-table-column
-        label="权限"
+        prop="G_category"
+        label="分类"
         width="80"
         align="center"
-        :filters="[
-          { text: '普通用户', value: 'guest' },
-          { text: 'vip', value: 'vip' },
-        ]"
-        :filter-method="filterRole"
+        sortable
+        :filters="selectOptions"
+        :filter-method="filterCategory"
         filter-placement="bottom-end"
       >
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.role === 'vip' ? 'danger' : 'primary'"
-            disable-transitions
-          >
-            {{ scope.row.role }}
+          <el-tag disable-transitions>
+            {{ scope.row.G_category }}
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="G_thumb" label="样图" width="120" align="center">
+        <template slot-scope="scope">
+          <el-avatar size="small" :src="scope.row.G_thumb"></el-avatar>
+        </template>
+      </el-table-column>
       <el-table-column
-        label="地址"
-        show-overflow-tooltip
+        prop="G_info"
+        label="介绍"
+        width="200"
         align="center"
         sortable
       >
         <template slot-scope="scope">
           <el-popover
-            trigger="hover"
+            trigger="click"
             placement="top"
-            :disabled="!scope.row.receiving_address.length"
+            :disabled="!scope.row.G_info"
           >
-            <p
-              v-for="addressRow in scope.row.receiving_address || []"
-              :key="addressRow.id"
-            >
-              {{ addressRow.address }}
-            </p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{
-                scope.row.receiving_address.length
-              }}</el-tag>
-            </div>
+            <el-tag slot="reference" type="primary" size="medium">
+              {{ scope.row.G_info }}
+            </el-tag>
           </el-popover>
         </template>
       </el-table-column>
+      <el-table-column
+        prop="G_price"
+        label="价格"
+        width="60"
+        show-overflow-tooltip
+        align="center"
+        sortable
+      ></el-table-column>
+      <el-table-column
+        prop="G_stock"
+        label="库存"
+        width="60"
+        align="center"
+        sortable
+      ></el-table-column>
       <el-table-column fixed="right" align="center" width="150" label="操作">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">
@@ -141,7 +147,7 @@
           <el-button
             size="mini"
             type="danger"
-            @click="handleDeleteGuest(scope.$index, scope.row)"
+            @click="handleDeleteGood(scope.$index, scope.row)"
           >
             删除
           </el-button>
@@ -152,70 +158,162 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { getProfilesOfGuests } from '@/api/guest/get-guests';
-import { deleteGuests } from '@/api/guest/cancel-account';
+import { getAllGoods } from '@/api/goods/get-goods';
+import { deleteGoods } from '@/api/goods/delete-goods';
+import { insertGood } from '@/api/goods/insert-good';
 import TableToolBar from '@/components/TableToolBar.vue';
 import { cloneDeep } from 'lodash';
+import CreateRowDrawer from '@/components/CreateRowDrawer.vue';
+import { AddGoodForm, selectOptions } from './add-good-form';
+import { Drawer } from 'element-ui';
 import { Ref } from 'vue-property-decorator';
-import { Table } from 'element-ui';
+import { isString } from '../../utils/getType';
 @Component({
-  components: { TableToolBar },
+  components: { TableToolBar, CreateRowDrawer },
 })
-export default class User extends Vue {
+export default class GoodsInfo extends Vue {
+  /** Setup */
+  // ===================================================================
+  // 表格
   private loading = true; // 表格加载状态
-  private userList = null; // 用户数据
+  private goodsList = null; // 商品数据
+  private selectedGoods = []; // 已选中的rows
+  // tool bar
   private tableData = []; // 筛选搜索后，实时展示的表格数据
-  private selectedUsers = []; // 已选中的rows
-  private searchKeyWord = { name: '' }; // 搜索关键词集合
+  private searchKeyWord = { key: '' }; // 搜索关键词集合
   private showSearchBar = true; // 是否展示搜索栏
   private showTipBar = true; // 是否展示提示栏
-
-  @Ref('userTable') readonly userTable!: Table;
+  // drawer抽屉
+  private loadingAddGoodDialog = false; // 抽屉卡片加载状态
+  private timer = null;
+  private addGoodFormItems = AddGoodForm;
+  private selectOptions = selectOptions.map(item => {
+    item.text = item.label;
+    delete item.label;
+    return item;
+  });
+  /** Computed */
+  // ===================================================================
+  get form() {
+    return this.addGoodFormItems.reduce((dict, formItem) => {
+      const key = formItem.modelName;
+      const val = formItem.modelVal;
+      dict[key] = val;
+      return dict;
+    }, {});
+  }
+  @Ref('drawer') readonly drawer: Drawer;
   /** Hooks */
   // ===================================================================
   async mounted() {
-    this.getGuests();
+    this.getGoods();
   }
 
   /** Methods */
   // ===================================================================
-  handleSelectionChange(selectedUsers) {
-    this.selectedUsers = selectedUsers;
+  handleShowDrawer() {
+    this.drawer.handleShowDrawer();
   }
-  handleClearSelected() {
-    this.userTable.clearSelection();
-  }
-  filterRole(value, row) {
-    return row.role === value;
-  }
-  // 搜索表格数据
-  filterTableData() {
-    this.tableData = this.userList.filter(
-      data =>
-        !this.searchKeyWord.name ||
-        data.G_info.toLowerCase().includes(
-          this.searchKeyWord.name.toLowerCase(),
-        ),
-    );
+  handleSelectionChange(selectedGoods) {
+    this.selectedGoods = selectedGoods;
   }
 
-  // 获取商城用户信息
-  async getGuests() {
+  handleClearSelected() {
+    this.goodsTable.clearSelection();
+  }
+
+  filterCategory(value, row) {
+    return row.G_category === value;
+  }
+
+  // 搜索表格数据
+  filterTableData() {
+    this.tableData = this.goodsList.filter(data => {
+      if (!data['G_info']) data.G_info = ''; // 解决遇到空值时直接报错阻塞的bug
+      return (
+        !this.searchKeyWord.key ||
+        data.G_info.toLowerCase().includes(
+          this.searchKeyWord?.key.toLowerCase(),
+        )
+      );
+    });
+  }
+
+  /**
+   * 关闭【新增一行数据】按钮弹出的抽屉
+   * 二次确认是否提交
+   */
+  beforeCloseAddGoodDialog(done) {
+    if (this.loadingAddGoodDialog) {
+      return;
+    }
+    this.$confirm('确定要提交表单吗？')
+      .then(async _ => {
+        this.loadingAddGoodDialog = true;
+        // 请求新增一条数据
+        const res = await insertGood(this.form);
+        // 失败
+        if (res.status !== 0) {
+          console.log(`🙈${res.detail}`);
+          this.$message({
+            showClose: true,
+            message: '新增数据失败，请重试',
+            type: 'error',
+            center: true,
+          });
+        }
+        // 成功
+        setTimeout(() => {
+          this.$message({
+            showClose: true,
+            message: '成功新增一条数据！',
+            type: 'success',
+            center: true,
+          });
+        }, 2000);
+
+        this.timer = setTimeout(() => {
+          done();
+          // 动画关闭需要一定的时间
+          setTimeout(() => {
+            this.loadingAddGoodDialog = false;
+            // 清空抽屉的表单状态
+            this.addGoodFormItems = this.addGoodFormItems.map(item => {
+              item.modelVal = '';
+              return item;
+            });
+          }, 400);
+        }, 2000);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  // 取消提交新增数据的表单
+  cancelForm() {
+    this.loadingAddGoodDialog = false;
+    this.drawer.cancelSubmit();
+    clearTimeout(this.timer);
+  }
+
+  // 获取商品信息
+  async getGoods() {
     this.loading = true;
     try {
-      const res = await getProfilesOfGuests();
+      const res = await getAllGoods();
       if (res.status !== 0) {
         this.$message({
           showClose: true,
-          message: 'Get user profile failed,Please try again later.',
+          message: 'Get goods dataset failed, Please try again later.',
           type: 'error',
           center: true,
         });
         throw Error(JSON.stringify(res));
       }
-      const { guests } = res.data;
-      this.userList = guests;
-      this.tableData = cloneDeep(guests);
+      const { goods } = res.data;
+      this.goodsList = goods;
+      this.tableData = cloneDeep(goods);
     } catch (err) {
       console.log(err);
     }
@@ -224,11 +322,11 @@ export default class User extends Vue {
     }, 200);
   }
 
-  // 编辑商城用户信息
-  async handleEdit(index, user) {
+  // 编辑商品信息
+  async handleEdit(index, good) {
     this.loading = true;
     try {
-      const res = await deleteGuests([user.id]);
+      const res = await deleteGoods([good.id]);
       if (res.status !== 0) {
         // this.$message({
         //   showClose: true,
@@ -238,10 +336,10 @@ export default class User extends Vue {
         // });
         // throw Error(JSON.stringify(res));
       }
-      // this.userList.splice(index, 1);
+      // this.goodsList.splice(index, 1);
       // this.$message({
       //   showClose: true,
-      //   message: 'Delete user successfully',
+      //   message: 'Delete good successfully',
       //   type: 'success',
       //   center: true,
       // });
@@ -251,37 +349,42 @@ export default class User extends Vue {
     this.loading = false;
   }
 
-  // 注销商城用户
-  async handleDeleteGuest(index, user) {
-    this.deleteGuestsByIds([user.id]);
+  // 删除单个商品
+  async handleDeleteGood(index, good) {
+    this.deleteGoodsByIds(good.id);
   }
 
-  // 注销商城用户
-  async handleDeleteGuests() {
-    const deleteGuestIds = this.selectedUsers.map(user => user.id);
-    this.deleteGuestsByIds(deleteGuestIds);
+  // 批量删除商品
+  async handleDeleteGoods() {
+    const deleteGuestIds = this.selectedGoods.map(good => good.id);
+    this.deleteGoodsByIds(deleteGuestIds);
   }
 
-  // 根据id列表删除商城用户
-  async deleteGuestsByIds(delIds: string[]) {
+  // 根据id删除商品
+  async deleteGoodsByIds(delIds: string[] | string) {
     this.loading = true;
     try {
-      const res = await deleteGuests(delIds);
+      const res = await deleteGoods(delIds);
       if (res.status !== 0) {
         this.$message({
           showClose: true,
-          message: 'Delete account failed,Please try again later.',
+          message: 'Delete goods failed,Please try again later.',
           type: 'error',
           center: true,
         });
         throw Error(JSON.stringify(res));
       }
-      this.userList = this.userList.filter(user => {
-        return !delIds.includes(user.id);
-      });
+      if (isString(delIds)) {
+        const delIndex = this.tableData.findIndex(item => item.id === delIds);
+        this.tableData.splice(delIndex, 1);
+      } else {
+        this.tableData = this.tableData.filter(good => {
+          return !delIds.includes(good.id);
+        });
+      }
       this.$message({
         showClose: true,
-        message: 'Delete user successfully',
+        message: 'Delete goods successfully',
         type: 'success',
         center: true,
       });
@@ -292,4 +395,3 @@ export default class User extends Vue {
   }
 }
 </script>
-<style lang="scss" scoped></style>
