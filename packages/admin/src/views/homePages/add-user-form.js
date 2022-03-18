@@ -1,3 +1,4 @@
+/* jshint esversion: 6 */
 /**
  * UserPage【新增用户】抽屉组件配置
  * @export AddUserForm

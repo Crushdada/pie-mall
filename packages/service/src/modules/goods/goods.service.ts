@@ -21,13 +21,12 @@ export class GoodsService {
    */
   findAllCategories(): Promise<ResponseBody<any>> {
     const tryExecution = async () => {
-      const allGoodsCategories = await this._goodsRepo
-        .createQueryBuilder('goods')
-        .distinctOn(['goods.G_category'])
-        .orderBy('goods.id');
-      console.log('allGoodsCategories=', allGoodsCategories);
+      const rawGoodsCategories = await this._goodsRepo.query(
+        'SELECT DISTINCT goods.G_category FROM goods;',
+      );
+      const goodsCategories = rawGoodsCategories.map(good => good.G_category);
       return this._responseSrv.success({
-        allGoodsCategories: allGoodsCategories,
+       goodsCategories: goodsCategories,
       });
     };
     return this._responseSrv.tryExecute(tryExecution);

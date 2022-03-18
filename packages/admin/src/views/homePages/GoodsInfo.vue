@@ -8,7 +8,7 @@
       商品名：
       <el-input
         class="mr-5"
-        v-model="searchKeyWord.name"
+        v-model="searchKeyWord.key"
         type="text"
         clearable
         placeholder="输入关键字搜索"
@@ -69,7 +69,12 @@
       max-height="450"
       row-key="id"
       v-loading="loading"
-      :header-cell-style="{ background: '#f4f3f9', color: '#515a6e' }"
+      :cell-style="{ padding: '5px 3px' }"
+      :header-cell-style="{
+        padding: '8px 3px',
+        background: '#f4f3f9',
+        color: '#515a6e',
+      }"
       :data="tableData"
       @selection-change="handleSelectionChange"
     >
@@ -78,16 +83,16 @@
       <el-table-column type="index" label="#" width="50" align="center">
       </el-table-column>
       <el-table-column
-        prop="id"
+        prop="G_id"
         label="uid"
-        width="280"
+        width="300"
         align="center"
         sortable
       ></el-table-column>
       <el-table-column
         prop="G_category"
         label="分类"
-        width="80"
+        width="160"
         align="center"
         sortable
         :filters="selectOptions"
@@ -102,13 +107,18 @@
       </el-table-column>
       <el-table-column prop="G_thumb" label="样图" width="120" align="center">
         <template slot-scope="scope">
-          <el-avatar size="small" :src="scope.row.G_thumb"></el-avatar>
+          <el-image
+            lazy
+            class="h-10 w-10"
+            :preview-src-list="[scope.row.G_thumb]"
+            :src="scope.row.G_thumb"
+          ></el-image>
         </template>
       </el-table-column>
       <el-table-column
         prop="G_info"
         label="介绍"
-        width="200"
+        width="350"
         align="center"
         sortable
       >
@@ -118,7 +128,16 @@
             placement="top"
             :disabled="!scope.row.G_info"
           >
-            <el-tag slot="reference" type="primary" size="medium">
+            <p>
+              {{ scope.row.G_info }}
+            </p>
+            <el-tag
+              slot="reference"
+              type="primary"
+              size="medium"
+              style="width: 335px"
+              class="cursor-pointer truncate"
+            >
               {{ scope.row.G_info }}
             </el-tag>
           </el-popover>
@@ -127,7 +146,7 @@
       <el-table-column
         prop="G_price"
         label="价格"
-        width="60"
+        width="80"
         show-overflow-tooltip
         align="center"
         sortable
@@ -135,7 +154,7 @@
       <el-table-column
         prop="G_stock"
         label="库存"
-        width="60"
+        width="80"
         align="center"
         sortable
       ></el-table-column>
@@ -154,6 +173,18 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页器 -->
+    <el-pagination
+      background
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="chunkSizes"
+      :page-size.sync="chunkSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="pageCounts"
+    >
+    </el-pagination>
   </div>
 </template>
 <script lang="ts">
@@ -161,13 +192,17 @@ import { Component, Vue } from 'vue-property-decorator';
 import { getAllGoods } from '@/api/goods/get-goods';
 import { deleteGoods } from '@/api/goods/delete-goods';
 import { insertGood } from '@/api/goods/insert-good';
+import { getGoodsCategories } from '@/api/goods/get-categories';
 import TableToolBar from '@/components/TableToolBar.vue';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, slice } from 'lodash';
 import CreateRowDrawer from '@/components/CreateRowDrawer.vue';
-import { AddGoodForm, selectOptions } from './add-good-form';
+import { AddGoodForm } from './add-good-form';
 import { Drawer } from 'element-ui';
 import { Ref } from 'vue-property-decorator';
 import { isString } from '../../utils/getType';
+import { SET_GOODS_DATASET } from '@/store/goods.module/mutations/set-goods-dataset.mutation';
+import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
+
 @Component({
   components: { TableToolBar, CreateRowDrawer },
 })
@@ -176,24 +211,40 @@ export default class GoodsInfo extends Vue {
   // ===================================================================
   // 表格
   private loading = true; // 表格加载状态
-  private goodsList = null; // 商品数据
   private selectedGoods = []; // 已选中的rows
+  private pageCounts = 1;
+  private chunkSizes = [10, 20, 50]; // 分页的每页行数选择
+  private chunkSize = 20; // 分页的每页行数
+  private currentPage = 1;
+
   // tool bar
   private tableData = []; // 筛选搜索后，实时展示的表格数据
   private searchKeyWord = { key: '' }; // 搜索关键词集合
   private showSearchBar = true; // 是否展示搜索栏
   private showTipBar = true; // 是否展示提示栏
+  private categoryDict = {
+    // 用于转换商品类别label
+    headset: '耳机',
+    router: '路由器',
+    television: '数码电视',
+    tablet_PC: '平板电脑',
+    notebook_computer: '笔记本电脑',
+    smart_home: '智能家居',
+    mobile_phone: '智能手机',
+    intelligent_watch: '智能手表',
+    intelligent_speaker: '智能语音',
+  };
   // drawer抽屉
   private loadingAddGoodDialog = false; // 抽屉卡片加载状态
   private timer = null;
   private addGoodFormItems = AddGoodForm;
-  private selectOptions = selectOptions.map(item => {
-    item.text = item.label;
-    delete item.label;
-    return item;
-  });
+  private selectOptions = null;
+
   /** Computed */
   // ===================================================================
+  get goodsList() {
+    return this.$store.state[VuexModuleName.GOODS].goodsDataset;
+  }
   get form() {
     return this.addGoodFormItems.reduce((dict, formItem) => {
       const key = formItem.modelName;
@@ -206,26 +257,48 @@ export default class GoodsInfo extends Vue {
   /** Hooks */
   // ===================================================================
   async mounted() {
-    this.getGoods();
+    this.init();
   }
 
   /** Methods */
   // ===================================================================
+  init() {
+    this.getAllGoodsCategories();
+    if (this.goodsList.length === 0) {
+      this.getGoods();
+    }
+    // 分片
+    this.pageCounts = this.goodsList.length;
+    this.handleSizeChange();
+    this.loading = false;
+  }
   handleShowDrawer() {
     this.drawer.handleShowDrawer();
   }
   handleSelectionChange(selectedGoods) {
     this.selectedGoods = selectedGoods;
   }
-
   handleClearSelected() {
     this.goodsTable.clearSelection();
   }
-
   filterCategory(value, row) {
     return row.G_category === value;
   }
-
+  handleSizeChange(chunkSize) {
+    const realChunkSize = chunkSize || this.chunkSize;
+    this.chunkTableData(0, realChunkSize);
+    this.currentPage = 1;
+  }
+  handleCurrentChange(currentPage) {
+    const startIndex = (currentPage - 1) * this.chunkSize;
+    const endIndex = startIndex + this.chunkSize - 1;
+    this.chunkTableData(startIndex, endIndex);
+  }
+  chunkTableData(start: number, end: number) {
+    this.loading = true;
+    this.tableData = slice(this.goodsList, start, end);
+    this.loading = false;
+  }
   // 搜索表格数据
   filterTableData() {
     this.tableData = this.goodsList.filter(data => {
@@ -237,6 +310,25 @@ export default class GoodsInfo extends Vue {
         )
       );
     });
+  }
+
+  /**
+   * 获取全部商品类别
+   */
+  async getAllGoodsCategories() {
+    try {
+      const res = await getGoodsCategories();
+      if (res.status !== 0) {
+        throw Error(JSON.stringify(res));
+      }
+      const { goodsCategories } = res.data;
+      this.selectOptions = goodsCategories.map(item => ({
+        text: this.categoryDict[item],
+        value: item,
+      }));
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   /**
@@ -311,9 +403,9 @@ export default class GoodsInfo extends Vue {
         });
         throw Error(JSON.stringify(res));
       }
-      const { goods } = res.data;
-      this.goodsList = goods;
-      this.tableData = cloneDeep(goods);
+      const { allGoods } = res.data;
+      this.$stock.commit(SET_GOODS_DATASET, allGoods);
+      this.chunkTableData(0, this.chunkSize);
     } catch (err) {
       console.log(err);
     }

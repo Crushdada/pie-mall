@@ -7,4 +7,5 @@
 export enum VuexModuleName {
   AUTH = 'auth',
   USER = 'user',
+  GOODS = 'goods',
 }
