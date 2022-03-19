@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from './entities/admin.entity';
-// import { Guest } from './entities/guest.entity';
 import { Repository } from 'typeorm';
 import { ResponseService } from '../response/response-service';
 import { ResponseBody } from '../../../../types/response/response-body.interface';

@@ -6,13 +6,15 @@ import { ResponseService } from '../response/response-service';
 import { ResponseBody } from '../../../../types/response/response-body.interface';
 import { ERROR_TYPE } from '../../../../types/response/error-type.enum';
 import { AddGoodsDto } from './dto/goods.dto';
-
+import { AddGoodDto } from './dto/add-good.dto';
+import { StaticResourceService } from '../static-resource/static-resource.service';
 @Injectable()
 export class GoodsService {
   constructor(
     @InjectRepository(Goods)
     private readonly _goodsRepo: Repository<Goods>,
     private readonly _responseSrv: ResponseService,
+    private readonly _staticResourceSrv: StaticResourceService,
   ) {}
 
   /**
@@ -26,7 +28,7 @@ export class GoodsService {
       );
       const goodsCategories = rawGoodsCategories.map(good => good.G_category);
       return this._responseSrv.success({
-       goodsCategories: goodsCategories,
+        goodsCategories: goodsCategories,
       });
     };
     return this._responseSrv.tryExecute(tryExecution);
@@ -104,6 +106,21 @@ export class GoodsService {
   ): Promise<ResponseBody<any>> {
     const tryExecution = async () => {
       await this._goodsRepo.insert(goodsEntities);
+      return this._responseSrv.success(null);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+  /**
+   * 商品上架/入库
+   * @param { AddGoodDto } goodsData
+   * @returns ResponseBody
+   */
+  public async CreateAtom(goodsEntity: AddGoodDto): Promise<ResponseBody<any>> {
+    const tryExecution = async () => {
+      const { G_thumb: imgFile } = goodsEntity;
+      const res = await this._goodsRepo.insert({ ...goodsEntity, G_thumb: '' });
+      console.log('res=', res);
+      this._staticResourceSrv.storageService(imgFile, 'path', 'fileName');
       return this._responseSrv.success(null);
     };
     return this._responseSrv.tryExecute(tryExecution);

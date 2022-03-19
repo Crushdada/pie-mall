@@ -8,7 +8,7 @@ export class Goods {
   @Column()
   G_category: string;
 
-  @Column()
+  @Column({ nullable: true })
   G_thumb: string;
 
   @Column()

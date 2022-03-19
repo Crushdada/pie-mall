@@ -15,6 +15,7 @@ export const AddGoodForm = [
     placeholder: '请选择商品分类',
     options: [],
     required: true,
+    width: 150, //组件宽度
   },
   // 商品信息
   {
@@ -31,17 +32,21 @@ export const AddGoodForm = [
     com: 'PInputPure',
     label: '商品价格',
     modelName: 'G_price',
-    modelVal: '',
+    modelVal: 0,
     type: 'number',
     required: true,
+    clearable: false,
+    width: 100,
   },
   // 库存
   {
     com: 'PInputPure',
     label: '库存量',
     modelName: 'G_stock',
-    modelVal: '',
+    modelVal: 0,
     type: 'number',
     required: true,
+    clearable: false,
+    width: 100,
   },
 ];

@@ -13,7 +13,7 @@
         :max="max"
         :disabled="disabled"
         :required="required"
-        clearable
+        :clearable="clearable"
       ></el-input>
     </form>
   </div>
@@ -35,6 +35,7 @@ export default class PInputPure extends Vue {
   @Prop({ type: Number, default: 100 }) readonly max!: number;
   @Prop({ type: Boolean, default: false }) readonly showPassword!: boolean; // 是否显示密码
   @Prop({ type: Boolean, default: false }) readonly required!: boolean;
+  @Prop({ type: Boolean, default: true }) readonly clearable!: boolean;
 
   @Model('change', { type: String }) readonly value!: string;
 
@@ -45,4 +46,8 @@ export default class PInputPure extends Vue {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+::v-deep .el-input__inner {
+  padding-right: 0 !important;
+}
+</style>

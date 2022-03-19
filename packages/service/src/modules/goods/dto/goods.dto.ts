@@ -20,7 +20,7 @@ export class AddGoodsDto {
   @IsString()
   readonly G_info: string;
 
-  @IsString()
+  @IsInt()
   readonly G_price: number;
   /**
    * 商品库存

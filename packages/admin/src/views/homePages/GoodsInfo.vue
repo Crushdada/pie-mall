@@ -23,7 +23,7 @@
         >搜 索</el-button
       >
       <!-- 重置按钮 -->
-      <el-button size="medium" @click="tableData = goodsList">重 置</el-button>
+      <el-button size="medium" @click="handleResetSearch">重 置</el-button>
     </div>
     <!-- Table Tool Bar -->
     <table-tool-bar
@@ -43,7 +43,28 @@
       :formComs="addGoodFormItems"
       @beforeCloseDrawer="beforeCloseAddGoodDialog"
       @cancelForm="cancelForm"
-    />
+    >
+      <template v-slot:default>
+        <el-form-item class="py-2" label="商品图样" required>
+          <el-upload
+            style="width: 150px"
+            class="img-uploader"
+            with-credentials
+            accept=".jpg,.jpeg,.png,.JPG,.JPEG"
+            :limit="1"
+            :show-file-list="false"
+            action="#"
+            :before-upload="beforeImgUpload"
+          >
+            <img v-if="imgPreviewUrl" :src="imgPreviewUrl" class="avatar" />
+            <i v-else class="el-upload el-icon-plus img-uploader-icon"></i>
+            <p class="el-upload__tip leading-5" slot="tip">
+              只能上传jpg/png文件，且不超过500kb
+            </p>
+          </el-upload>
+        </el-form-item>
+      </template>
+    </create-row-drawer>
     <!-- Selected Tips -->
     <div
       v-show="showTipBar"
@@ -175,6 +196,7 @@
     </el-table>
     <!-- 分页器 -->
     <el-pagination
+      class="mt-2"
       background
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -234,11 +256,12 @@ export default class GoodsInfo extends Vue {
     intelligent_watch: '智能手表',
     intelligent_speaker: '智能语音',
   };
-  // drawer抽屉
+  // drawer抽屉 (form提交表单)
   private loadingAddGoodDialog = false; // 抽屉卡片加载状态
   private timer = null;
   private addGoodFormItems = AddGoodForm;
   private selectOptions = null;
+  private imgPreviewUrl = '';
 
   /** Computed */
   // ===================================================================
@@ -253,6 +276,22 @@ export default class GoodsInfo extends Vue {
       return dict;
     }, {});
   }
+  get realTableData() {
+    return this.searchKeyWord.key ? this.filteredGoodsList : this.goodsList;
+  }
+  // 商品搜索结果数组
+  get filteredGoodsList() {
+    return this.goodsList.filter(data => {
+      if (!data['G_info']) data.G_info = ''; // 解决遇到空值时直接报错阻塞的bug
+      return (
+        !this.searchKeyWord.key ||
+        data.G_info.toLowerCase().includes(
+          this.searchKeyWord?.key.toLowerCase(),
+        )
+      );
+    });
+  }
+
   @Ref('drawer') readonly drawer: Drawer;
   /** Hooks */
   // ===================================================================
@@ -263,14 +302,48 @@ export default class GoodsInfo extends Vue {
   /** Methods */
   // ===================================================================
   init() {
+    // 获取全部商品分类
     this.getAllGoodsCategories();
+    // 如果本地没有数据存留，再请求
     if (this.goodsList.length === 0) {
       this.getGoods();
     }
     // 分片
+    this.chunk();
+  }
+  chunk() {
+    this.loading = true;
     this.pageCounts = this.goodsList.length;
-    this.handleSizeChange();
+    this.handleSizeChange(this.chunkSize);
     this.loading = false;
+  }
+  handleSizeChange(chunkSize) {
+    this.chunkTableData(this.realTableData, 0, chunkSize);
+    this.currentPage = 1;
+  }
+  handleCurrentChange(currentPage) {
+    const startIndex = (currentPage - 1) * this.chunkSize;
+    const endIndex = startIndex + this.chunkSize - 1;
+    this.chunkTableData(this.realTableData, startIndex, endIndex);
+  }
+  chunkTableData(arr: Array, start: number, end: number) {
+    this.loading = true;
+    this.tableData = slice(arr, start, end);
+    this.loading = false;
+  }
+  // 搜索表格数据
+  filterTableData() {
+    if (!this.searchKeyWord.key) return;
+    this.chunkTableData(this.filteredGoodsList, 0, this.chunkSize);
+    this.pageCounts = this.filteredGoodsList.length;
+    this.currentPage = 1;
+  }
+  // 重置搜索
+  handleResetSearch() {
+    if (!this.searchKeyWord.key) return;
+    this.$set(this.searchKeyWord, 'key', '');
+    this.handleSizeChange(this.chunkSize);
+    this.pageCounts = this.goodsList.length;
   }
   handleShowDrawer() {
     this.drawer.handleShowDrawer();
@@ -284,51 +357,12 @@ export default class GoodsInfo extends Vue {
   filterCategory(value, row) {
     return row.G_category === value;
   }
-  handleSizeChange(chunkSize) {
-    const realChunkSize = chunkSize || this.chunkSize;
-    this.chunkTableData(0, realChunkSize);
-    this.currentPage = 1;
-  }
-  handleCurrentChange(currentPage) {
-    const startIndex = (currentPage - 1) * this.chunkSize;
-    const endIndex = startIndex + this.chunkSize - 1;
-    this.chunkTableData(startIndex, endIndex);
-  }
-  chunkTableData(start: number, end: number) {
-    this.loading = true;
-    this.tableData = slice(this.goodsList, start, end);
-    this.loading = false;
-  }
-  // 搜索表格数据
-  filterTableData() {
-    this.tableData = this.goodsList.filter(data => {
-      if (!data['G_info']) data.G_info = ''; // 解决遇到空值时直接报错阻塞的bug
-      return (
-        !this.searchKeyWord.key ||
-        data.G_info.toLowerCase().includes(
-          this.searchKeyWord?.key.toLowerCase(),
-        )
-      );
-    });
-  }
 
-  /**
-   * 获取全部商品类别
-   */
-  async getAllGoodsCategories() {
-    try {
-      const res = await getGoodsCategories();
-      if (res.status !== 0) {
-        throw Error(JSON.stringify(res));
-      }
-      const { goodsCategories } = res.data;
-      this.selectOptions = goodsCategories.map(item => ({
-        text: this.categoryDict[item],
-        value: item,
-      }));
-    } catch (err) {
-      console.log(err);
-    }
+  // 商品图片预览
+  beforeImgUpload(file) {
+    const imgPreviewUrl = URL.createObjectURL(file);
+    this.imgPreviewUrl = imgPreviewUrl;
+    this.goodImgCache = file;
   }
 
   /**
@@ -343,6 +377,9 @@ export default class GoodsInfo extends Vue {
       .then(async _ => {
         this.loadingAddGoodDialog = true;
         // 请求新增一条数据
+        this.form.G_thumb = this.goodImgCache;
+        this.form.G_price = Number(this.form.G_price);
+        this.form.G_stock = Number(this.form.G_stock);
         const res = await insertGood(this.form);
         // 失败
         if (res.status !== 0) {
@@ -353,6 +390,7 @@ export default class GoodsInfo extends Vue {
             type: 'error',
             center: true,
           });
+          return;
         }
         // 成功
         setTimeout(() => {
@@ -389,6 +427,25 @@ export default class GoodsInfo extends Vue {
     clearTimeout(this.timer);
   }
 
+  // 获取全部商品类别
+  async getAllGoodsCategories() {
+    try {
+      const res = await getGoodsCategories();
+      if (res.status !== 0) {
+        throw Error(JSON.stringify(res));
+      }
+      const { goodsCategories } = res.data;
+      this.selectOptions = goodsCategories.map(item => ({
+        text: this.categoryDict[item],
+        label: this.categoryDict[item],
+        value: item,
+      }));
+      this.addGoodFormItems[0].options = this.selectOptions;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   // 获取商品信息
   async getGoods() {
     this.loading = true;
@@ -405,7 +462,7 @@ export default class GoodsInfo extends Vue {
       }
       const { allGoods } = res.data;
       this.$stock.commit(SET_GOODS_DATASET, allGoods);
-      this.chunkTableData(0, this.chunkSize);
+      this.chunkTableData(this.realTableData, 0, this.chunkSize);
     } catch (err) {
       console.log(err);
     }
@@ -487,3 +544,28 @@ export default class GoodsInfo extends Vue {
   }
 }
 </script>
+<style lang="scss" scoped>
+.img-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.img-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.img-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 120px;
+  height: 120px;
+  line-height: 120px;
+  text-align: center;
+}
+.avatar {
+  width: 120px;
+  height: 120px;
+  display: block;
+}
+</style>

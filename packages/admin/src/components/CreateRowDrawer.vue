@@ -10,27 +10,28 @@
       ref="drawer"
     >
       <div>
-        <el-form label-position="left">
+        <el-form class="pl-4" label-position="left" label-width="80px">
           <el-form-item
             class="py-2"
             v-for="(item, i) in formComs"
             :key="i"
             :label="item.label"
+            :required="item.required"
           >
             <component
-              style="transform: translateX(15px)"
               v-model="item.modelVal"
               :is="item.com"
-              :width="300"
               :type="item.type"
               :placeholder="item.placeholder"
               :options="item.options"
-              :required="item.required"
+              :width="item.width || 300"
               :showPassword="item.showPassword"
+              :clearable="item.clearable"
             />
           </el-form-item>
+          <slot></slot>
         </el-form>
-        <div class="pt-6" style="text-align: center">
+        <div style="text-align: center">
           <el-button class="mr-6" @click="$emit('cancelForm')">取 消</el-button>
           <el-button
             type="primary"
@@ -83,4 +84,3 @@ export default class CreateRowDrawer extends Vue {
   }
 }
 </script>
-

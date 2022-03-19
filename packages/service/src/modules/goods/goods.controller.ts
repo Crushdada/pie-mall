@@ -8,6 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AddGoodDto } from './dto/add-good.dto';
 import { AddGoodsDto } from './dto/goods.dto';
 import { GoodsService } from './goods.service';
 
@@ -22,6 +23,14 @@ export class GoodsController {
   })
   public addGoods(@Body() AddGoodsPayload: Array<AddGoodsDto> | AddGoodsDto) {
     return this._goodsSrv.create(AddGoodsPayload);
+  }
+
+  @Post('atom')
+  @ApiOperation({
+    summary: '商品数据单个入库，并完成商品图片上传',
+  })
+  public addGood(@Body() AddGoodsPayload: AddGoodDto) {
+    return this._goodsSrv.CreateAtom(AddGoodsPayload);
   }
 
   @Get('categories')
