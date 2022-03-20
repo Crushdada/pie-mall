@@ -6,7 +6,10 @@ import {
   Param,
   Patch,
   Delete,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AddGoodDto } from './dto/add-good.dto';
 import { AddGoodsDto } from './dto/goods.dto';
@@ -29,8 +32,12 @@ export class GoodsController {
   @ApiOperation({
     summary: '商品数据单个入库，并完成商品图片上传',
   })
-  public addGood(@Body() AddGoodsPayload: AddGoodDto) {
-    return this._goodsSrv.CreateAtom(AddGoodsPayload);
+  @UseInterceptors(FileInterceptor('G_thumb'))
+  public addGood(
+    @Body() addGoodPayload: Omit<AddGoodDto, 'G_thumb'>,
+    @UploadedFile() G_thumb: Express.Multer.File,
+  ) {
+    return this._goodsSrv.CreateAtom(addGoodPayload, G_thumb);
   }
 
   @Get('categories')

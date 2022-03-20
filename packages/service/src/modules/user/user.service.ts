@@ -8,10 +8,9 @@ import { ERROR_TYPE } from '../../../../types/response/error-type.enum';
 import { SignDto } from './dto/sign.dto';
 import { JwtAuthService } from '../jwt-auth/jwt-auth.service';
 import { UserProfileInterface } from '../../../../types/user/user-profile.interface';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import { join } from 'path';
 import { Guest } from './entities/guest.entity';
 import { ReceivingAddress } from './entities/guest-address.entity';
+import { StaticResourceService } from '../static-resource/static-resource.service';
 
 @Injectable()
 export class UserService {
@@ -24,6 +23,7 @@ export class UserService {
     private readonly __guestAddressRepo: Repository<ReceivingAddress>,
     private readonly _responseSrv: ResponseService,
     private readonly _jwtSrv: JwtAuthService,
+    private readonly _staticResourceSrv: StaticResourceService,
   ) {}
 
   /**
@@ -139,30 +139,19 @@ export class UserService {
     file: Express.Multer.File,
     userId: string,
   ): Promise<ResponseBody<{ userAvatarUrl: string }>> {
-    const staticSrvDir = process.env.SSD; // 静态服务存储目录
-    const serviceRort = process.env.PIEMALL_SERVICE_PORT;
     const avatarFileName = `${userId}.jpg`;
-    /**
-     * project-path\dist\service\public\upload\user-avatar
-     */
-    const avatarStorePath = join(
-      __dirname,
-      '../../../',
-      staticSrvDir,
-      '/user-avatar',
-    );
+    const resourceDir = '/user-avatar';
+
     return this._responseSrv.tryExecute(async () => {
-      // 创建静态资源存储服务路径(文件夹)
-      if (!existsSync(avatarStorePath))
-        mkdirSync(avatarStorePath, { recursive: true }); // 递归参数，否则只能建一层
-      // 存储图片到静态服务目录
-      writeFileSync(join(avatarStorePath, avatarFileName), file.buffer);
-      // 写入图片存储路径到DB(userProfile)
       const _userRepo = {
         [process.env.PIEMALL_APP]: '_appUserRepo',
         [process.env.PIEMALL_ADMIN]: '_adminRepo',
       }[client];
-      const userAvatarUrl = `http://localhost:${serviceRort}/user-avatar/${avatarFileName}`;
+      const userAvatarUrl = this._staticResourceSrv.storageService(
+        file,
+        resourceDir,
+        avatarFileName,
+      );
       await this[_userRepo].update(userId, {
         avatar: userAvatarUrl,
       });

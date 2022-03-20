@@ -19,7 +19,7 @@
         icon="el-icon-search"
         type="primary"
         size="medium"
-        @click="filterTableData"
+        @click="searchedTableData"
         >搜 索</el-button
       >
       <!-- 重置按钮 -->
@@ -27,14 +27,17 @@
     </div>
     <!-- Table Tool Bar -->
     <table-tool-bar
+      ref="toolbar"
       class="my-2"
       :createRowBtnLabel="`上架商品`"
       @handleAddNewRow="handleShowDrawer"
       @handleDeleteRows="handleDeleteGoods"
+      @handleAddRowsByExcel="uploadFile"
       @handleRefreshTable="getGoods"
       @closeSearchBar="showSearchBar = !showSearchBar"
       @closeShowTipBar="showTipBar = !showTipBar"
     />
+
     <!-- drawer抽屉 -->
     <create-row-drawer
       title="请填写商品信息"
@@ -56,8 +59,17 @@
             action="#"
             :before-upload="beforeImgUpload"
           >
-            <img v-if="imgPreviewUrl" :src="imgPreviewUrl" class="avatar" />
-            <i v-else class="el-upload el-icon-plus img-uploader-icon"></i>
+            <img
+              slot="trigger"
+              v-if="imgPreviewUrl"
+              :src="imgPreviewUrl"
+              class="avatar object-cover object-center"
+            />
+            <i
+              v-else
+              slot="trigger"
+              class="el-upload el-icon-plus img-uploader-icon"
+            ></i>
             <p class="el-upload__tip leading-5" slot="tip">
               只能上传jpg/png文件，且不超过500kb
             </p>
@@ -88,7 +100,7 @@
       style="width: 100%"
       header-align="center"
       max-height="450"
-      row-key="id"
+      row-key="G_id"
       v-loading="loading"
       :cell-style="{ padding: '5px 3px' }"
       :header-cell-style="{
@@ -98,6 +110,7 @@
       }"
       :data="tableData"
       @selection-change="handleSelectionChange"
+      @filter-change="filterChange"
     >
       <el-table-column type="selection" width="50" align="center">
       </el-table-column>
@@ -116,8 +129,9 @@
         width="160"
         align="center"
         sortable
+        column-key="G_category"
         :filters="selectOptions"
-        :filter-method="filterCategory"
+        :filter-method="() => true"
         filter-placement="bottom-end"
       >
         <template slot-scope="scope">
@@ -156,7 +170,7 @@
               slot="reference"
               type="primary"
               size="medium"
-              style="width: 335px"
+              style="max-width: 335px; width: fix-content"
               class="cursor-pointer truncate"
             >
               {{ scope.row.G_info }}
@@ -224,7 +238,8 @@ import { Ref } from 'vue-property-decorator';
 import { isString } from '../../utils/getType';
 import { SET_GOODS_DATASET } from '@/store/goods.module/mutations/set-goods-dataset.mutation';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
-
+import { uint8Array2JSON } from '@/utils/data-utils';
+import { addGoods } from '@/api/goods/add-goods';
 @Component({
   components: { TableToolBar, CreateRowDrawer },
 })
@@ -234,10 +249,10 @@ export default class GoodsInfo extends Vue {
   // 表格
   private loading = true; // 表格加载状态
   private selectedGoods = []; // 已选中的rows
-  private pageCounts = 1;
   private chunkSizes = [10, 20, 50]; // 分页的每页行数选择
   private chunkSize = 20; // 分页的每页行数
-  private currentPage = 1;
+  private currentPage = 1; // 当前页数
+  private selectedFilters = null; // 选中的筛选条件
 
   // tool bar
   private tableData = []; // 筛选搜索后，实时展示的表格数据
@@ -268,6 +283,58 @@ export default class GoodsInfo extends Vue {
   get goodsList() {
     return this.$store.state[VuexModuleName.GOODS].goodsDataset;
   }
+  // 是否过滤表格数据，过滤包含筛选和搜索两个行为
+  get dataFiltered() {
+    return this.dataSearched || this.dataScreened;
+  }
+  // 是否搜索表格数据
+  get dataSearched() {
+    return this.searchKeyWord.key;
+  }
+  // 是否筛选表格数据
+  get dataScreened() {
+    if (!this.selectedFilters) return false;
+    for (const filters of Object.values(this.selectedFilters)) {
+      if (filters.length) return true;
+    }
+    return false;
+  }
+  // 商品搜索结果数组
+  get filteredTableData() {
+    return this.goodsList.filter(good => {
+      // 解决遇到空值时直接报错阻塞的bug
+      for (const attr of Object.keys(good)) {
+        if (!good[attr]) good[attr] = '';
+      }
+      // 过滤掉不符合筛选的
+      if (this.selectedFilters) {
+        for (const key of Object.keys(this.selectedFilters)) {
+          if (
+            this.dataScreened &&
+            !this.selectedFilters[key].includes(good[key])
+          ) {
+            return false;
+          }
+        }
+      }
+      // 过滤掉不符合搜索的
+      const matchSearchKeys =
+        !this.dataSearched ||
+        good.G_info.toLowerCase().includes(
+          this.searchKeyWord?.key.toLowerCase(),
+        );
+      return matchSearchKeys;
+    });
+  }
+
+  get realTableData() {
+    return this.dataFiltered ? this.filteredTableData : this.goodsList;
+  }
+
+  get pageCounts() {
+    return this.realTableData.length;
+  }
+
   get form() {
     return this.addGoodFormItems.reduce((dict, formItem) => {
       const key = formItem.modelName;
@@ -276,26 +343,12 @@ export default class GoodsInfo extends Vue {
       return dict;
     }, {});
   }
-  get realTableData() {
-    return this.searchKeyWord.key ? this.filteredGoodsList : this.goodsList;
-  }
-  // 商品搜索结果数组
-  get filteredGoodsList() {
-    return this.goodsList.filter(data => {
-      if (!data['G_info']) data.G_info = ''; // 解决遇到空值时直接报错阻塞的bug
-      return (
-        !this.searchKeyWord.key ||
-        data.G_info.toLowerCase().includes(
-          this.searchKeyWord?.key.toLowerCase(),
-        )
-      );
-    });
-  }
 
   @Ref('drawer') readonly drawer: Drawer;
+  @Ref('toolbar') readonly toolbar: TableToolBar;
   /** Hooks */
   // ===================================================================
-  async mounted() {
+  mounted() {
     this.init();
   }
 
@@ -313,17 +366,17 @@ export default class GoodsInfo extends Vue {
   }
   chunk() {
     this.loading = true;
-    this.pageCounts = this.goodsList.length;
+    // this.pageCounts = this.goodsList.length;
     this.handleSizeChange(this.chunkSize);
     this.loading = false;
   }
   handleSizeChange(chunkSize) {
-    this.chunkTableData(this.realTableData, 0, chunkSize);
-    this.currentPage = 1;
+    this.handleCurrentChange(1);
   }
   handleCurrentChange(currentPage) {
+    this.currentPage = currentPage;
     const startIndex = (currentPage - 1) * this.chunkSize;
-    const endIndex = startIndex + this.chunkSize - 1;
+    const endIndex = startIndex + this.chunkSize;
     this.chunkTableData(this.realTableData, startIndex, endIndex);
   }
   chunkTableData(arr: Array, start: number, end: number) {
@@ -332,43 +385,76 @@ export default class GoodsInfo extends Vue {
     this.loading = false;
   }
   // 搜索表格数据
-  filterTableData() {
-    if (!this.searchKeyWord.key) return;
-    this.chunkTableData(this.filteredGoodsList, 0, this.chunkSize);
-    this.pageCounts = this.filteredGoodsList.length;
-    this.currentPage = 1;
+  searchedTableData() {
+    if (!this.dataSearched) return;
+    this.handleCurrentChange(1);
   }
   // 重置搜索
   handleResetSearch() {
-    if (!this.searchKeyWord.key) return;
+    if (!this.dataSearched) return;
     this.$set(this.searchKeyWord, 'key', '');
     this.handleSizeChange(this.chunkSize);
-    this.pageCounts = this.goodsList.length;
+    // this.pageCounts = this.goodsList.length;
   }
+  // 展开新增数据的表单的抽屉组件
   handleShowDrawer() {
     this.drawer.handleShowDrawer();
   }
+  // 表格已选项变化
   handleSelectionChange(selectedGoods) {
     this.selectedGoods = selectedGoods;
   }
+  // 清空表格已选
   handleClearSelected() {
     this.goodsTable.clearSelection();
   }
-  filterCategory(value, row) {
-    return row.G_category === value;
+  // 筛选条件改变
+  filterChange(filterOpt) {
+    this.selectedFilters = filterOpt;
+    this.handleCurrentChange(1);
   }
-
   // 商品图片预览
   beforeImgUpload(file) {
     const imgPreviewUrl = URL.createObjectURL(file);
     this.imgPreviewUrl = imgPreviewUrl;
     this.goodImgCache = file;
   }
-
-  /**
-   * 关闭【新增一行数据】按钮弹出的抽屉
-   * 二次确认是否提交
-   */
+  //读取Excel数据
+  uploadFile(file) {
+    console.log('触发了读取excel数据');
+    const realFile = file.raw;
+    const reader = new FileReader();
+    reader.onload = async e => {
+      var data = e.target.result;
+      const rawData = new Uint8Array(data as any);
+      const processedData = uint8Array2JSON(rawData);
+      try {
+        // 数据规范化
+        const goodsData = processedData.map(el => {
+          if (!el.G_stock) {
+            el.G_stock = 100;
+          }
+          el.price = parseInt(el.price);
+          return el;
+        });
+        // 商品数据入库
+        const response: any = await addGoods(goodsData);
+        if (response.status !== 0) throw Error(JSON.stringify(response));
+        // notify;
+        this.$message({
+          showClose: true,
+          message: 'Added successfully',
+          type: 'success',
+          center: true,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    reader.readAsArrayBuffer(realFile);
+    this.toolbar.clearFiles();
+  }
+  // 关闭【新增一行数据】按钮弹出的抽屉，二次确认是否提交
   beforeCloseAddGoodDialog(done) {
     if (this.loadingAddGoodDialog) {
       return;
@@ -380,7 +466,11 @@ export default class GoodsInfo extends Vue {
         this.form.G_thumb = this.goodImgCache;
         this.form.G_price = Number(this.form.G_price);
         this.form.G_stock = Number(this.form.G_stock);
-        const res = await insertGood(this.form);
+        const formData = new FormData();
+        Object.keys(this.form).forEach(key => {
+          formData.append(key, this.form[key]);
+        });
+        const res = await insertGood(formData);
         // 失败
         if (res.status !== 0) {
           console.log(`🙈${res.detail}`);
@@ -419,14 +509,12 @@ export default class GoodsInfo extends Vue {
         console.log(err);
       });
   }
-
   // 取消提交新增数据的表单
   cancelForm() {
     this.loadingAddGoodDialog = false;
     this.drawer.cancelSubmit();
     clearTimeout(this.timer);
   }
-
   // 获取全部商品类别
   async getAllGoodsCategories() {
     try {
@@ -445,7 +533,6 @@ export default class GoodsInfo extends Vue {
       console.log(err);
     }
   }
-
   // 获取商品信息
   async getGoods() {
     this.loading = true;
@@ -463,6 +550,7 @@ export default class GoodsInfo extends Vue {
       const { allGoods } = res.data;
       this.$stock.commit(SET_GOODS_DATASET, allGoods);
       this.chunkTableData(this.realTableData, 0, this.chunkSize);
+      // this.pageCounts = this.goodsList.length;
     } catch (err) {
       console.log(err);
     }
@@ -470,12 +558,11 @@ export default class GoodsInfo extends Vue {
       this.loading = false;
     }, 200);
   }
-
   // 编辑商品信息
   async handleEdit(index, good) {
     this.loading = true;
     try {
-      const res = await deleteGoods([good.id]);
+      const res = await deleteGoods([good.G_id]);
       if (res.status !== 0) {
         // this.$message({
         //   showClose: true,
@@ -497,18 +584,15 @@ export default class GoodsInfo extends Vue {
     }
     this.loading = false;
   }
-
   // 删除单个商品
   async handleDeleteGood(index, good) {
-    this.deleteGoodsByIds(good.id);
+    this.deleteGoodsByIds(good.G_id);
   }
-
   // 批量删除商品
   async handleDeleteGoods() {
-    const deleteGuestIds = this.selectedGoods.map(good => good.id);
+    const deleteGuestIds = this.selectedGoods.map(good => good.G_id);
     this.deleteGoodsByIds(deleteGuestIds);
   }
-
   // 根据id删除商品
   async deleteGoodsByIds(delIds: string[] | string) {
     this.loading = true;
@@ -524,11 +608,11 @@ export default class GoodsInfo extends Vue {
         throw Error(JSON.stringify(res));
       }
       if (isString(delIds)) {
-        const delIndex = this.tableData.findIndex(item => item.id === delIds);
+        const delIndex = this.tableData.findIndex(item => item.G_id === delIds);
         this.tableData.splice(delIndex, 1);
       } else {
         this.tableData = this.tableData.filter(good => {
-          return !delIds.includes(good.id);
+          return !delIds.includes(good.G_id);
         });
       }
       this.$message({

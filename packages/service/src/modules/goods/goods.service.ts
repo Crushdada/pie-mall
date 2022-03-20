@@ -90,6 +90,11 @@ export class GoodsService {
    */
   delete(ids: string | Array<string>): Promise<ResponseBody<any>> {
     const tryExecution = async () => {
+      if (!ids) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+          detail: `所删除商品id=${ids}不存在`,
+        });
+      }
       await this._goodsRepo.delete(ids);
       return this._responseSrv.success(null);
     };
@@ -115,13 +120,25 @@ export class GoodsService {
    * @param { AddGoodDto } goodsData
    * @returns ResponseBody
    */
-  public async CreateAtom(goodsEntity: AddGoodDto): Promise<ResponseBody<any>> {
+  public async CreateAtom(
+    goodsEntity: Omit<AddGoodDto, 'G_thumb'>,
+    file: Express.Multer.File,
+  ): Promise<ResponseBody<any>> {
     const tryExecution = async () => {
-      const { G_thumb: imgFile } = goodsEntity;
-      const res = await this._goodsRepo.insert({ ...goodsEntity, G_thumb: '' });
-      console.log('res=', res);
-      this._staticResourceSrv.storageService(imgFile, 'path', 'fileName');
-      return this._responseSrv.success(null);
+      const goodEntity = await this._goodsRepo.save({
+        ...goodsEntity,
+        G_thumb: '',
+      });
+      const { G_id } = goodEntity;
+      const path = '/goods-thumb';
+      const fileName = `${G_id}.jpg`;
+      const fileAccessUrl = this._staticResourceSrv.storageService(
+        file,
+        path,
+        fileName,
+      );
+      await this._goodsRepo.update(G_id, { G_thumb: fileAccessUrl });
+      return this._responseSrv.success(fileAccessUrl);
     };
     return this._responseSrv.tryExecute(tryExecution);
   }

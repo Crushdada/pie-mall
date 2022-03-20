@@ -1,7 +1,7 @@
 <template>
   <div class="table-tool-bar flex flex-row justify-between items-center">
     <!-- 表格功能按钮 -->
-    <div>
+    <div class="flex flex-row flex-nowrap space-x-4">
       <el-button
         icon="el-icon-circle-plus-outline"
         type="primary"
@@ -11,16 +11,33 @@
         {{ createRowBtnLabel }}
       </el-button>
       <el-button
-        icon="el-icon-circle-plus-outline"
+        icon="el-icon-delete-solid"
         size="medium"
         @click="$emit('handleDeleteRows')"
       >
         批量删除
       </el-button>
+      <el-upload
+        ref="elUpload"
+        :auto-upload="false"
+        :show-file-list="false"
+        action
+        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+        :on-change="file => $emit('handleAddRowsByExcel', file)"
+        :limit="1"
+      >
+        <el-button
+          size="medium"
+          icon="el-icon-circle-plus-outline"
+          type="primary"
+        >
+          批量上传
+        </el-button>
+      </el-upload>
     </div>
 
     <!-- 表格设置按钮 -->
-    <div class="space-x-4 text-base">
+    <div class="flex flex-row flex-nowrap space-x-4 text-base">
       <!-- 刷新表格 -->
       <el-tooltip
         class="item"
@@ -73,11 +90,18 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
-
+import { Prop, Ref } from 'vue-property-decorator';
+import { Upload } from 'element-ui';
 @Component()
 export default class TableToolbar extends Vue {
   @Prop({ type: String, default: '新增一条' })
   readonly createRowBtnLabel!: string;
+
+  @Ref('elUpload') readonly elUpload: Upload;
+
+  // 清空上传列表
+  clearFiles() {
+    this.elUpload.clearFiles();
+  }
 }
 </script>
