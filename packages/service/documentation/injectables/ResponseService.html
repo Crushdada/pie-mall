@@ -1,0 +1,568 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>@pie-mall/service documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">@pie-mall/service documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="请输入查询关键字"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>可注入的</li>
+  <li >ResponseService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>文件</h3>
+        </p>
+        <p class="comment">
+            <code>src/modules/response/response-service.ts</code>
+        </p>
+
+
+
+
+
+            <section>
+    <h3 id="index">索引</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>方法</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#error" >error</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#success" >success</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#tryExecute" >tryExecute</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">构造方法</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(_errSrv: <a href="../injectables/ErrorService.html" target="_self">ErrorService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">被定义在 <a href="" data-line="10" class="link-to-prism">src/modules/response/response-service.ts:10</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>参数列表 :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>名称</td>
+                                                    <td>类型</td>
+                                                <td>可选的</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>_errSrv</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ErrorService.html" target="_self" >ErrorService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            否
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        方法
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="error"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>error</b></span>
+                        <a href="#error"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>error(errorCode: ERROR_TYPE, data: T, options?: literal type)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="32"
+                            class="link-to-prism">src/modules/response/response-service.ts:32</a></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>类型参数 :</b>
+                    <ul class="type-parameters">
+                        <li>T</li>
+                    </ul>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>请求失败的返回体</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>errorCode</td>
+                                    <td>
+                                            <code>ERROR_TYPE</code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>data</td>
+                                    <td>
+                                            <code>T</code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                            <code>literal type</code>
+                                    </td>
+
+                                    <td>
+                                        是
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>ErrorResponse&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="success"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>success</b></span>
+                        <a href="#success"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>success(data: T)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="17"
+                            class="link-to-prism">src/modules/response/response-service.ts:17</a></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>类型参数 :</b>
+                    <ul class="type-parameters">
+                        <li>T</li>
+                    </ul>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>请求成功</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>data</td>
+                                    <td>
+                                            <code>T</code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>SuccessResponse&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>, data, message }</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tryExecute"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>tryExecute</b></span>
+                        <a href="#tryExecute"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>tryExecute(cb)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="54"
+                            class="link-to-prism">src/modules/response/response-service.ts:54</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>简化【DB操作代码段】的工具函数</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>可选的</td>
+                                    <td>描述</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>cb</td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                    <td>
+                                        <p>须try包裹的代码段</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>res = cb();</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  ErrorResponse,
+  SuccessResponse,
+} from &#x27;./../../../../types/response/response-body.interface&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ERROR_TYPE } from &#x27;../../../../types/response/error-type.enum&#x27;;
+import { ErrorService } from &#x27;./error/err-service&#x27;;
+
+@Injectable()
+export class ResponseService {
+  constructor(private readonly _errSrv: ErrorService) {}
+  /**
+   * 请求成功
+   * @param {T} data
+   * @returns { status, data, message }
+   */
+  public success&lt;T&gt;(data: T): SuccessResponse&lt;T&gt; {
+    return {
+      status: 0,
+      message: &#x27;success&#x27;,
+      data,
+    };
+  }
+
+  /**
+   * 请求失败的返回体
+   * @param errorCode
+   * @param data
+   * @param options
+   * @returns
+   */
+  public error&lt;T&gt;(
+    errorCode: ERROR_TYPE,
+    data: T,
+    options?: {
+      detail?: string;
+    },
+  ): ErrorResponse&lt;T&gt; {
+    const error &#x3D; this._errSrv.errInfo(errorCode);
+    return {
+      data,
+      status: errorCode,
+      error: error.message,
+      detail: options?.detail,
+      ...error,
+    };
+  }
+
+  /**
+   * 简化【DB操作代码段】的工具函数
+   * @param cb 须try包裹的代码段
+   * @returns res &#x3D; cb();
+   */
+  public async tryExecute(cb) {
+    try {
+      return cb();
+    } catch (err) {
+      console.log(err.toString());
+      return this.error(ERROR_TYPE.UNKNOW, err, {
+        detail: err.toString(),
+      });
+    }
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> 匹配的结果 "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">无匹配的结果 "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'ResponseService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

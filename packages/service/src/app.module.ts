@@ -10,7 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import TypeOrmModuleOptions from './config/interfaces/db.interface';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { checkClientMiddleware } from './middlewares/check-client.middleware';
-import { GoodsModule } from './modules/admin_service/goods/goods.module';
+import { GoodsModule } from './modules/goods/goods.module';
 import { ResponseModule } from './modules/response/response-module';
 import { UserModule } from './modules/user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';

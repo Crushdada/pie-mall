@@ -45,7 +45,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-, "src/utils/data-utils.js", "src/utils/string-validation.js"  ],
+, "src/utils/data-utils.js", "src/utils/string-validation.js", "src/views/homePages/add-good-form.js", "src/views/homePages/add-user-form.js"  ],
   "exclude": [
     "node_modules",
     "dist",

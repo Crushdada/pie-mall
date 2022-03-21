@@ -28,9 +28,21 @@
     <!-- Table Tool Bar -->
     <table-tool-bar
       class="my-2"
-      @handleDeleteGuests="handleDeleteGuests"
+      :createRowBtnLabel="`新增用户`"
+      @handleAddNewRow="handleShowDrawer"
+      @handleDeleteRows="handleDeleteGuests"
+      @handleRefreshTable="getGuests"
       @closeSearchBar="showSearchBar = !showSearchBar"
       @closeShowTipBar="showTipBar = !showTipBar"
+    />
+    <!-- drawer抽屉       :showDrawer="showAddUserDialog"-->
+    <create-row-drawer
+      title="请填写用户信息"
+      ref="drawer"
+      :loading="loadingAddUserDialog"
+      :formComs="addUserFormItems"
+      @beforeCloseDrawer="beforeCloseAddUserDialog"
+      @cancelForm="cancelForm"
     />
     <!-- Selected Tips -->
     <div
@@ -153,20 +165,45 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { getProfilesOfGuests } from '@/api/guest/get-guests';
 import { deleteGuests } from '@/api/guest/cancel-account';
+import { insertGuest } from '@/api/guest/insert-guest';
 import TableToolBar from '@/components/TableToolBar.vue';
 import { cloneDeep } from 'lodash';
+import CreateRowDrawer from '@/components/CreateRowDrawer.vue';
+import { AddUserForm } from './add-user-form';
+import { Drawer } from 'element-ui';
+import { Ref } from 'vue-property-decorator';
+import { isString } from '../../utils/getType';
 @Component({
-  components: { TableToolBar },
+  components: { TableToolBar, CreateRowDrawer },
 })
 export default class User extends Vue {
+  /** Setup */
+  // ===================================================================
+  // 表格
   private loading = true; // 表格加载状态
   private userList = null; // 用户数据
-  private tableData = []; // 筛选搜索后，实时展示的表格数据
   private selectedUsers = []; // 已选中的rows
+  // tool bar
+  private tableData = []; // 筛选搜索后，实时展示的表格数据
   private searchKeyWord = { name: '' }; // 搜索关键词集合
   private showSearchBar = true; // 是否展示搜索栏
   private showTipBar = true; // 是否展示提示栏
+  // drawer抽屉
+  private loadingAddUserDialog = false; // 抽屉卡片加载状态
+  private timer = null;
+  private addUserFormItems = AddUserForm;
 
+  /** Computed */
+  // ===================================================================
+  get form() {
+    return this.addUserFormItems.reduce((dict, formItem) => {
+      const key = formItem.modelName;
+      const val = formItem.modelVal;
+      dict[key] = val;
+      return dict;
+    }, {});
+  }
+  @Ref('drawer') readonly drawer: Drawer;
   /** Hooks */
   // ===================================================================
   async mounted() {
@@ -175,22 +212,88 @@ export default class User extends Vue {
 
   /** Methods */
   // ===================================================================
+  handleShowDrawer() {
+    this.drawer.handleShowDrawer();
+  }
   handleSelectionChange(selectedUsers) {
     this.selectedUsers = selectedUsers;
   }
+
   handleClearSelected() {
-    this.$refs.userTable.clearSelection();
+    this.userTable.clearSelection();
   }
+
   filterRole(value, row) {
     return row.role === value;
   }
+
   // 搜索表格数据
   filterTableData() {
-    this.tableData = this.userList.filter(
-      data =>
+    this.tableData = this.userList.filter(data => {
+      if (!data['name']) data.name = ''; // 解决遇到空值时直接报错阻塞的bug
+      return (
         !this.searchKeyWord.name ||
-        data.name.toLowerCase().includes(this.searchKeyWord.name.toLowerCase()),
-    );
+        data.name.toLowerCase().includes(this.searchKeyWord?.name.toLowerCase())
+      );
+    });
+  }
+
+  /**
+   * 关闭新增用户按钮弹出的抽屉
+   * 二次确认是否提交
+   */
+  beforeCloseAddUserDialog(done) {
+    if (this.loadingAddUserDialog) {
+      return;
+    }
+    this.$confirm('确定要提交表单吗？')
+      .then(async _ => {
+        this.loadingAddUserDialog = true;
+        // 请求新增一条数据
+        const res = await insertGuest(this.form);
+        // 失败
+        if (res.status !== 0) {
+          console.log(`🙈${res.detail}`);
+          this.$message({
+            showClose: true,
+            message: '新增数据失败，请重试',
+            type: 'error',
+            center: true,
+          });
+        }
+        // 成功
+        setTimeout(() => {
+          this.$message({
+            showClose: true,
+            message: '成功新增一条数据！',
+            type: 'success',
+            center: true,
+          });
+        }, 2000);
+
+        this.timer = setTimeout(() => {
+          done();
+          // 动画关闭需要一定的时间
+          setTimeout(() => {
+            this.loadingAddUserDialog = false;
+            // 清空抽屉的表单状态
+            this.addUserFormItems = this.addUserFormItems.map(item => {
+              item.modelVal = '';
+              return item;
+            });
+          }, 400);
+        }, 2000);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  // 取消提交新增的用户信息
+  cancelForm() {
+    this.loadingAddUserDialog = false;
+    this.drawer.cancelSubmit();
+    clearTimeout(this.timer);
   }
 
   // 获取商城用户信息
@@ -247,7 +350,7 @@ export default class User extends Vue {
 
   // 注销商城用户
   async handleDeleteGuest(index, user) {
-    this.deleteGuestsByIds([user.id]);
+    this.deleteGuestsByIds(user.id);
   }
 
   // 注销商城用户
@@ -257,10 +360,12 @@ export default class User extends Vue {
   }
 
   // 根据id列表删除商城用户
-  async deleteGuestsByIds(delIds: string[]) {
+  async deleteGuestsByIds(delIds: string[] | string) {
     this.loading = true;
     try {
-      const res = await deleteGuests(delIds);
+      const delIdSet = isString(delIds) ? [delIds] : delIds;
+
+      const res = await deleteGuests(delIdSet);
       if (res.status !== 0) {
         this.$message({
           showClose: true,
@@ -270,9 +375,16 @@ export default class User extends Vue {
         });
         throw Error(JSON.stringify(res));
       }
-      this.userList = this.userList.filter(user => {
-        return !delIds.includes(user.id);
-      });
+      if (isString(delIds)) {
+        const delUserIndex = this.tableData.findIndex(
+          item => item.id === delIds,
+        );
+        this.tableData.splice(delUserIndex, 1);
+      } else {
+        this.tableData = this.tableData.filter(user => {
+          return !delIds.includes(user.id);
+        });
+      }
       this.$message({
         showClose: true,
         message: 'Delete user successfully',
@@ -286,4 +398,3 @@ export default class User extends Vue {
   }
 }
 </script>
-<style lang="scss" scoped></style>

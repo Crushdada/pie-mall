@@ -1,0 +1,1515 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>@pie-mall/service documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">@pie-mall/service documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="请输入查询关键字"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>可注入的</li>
+  <li >UserService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>文件</h3>
+        </p>
+        <p class="comment">
+            <code>src/modules/user/user.service.ts</code>
+        </p>
+
+
+
+
+
+            <section>
+    <h3 id="index">索引</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>方法</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#addGuest" >addGuest</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#addUser" >addUser</a>
+                            </li>
+                            <li>
+                                <a href="#deleteGuestsByIds" >deleteGuestsByIds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteUserSession" >deleteUserSession</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getProfilesOfGuests" >getProfilesOfGuests</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getUserProfile" >getUserProfile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getUserProfileById" >getUserProfileById</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#setUserName" >setUserName</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateAvatar" >updateAvatar</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#userLogin" >userLogin</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#userRegister" >userRegister</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">构造方法</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(_adminRepo: <a href="../entitys/Admin.html" target="_self">Repository&lt;Admin&gt;</a>, __guestRepo: <a href="../entitys/Guest.html" target="_self">Repository&lt;Guest&gt;</a>, __guestAddressRepo: <a href="../entitys/ReceivingAddress.html" target="_self">Repository&lt;ReceivingAddress&gt;</a>, _responseSrv: <a href="../injectables/ResponseService.html" target="_self">ResponseService</a>, _jwtSrv: <a href="../injectables/JwtAuthService.html" target="_self">JwtAuthService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">被定义在 <a href="" data-line="18" class="link-to-prism">src/modules/user/user.service.ts:18</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>参数列表 :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>名称</td>
+                                                    <td>类型</td>
+                                                <td>可选的</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>_adminRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../entitys/Admin.html" target="_self" >Repository&lt;Admin&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            否
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>__guestRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../entitys/Guest.html" target="_self" >Repository&lt;Guest&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            否
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>__guestAddressRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../entitys/ReceivingAddress.html" target="_self" >Repository&lt;ReceivingAddress&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            否
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>_responseSrv</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ResponseService.html" target="_self" >ResponseService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            否
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>_jwtSrv</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/JwtAuthService.html" target="_self" >JwtAuthService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            否
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        方法
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addGuest"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>addGuest</b></span>
+                        <a href="#addGuest"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addGuest(userProfile: <a href="../entitys/UserProfile.html" target="_self">Partial&lt;UserProfileInterface&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="35"
+                            class="link-to-prism">src/modules/user/user.service.ts:35</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>后台添加app端用户</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userProfile</td>
+                                    <td>
+                                                <code><a href="../entitys/UserProfile.html" target="_self" >Partial&lt;UserProfileInterface&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addUser"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>addUser</b></span>
+                        <a href="#addUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addUser(userProfile: <a href="../entitys/UserProfile.html" target="_self">Partial&lt;UserProfileInterface&gt;</a>, repo: Repository<any>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="62"
+                            class="link-to-prism">src/modules/user/user.service.ts:62</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>向指定user表添加一个用户的工具方法</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userProfile</td>
+                                    <td>
+                                                <code><a href="../entitys/UserProfile.html" target="_self" >Partial&lt;UserProfileInterface&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>repo</td>
+                                    <td>
+                                            <code>Repository&lt;any&gt;</code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>row | false</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteGuestsByIds"></a>
+                    <span class="name">
+                        <span ><b>deleteGuestsByIds</b></span>
+                        <a href="#deleteGuestsByIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteGuestsByIds(ids: string[])</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="81"
+                            class="link-to-prism">src/modules/user/user.service.ts:81</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>批量注销app端用户</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ids</td>
+                                    <td>
+                                            <code>string[]</code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteUserSession"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>deleteUserSession</b></span>
+                        <a href="#deleteUserSession"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUserSession(token: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, session: Record<string | any>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="285"
+                            class="link-to-prism">src/modules/user/user.service.ts:285</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>删除user session</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>token</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>session</td>
+                                    <td>
+                                            <code>Record&lt;string | any&gt;</code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>Promise&lt;ResponseBody&lt;any&gt;&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>ResponseBody</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getProfilesOfGuests"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>getProfilesOfGuests</b></span>
+                        <a href="#getProfilesOfGuests"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getProfilesOfGuests()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="94"
+                            class="link-to-prism">src/modules/user/user.service.ts:94</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>获取app端全部用户信息</p>
+</div>
+
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>guestArray</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUserProfile"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>getUserProfile</b></span>
+                        <a href="#getUserProfile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getUserProfile(token: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="180"
+                            class="link-to-prism">src/modules/user/user.service.ts:180</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>校验ticket并获取userProfile</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>token</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>Promise&lt;ResponseBody&lt;any&gt;&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUserProfileById"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>getUserProfileById</b></span>
+                        <a href="#getUserProfileById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getUserProfileById(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="212"
+                            class="link-to-prism">src/modules/user/user.service.ts:212</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="../entitys/UserProfile.html" target="_self" >Promise&lt;UserProfileInterface&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>userProfile</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setUserName"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>setUserName</b></span>
+                        <a href="#setUserName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setUserName(client: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="117"
+                            class="link-to-prism">src/modules/user/user.service.ts:117</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>更新用户名称</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>client</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>name</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateAvatar"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>updateAvatar</b></span>
+                        <a href="#updateAvatar"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateAvatar(client: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, file: Express.Multer.File, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="138"
+                            class="link-to-prism">src/modules/user/user.service.ts:138</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>更新用户头像</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>client</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>file</td>
+                                    <td>
+                                            <code>Express.Multer.File</code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>Promise&lt;ResponseBody&lt;literal type&gt;&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="userLogin"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>userLogin</b></span>
+                        <a href="#userLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>userLogin(userProfile: <a href="../classes/SignDto.html" target="_self">SignDto</a>, session: Record<string | any>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="227"
+                            class="link-to-prism">src/modules/user/user.service.ts:227</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>登录</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userProfile</td>
+                                    <td>
+                                                <code><a href="../classes/SignDto.html" target="_self" >SignDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>session</td>
+                                    <td>
+                                            <code>Record&lt;string | any&gt;</code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>Promise&lt;ResponseBody&lt;any&gt;&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>ResponseBody</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="userRegister"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>userRegister</b></span>
+                        <a href="#userRegister"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>userRegister(userProfile: <a href="../classes/SignDto.html" target="_self">SignDto</a>, client: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="259"
+                            class="link-to-prism">src/modules/user/user.service.ts:259</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>注册</p>
+</div>
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userProfile</td>
+                                    <td>
+                                                <code><a href="../classes/SignDto.html" target="_self" >SignDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>client</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>Promise&lt;ResponseBody&lt;any&gt;&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>ResponseBody</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
+import { Admin } from &#x27;./entities/admin.entity&#x27;;
+// import { Guest } from &#x27;./entities/guest.entity&#x27;;
+import { Repository } from &#x27;typeorm&#x27;;
+import { ResponseService } from &#x27;../response/response-service&#x27;;
+import { ResponseBody } from &#x27;../../../../types/response/response-body.interface&#x27;;
+import { ERROR_TYPE } from &#x27;../../../../types/response/error-type.enum&#x27;;
+import { SignDto } from &#x27;./dto/sign.dto&#x27;;
+import { JwtAuthService } from &#x27;../jwt-auth/jwt-auth.service&#x27;;
+import { UserProfileInterface } from &#x27;../../../../types/user/user-profile.interface&#x27;;
+import { existsSync, mkdirSync, writeFileSync } from &#x27;fs&#x27;;
+import { join } from &#x27;path&#x27;;
+import { Guest } from &#x27;./entities/guest.entity&#x27;;
+import { ReceivingAddress } from &#x27;./entities/guest-address.entity&#x27;;
+
+@Injectable()
+export class UserService {
+  constructor(
+    @InjectRepository(Admin)
+    private readonly _adminRepo: Repository&lt;Admin&gt;,
+    @InjectRepository(Guest)
+    private readonly __guestRepo: Repository&lt;Guest&gt;,
+    @InjectRepository(ReceivingAddress)
+    private readonly __guestAddressRepo: Repository&lt;ReceivingAddress&gt;,
+    private readonly _responseSrv: ResponseService,
+    private readonly _jwtSrv: JwtAuthService,
+  ) {}
+
+  /**
+   * 后台添加app端用户
+   * @param userProfile
+   * @returns
+   */
+  public async addGuest(userProfile: Partial&lt;UserProfileInterface&gt;) {
+    return this._responseSrv.tryExecute(async () &#x3D;&gt; {
+      const guest &#x3D; await this.addUser(userProfile, this.__guestRepo);
+      // 账号已存在
+      if (!guest) {
+        return this._responseSrv.error(ERROR_TYPE.ALREADY_EXIST, null);
+      }
+      const { address } &#x3D; userProfile;
+      // userId 作为地址表的外键
+      const exeResult &#x3D; await this.__guestAddressRepo.insert({
+        address,
+        user: guest,
+      });
+      if (!exeResult) {
+        return this._responseSrv.error(ERROR_TYPE.UNKNOW, null);
+      }
+      // 添加账户成功
+      return this._responseSrv.success({});
+    });
+  }
+
+  /**
+   * 向指定user表添加一个用户的工具方法
+   * @param userProfile
+   * @param repo
+   * @returns row | false
+   */
+  public async addUser(
+    userProfile: Partial&lt;UserProfileInterface&gt;,
+    repo: Repository&lt;any&gt;,
+  ) {
+    const { account } &#x3D; userProfile;
+    const user &#x3D; await repo.findOne({ account });
+    // 账号已存在
+    if (user) {
+      return false;
+    }
+    // 添加账户成功
+    return await repo.save(userProfile);
+  }
+
+  /**
+   * 批量注销app端用户
+   * @param ids
+   * @returns
+   */
+  deleteGuestsByIds(ids: string[]) {
+    return this._responseSrv.tryExecute(async () &#x3D;&gt; {
+      console.log(ids);
+      const exeResult &#x3D; await this.__guestRepo.delete(ids);
+      console.log(exeResult);
+      return this._responseSrv.success({});
+    });
+  }
+
+  /**
+   * 获取app端全部用户信息
+   * @returns guestArray
+   */
+  async getProfilesOfGuests() {
+    return this._responseSrv.tryExecute(async () &#x3D;&gt; {
+      const guests &#x3D; await this.__guestRepo.find({
+        select: [&#x27;id&#x27;, &#x27;account&#x27;, &#x27;name&#x27;, &#x27;role&#x27;],
+        relations: [&#x27;receiving_address&#x27;],
+      });
+      const processAddressGuests &#x3D; guests.map(guest &#x3D;&gt; ({
+        ...guest,
+        receiving_address: guest.receiving_address.map(addressRow &#x3D;&gt; ({
+          address_id: addressRow.id,
+          address: addressRow.address,
+        })),
+      }));
+      return this._responseSrv.success({ guests: processAddressGuests });
+    });
+  }
+
+  /**
+   * 更新用户名称
+   * @param client
+   * @param name
+   * @param userId
+   */
+  public async setUserName(client: string, name: string, userId: string) {
+    const _userRepo &#x3D; {
+      [process.env.PIEMALL_APP]: &#x27;_appUserRepo&#x27;,
+      [process.env.PIEMALL_ADMIN]: &#x27;_adminRepo&#x27;,
+    }[client];
+
+    return this._responseSrv.tryExecute(async () &#x3D;&gt; {
+      await this[_userRepo].update(userId, {
+        name: name,
+      });
+      return this._responseSrv.success({});
+    });
+  }
+
+  /**
+   * 更新用户头像
+   * @param client
+   * @param file
+   * @param userId
+   * @returns
+   */
+  public async updateAvatar(
+    client: string,
+    file: Express.Multer.File,
+    userId: string,
+  ): Promise&lt;ResponseBody&lt;{ userAvatarUrl: string }&gt;&gt; {
+    const staticSrvDir &#x3D; process.env.SSD; // 静态服务存储目录
+    const serviceRort &#x3D; process.env.PIEMALL_SERVICE_PORT;
+    const avatarFileName &#x3D; &#x60;${userId}.jpg&#x60;;
+    /**
+     * project-path\dist\service\public\upload\user-avatar
+     */
+    const avatarStorePath &#x3D; join(
+      __dirname,
+      &#x27;../../../&#x27;,
+      staticSrvDir,
+      &#x27;/user-avatar&#x27;,
+    );
+    return this._responseSrv.tryExecute(async () &#x3D;&gt; {
+      // 创建静态资源存储服务路径(文件夹)
+      if (!existsSync(avatarStorePath))
+        mkdirSync(avatarStorePath, { recursive: true }); // 递归参数，否则只能建一层
+      // 存储图片到静态服务目录
+      writeFileSync(join(avatarStorePath, avatarFileName), file.buffer);
+      // 写入图片存储路径到DB(userProfile)
+      const _userRepo &#x3D; {
+        [process.env.PIEMALL_APP]: &#x27;_appUserRepo&#x27;,
+        [process.env.PIEMALL_ADMIN]: &#x27;_adminRepo&#x27;,
+      }[client];
+      const userAvatarUrl &#x3D; &#x60;http://localhost:${serviceRort}/user-avatar/${avatarFileName}&#x60;;
+      await this[_userRepo].update(userId, {
+        avatar: userAvatarUrl,
+      });
+      return this._responseSrv.success({ userAvatarUrl });
+    });
+  }
+
+  /**
+   * 校验ticket并获取userProfile
+   * @param token
+   * @param userId
+   * @returns
+   */
+  public async getUserProfile(
+    token: string,
+    userId: string,
+  ): Promise&lt;ResponseBody&lt;any&gt;&gt; {
+    return this._responseSrv.tryExecute(async () &#x3D;&gt; {
+      // 验证session，只有二次登录，session中才有该字段
+      if (!userId) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+          detail: &#x27;身份认证失败, 您没有权限执行此操作&#x27;,
+        });
+      }
+      // 1. 验证token
+      const verifyRes &#x3D; await this._jwtSrv.verifyAccessToken(token);
+
+      if (!verifyRes) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+          detail: &#x27;身份认证失败, 您没有权限执行此操作&#x27;,
+        });
+      }
+      // 通过身份认证校验
+      const userProfile &#x3D; await this.getUserProfileById(userId);
+      if (!userProfile) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
+      }
+      return this._responseSrv.success(userProfile);
+    });
+  }
+  /**
+   *
+   * @param userId
+   * @returns userProfile
+   */
+  public async getUserProfileById(
+    userId: string,
+    // project: &#x27;B&#x27; | &#x27;C&#x27;,
+  ): Promise&lt;UserProfileInterface&gt; {
+    // return project &#x3D;&#x3D;&#x3D; &#x27;B&#x27;
+    //   ? this._adminRepo.findOne({ id: userId })
+    //   : this.__guestRepo.findOne({ id: userId });
+    return await this._adminRepo.findOne({ id: userId });
+  }
+
+  /**
+   * 登录
+   * @param {SignAdminDto} userProfile
+   * @returns ResponseBody
+   */
+  public async userLogin(
+    userProfile: SignDto,
+    session: Record&lt;string, any&gt;,
+  ): Promise&lt;ResponseBody&lt;any&gt;&gt; {
+    const { account, password } &#x3D; userProfile;
+    return this._responseSrv.tryExecute(async () &#x3D;&gt; {
+      const _userRepo &#x3D; {
+        [process.env.PIEMALL_APP]: &#x27;_guestRepo&#x27;,
+        [process.env.PIEMALL_ADMIN]: &#x27;_adminRepo&#x27;,
+      }[session.client];
+      const user &#x3D; await this[_userRepo].findOne({
+        account,
+        password,
+      });
+      if (!user) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
+      }
+      const { name, id } &#x3D; user;
+      session.userId &#x3D; id;
+      const access_token &#x3D; await this._jwtSrv.signAccessToken(id);
+      return this._responseSrv.success({
+        userProfile: { name },
+        access_token,
+      });
+    });
+  }
+
+  /**
+   * 注册
+   * @param {SignAdminDto} userProfile
+   * @returns ResponseBody
+   */
+  public userRegister(
+    userProfile: SignDto,
+    client: string,
+  ): Promise&lt;ResponseBody&lt;any&gt;&gt; {
+    return this._responseSrv.tryExecute(() &#x3D;&gt; {
+      const _userRepo &#x3D; {
+        [process.env.PIEMALL_APP]: this.__guestRepo,
+        [process.env.PIEMALL_ADMIN]: this._adminRepo,
+      }[client];
+      _userRepo;
+      const exeResult &#x3D; this.addUser(userProfile, _userRepo);
+      // 账号已存在
+      if (!exeResult) {
+        return this._responseSrv.error(ERROR_TYPE.ALREADY_EXIST, null);
+      }
+      // 添加账户成功
+      return this._responseSrv.success({ userProfile: exeResult });
+    });
+  }
+
+  /**
+   * 删除user session
+   * @param token
+   * @param session
+   * @returns ResponseBody
+   */
+  public async deleteUserSession(
+    token: string,
+    session: Record&lt;string, any&gt;,
+  ): Promise&lt;ResponseBody&lt;any&gt;&gt; {
+    return this._responseSrv.tryExecute(async () &#x3D;&gt; {
+      session.destroy();
+      return this._responseSrv.success({});
+    });
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> 匹配的结果 "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">无匹配的结果 "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'UserService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

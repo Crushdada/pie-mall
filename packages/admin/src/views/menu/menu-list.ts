@@ -7,7 +7,7 @@ export const moduleMenu = [
     moduleName: '用户管理',
     children: [
       { childPageName: '用户管理', path: '/user', component: 'User' },
-      { childPageName: '会员管理', path: '/vip', component: 'Vip' },
+      // { childPageName: '会员管理', path: '/vip', component: 'Vip' },
     ],
   },
   {
@@ -15,12 +15,6 @@ export const moduleMenu = [
     path: '/goods',
     children: [
       { childPageName: '商品列表', path: '/info', component: 'GoodsInfo' },
-      {
-        childPageName: '商品类目',
-        path: '/category',
-        component: 'GoodsCategory',
-      },
-      { childPageName: '商品上架', path: '/newGoods', component: 'NewGoods' },
     ],
   },
   {
@@ -78,6 +72,14 @@ export const moduleMenu = [
  * 初始页面(初始视图路由)
  */
 export const initComRoute = {
-  PagePath: '/user',
-  component: 'User',
+  PagePath: '/goods/info',
+  component: 'GoodsInfo',
 };
+
+/**
+ * 初始页面(初始视图路由)
+ */
+// export const initComRoute = {
+//   PagePath: '/user',
+//   component: 'User',
+// };

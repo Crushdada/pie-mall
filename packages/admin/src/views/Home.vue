@@ -12,8 +12,10 @@
         <!-- header -->
         <header-bar />
         <!-- body -->
-        <el-main>
-          <router-view></router-view>
+        <el-main class="bg-gray-100" style="padding: 10px">
+          <el-card class="p-2" shadow="hover">
+            <router-view></router-view>
+          </el-card>
         </el-main>
       </el-container>
     </el-container>
@@ -22,18 +24,21 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { uint8Array2JSON } from '@/utils/data-utils';
-import { addGoods } from '@/api/goods/add-goods';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { getUserProfile } from '@/api/user/get-user-profile';
 import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
 import HomeMenu from './menu/Menu.vue';
 import { initComRoute } from './menu/menu-list';
 import HeaderBar from '@/components/HeaderBar.vue';
+import { Ref } from 'vue-property-decorator';
+import { Button } from 'element-ui';
 @Component({
   components: { HomeMenu, HeaderBar },
 })
 export default class Home extends Vue {
+  @Ref('homeMenu') readonly homeMenu!: HomeMenu;
+  @Ref('loadFileBtn') readonly loadFileBtn!: Button;
+
   /** Computed*/
   // ===================================================================
   get userTicket(): string | undefined {
@@ -48,7 +53,7 @@ export default class Home extends Vue {
 
   mounted() {
     //暂定数据分析页面为初始页面
-    this.$refs.homeMenu.naviPage(initComRoute.PagePath, initComRoute.component);
+    this.homeMenu.naviPage(initComRoute.PagePath, initComRoute.component);
   }
   // Methods
   // ===================================================================
@@ -86,41 +91,6 @@ export default class Home extends Vue {
       });
       console.log(err);
     }
-  }
-
-  //读取Excel数据
-  uploadFile(file) {
-    const realFile = file.raw;
-    const reader = new FileReader();
-    reader.onload = async e => {
-      var data = e.target.result;
-      const rawData = new Uint8Array(data as any);
-      const processedData = uint8Array2JSON(rawData);
-      try {
-        // 数据规范化
-        const goodsData = processedData.map(el => {
-          if (!el.G_stock) {
-            el.G_stock = 100;
-          }
-          el.price = parseInt(el.price);
-          return el;
-        });
-        // 商品数据入库
-        const response: any = await addGoods(goodsData);
-        if (response.status !== 0) throw Error(JSON.stringify(response));
-        // notify;
-        this.$message({
-          showClose: true,
-          message: 'Added successfully',
-          type: 'success',
-          center: true,
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    reader.readAsArrayBuffer(realFile);
-    this.$refs.loadFileBtn.clearFiles();
   }
 }
 </script>

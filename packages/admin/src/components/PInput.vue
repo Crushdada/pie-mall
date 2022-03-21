@@ -1,5 +1,4 @@
 <template>
-  <!-- 坐标轴名称设置 -->
   <div
     class="p-input py-2.5 flex flex-col flex-nowrap"
     style="width: 355px; height: 80px"
@@ -25,7 +24,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop, Model } from 'vue-property-decorator';
+import { Prop, Model, Emit } from 'vue-property-decorator';
 
 @Component()
 export default class PInput extends Vue {
@@ -44,12 +43,11 @@ export default class PInput extends Vue {
   get placeholder() {
     return this.showLabel ? '' : this.label;
   }
-
+  @Emit('change')
   handleInput(value) {
-    this.$emit('change', value);
+    return value;
   }
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

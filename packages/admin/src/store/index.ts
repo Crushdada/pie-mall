@@ -4,6 +4,8 @@ import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { VuexRootState } from '@types/vuex/root-state.interface';
 import authModule from './auth.module';
 import userModule from './user.module';
+import goodsModule from './goods.module';
+
 import VuexPersistence from 'vuex-persist';
 
 Vue.use(Vuex);
@@ -15,6 +17,7 @@ const store = new Vuex.Store<VuexRootState>({
   modules: {
     [VuexModuleName.AUTH]: authModule,
     [VuexModuleName.USER]: userModule,
+    [VuexModuleName.GOODS]: goodsModule,
   },
   plugins: [vuexLocal.plugin],
 });
