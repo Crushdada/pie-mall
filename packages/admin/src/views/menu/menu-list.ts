@@ -15,7 +15,6 @@ export const moduleMenu = [
     path: '/goods',
     children: [
       { childPageName: '商品列表', path: '/info', component: 'GoodsInfo' },
-      { childPageName: '商品上架', path: '/newGoods', component: 'NewGoods' },
     ],
   },
   {

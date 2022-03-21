@@ -212,8 +212,12 @@
     <el-pagination
       class="mt-2"
       background
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
+      @size-change="
+        () => {
+          chunk(1);
+        }
+      "
+      @current-change="chunk"
       :current-page="currentPage"
       :page-sizes="chunkSizes"
       :page-size.sync="chunkSize"
@@ -233,7 +237,7 @@ import TableToolBar from '@/components/TableToolBar.vue';
 import { cloneDeep, slice } from 'lodash';
 import CreateRowDrawer from '@/components/CreateRowDrawer.vue';
 import { AddGoodForm } from './add-good-form';
-import { Drawer } from 'element-ui';
+import { Drawer, Table } from 'element-ui';
 import { Ref } from 'vue-property-decorator';
 import { isString } from '../../utils/getType';
 import { SET_GOODS_DATASET } from '@/store/goods.module/mutations/set-goods-dataset.mutation';
@@ -253,12 +257,13 @@ export default class GoodsInfo extends Vue {
   private chunkSize = 20; // 分页的每页行数
   private currentPage = 1; // 当前页数
   private selectedFilters = null; // 选中的筛选条件
-
+  private pageCounts = 1;
   // tool bar
   private tableData = []; // 筛选搜索后，实时展示的表格数据
   private searchKeyWord = { key: '' }; // 搜索关键词集合
   private showSearchBar = true; // 是否展示搜索栏
   private showTipBar = true; // 是否展示提示栏
+  private clickedSearchBtn = false;
   private categoryDict = {
     // 用于转换商品类别label
     headset: '耳机',
@@ -289,7 +294,7 @@ export default class GoodsInfo extends Vue {
   }
   // 是否搜索表格数据
   get dataSearched() {
-    return this.searchKeyWord.key;
+    return this.clickedSearchBtn;
   }
   // 是否筛选表格数据
   get dataScreened() {
@@ -331,10 +336,6 @@ export default class GoodsInfo extends Vue {
     return this.dataFiltered ? this.filteredTableData : this.goodsList;
   }
 
-  get pageCounts() {
-    return this.realTableData.length;
-  }
-
   get form() {
     return this.addGoodFormItems.reduce((dict, formItem) => {
       const key = formItem.modelName;
@@ -346,6 +347,8 @@ export default class GoodsInfo extends Vue {
 
   @Ref('drawer') readonly drawer: Drawer;
   @Ref('toolbar') readonly toolbar: TableToolBar;
+  @Ref('goodsTable') readonly goodsTable: Table;
+
   /** Hooks */
   // ===================================================================
   mounted() {
@@ -361,40 +364,35 @@ export default class GoodsInfo extends Vue {
     if (this.goodsList.length === 0) {
       this.getGoods();
     }
-    // 分片
-    this.chunk();
+    this.chunk(1);
   }
-  chunk() {
+  // 分片
+  chunk(currentPage) {
     this.loading = true;
-    // this.pageCounts = this.goodsList.length;
-    this.handleSizeChange(this.chunkSize);
-    this.loading = false;
-  }
-  handleSizeChange(chunkSize) {
-    this.handleCurrentChange(1);
-  }
-  handleCurrentChange(currentPage) {
     this.currentPage = currentPage;
     const startIndex = (currentPage - 1) * this.chunkSize;
     const endIndex = startIndex + this.chunkSize;
-    this.chunkTableData(this.realTableData, startIndex, endIndex);
-  }
-  chunkTableData(arr: Array, start: number, end: number) {
-    this.loading = true;
-    this.tableData = slice(arr, start, end);
+    this.tableData = slice(this.realTableData, startIndex, endIndex);
+    this.pageCounts = this.realTableData.length;
     this.loading = false;
   }
   // 搜索表格数据
   searchedTableData() {
-    if (!this.dataSearched) return;
-    this.handleCurrentChange(1);
+    if (!this.searchKeyWord?.key) return;
+    this.clickedSearchBtn = true;
+    this.chunk(1);
   }
   // 重置搜索
   handleResetSearch() {
     if (!this.dataSearched) return;
     this.$set(this.searchKeyWord, 'key', '');
-    this.handleSizeChange(this.chunkSize);
-    // this.pageCounts = this.goodsList.length;
+    this.chunk(1);
+    this.clickedSearchBtn = false;
+  }
+  // 筛选条件改变
+  filterChange(filterOpt) {
+    this.selectedFilters = filterOpt;
+    this.chunk(1);
   }
   // 展开新增数据的表单的抽屉组件
   handleShowDrawer() {
@@ -408,11 +406,6 @@ export default class GoodsInfo extends Vue {
   handleClearSelected() {
     this.goodsTable.clearSelection();
   }
-  // 筛选条件改变
-  filterChange(filterOpt) {
-    this.selectedFilters = filterOpt;
-    this.handleCurrentChange(1);
-  }
   // 商品图片预览
   beforeImgUpload(file) {
     const imgPreviewUrl = URL.createObjectURL(file);
@@ -421,7 +414,6 @@ export default class GoodsInfo extends Vue {
   }
   //读取Excel数据
   uploadFile(file) {
-    console.log('触发了读取excel数据');
     const realFile = file.raw;
     const reader = new FileReader();
     reader.onload = async e => {
@@ -549,8 +541,7 @@ export default class GoodsInfo extends Vue {
       }
       const { allGoods } = res.data;
       this.$stock.commit(SET_GOODS_DATASET, allGoods);
-      this.chunkTableData(this.realTableData, 0, this.chunkSize);
-      // this.pageCounts = this.goodsList.length;
+      this.chunk(1);
     } catch (err) {
       console.log(err);
     }
