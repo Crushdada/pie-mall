@@ -1,5 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Order } from '../../order/entities/order.entity';
 @Entity()
 export class Goods {
   @PrimaryGeneratedColumn('uuid')
@@ -19,4 +19,10 @@ export class Goods {
 
   @Column()
   G_stock: number;
+
+  /**
+   * 订单列表
+   */
+  @ManyToMany(() => Order, Order => Order.goodsList)
+  orderList: Order[];
 }
