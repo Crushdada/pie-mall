@@ -1,7 +1,16 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinTable,
+  ManyToMany,
+  CreateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { OrderStatus } from '../enums/order-status.enum';
 import { Guest } from '../../user/entities/guest.entity';
-import { Goods } from '../../goods/entities/goods.entity';
+import { CartGoodsMap } from '../../shop-cart/entities/cart-goods-map.entity';
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn('uuid')
@@ -19,13 +28,10 @@ export class Order {
   guest: Guest;
 
   /**
-   * 商品列表 与商品ManyToMany
+   * one to many 一个订单拥有多对商品<=>数目映射
    */
-  @ManyToMany(() => Goods, Goods => Goods.orderList, {
-    eager: true,
-  })
-  @JoinTable()
-  goodsList: Goods[];
+  @OneToMany(() => CartGoodsMap, cartGoodsMap => cartGoodsMap.order)
+  goods_maps: CartGoodsMap[];
 
   /**
    * 状态
@@ -40,11 +46,12 @@ export class Order {
   /**
    * 下单时间
    */
-  @Column({
-    name: 'datefield',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    precision: 6,
-  })
+  // @Column({
+  //   type: 'timestamp',
+  //   default: () => new Date().getTime(),
+  //   precision: 6,
+  // })
+
+  @CreateDateColumn()
   timeStamp: Date;
 }
