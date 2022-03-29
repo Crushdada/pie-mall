@@ -14,15 +14,9 @@ export class Goods {
   @Column()
   G_info?: string;
 
-  @Column()
+  @Column({ type: 'int' })
   G_price: number;
 
-  @Column()
+  @Column({ type: 'int' })
   G_stock: number;
-
-  /**
-   * 订单列表
-   */
-  @ManyToMany(() => Order, Order => Order.goodsList)
-  orderList: Order[];
 }

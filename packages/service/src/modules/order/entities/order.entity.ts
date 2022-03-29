@@ -43,6 +43,9 @@ export class Order {
   })
   status: OrderStatus;
 
+  @Column()
+  address: string;
+
   /**
    * 下单时间
    */

@@ -26,7 +26,12 @@ export class CartGoodsMap {
   /**
    * many to one 一种商品可以有多种映射记录
    */
-  @Column()
+  @ManyToOne(() => Goods, {
+    eager: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   good: Goods;
 
   /**
