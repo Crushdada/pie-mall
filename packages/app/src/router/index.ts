@@ -19,23 +19,23 @@ const routes: Array<RouteConfig> = [
     path: '/home',
     name: 'home',
     component: () => import('../views/Home.vue'),
-    children: [
-      {
-        path: '/personal/center',
-        name: 'PersonalCenter',
-        component: () => import('../views/PersonalCenter.vue'),
-        // children: menuRoutes,
-      },
-    ],
+    // children: [
+      // {
+      //   path: '/personal/center',
+      //   name: 'PersonalCenter',
+      //   component: () => import('../views/PersonalCenter.vue'),
+      //   // children: menuRoutes,
+      // },
+    // ],
   },
-  {
-    path: '/login',
-    name: 'login',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import('../views/LoginPage.vue'),
-  },
+  // {
+  //   path: '/login',
+  //   name: 'login',
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () => import('../views/LoginPage.vue'),
+  // },
 ];
 
 const router = new VueRouter({
