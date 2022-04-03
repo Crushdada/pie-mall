@@ -11,11 +11,12 @@ import TypeOrmModuleOptions from './config/interfaces/db.interface';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { checkClientMiddleware } from './middlewares/check-client.middleware';
 import { GoodsModule } from './modules/goods/goods.module';
+import { OrderModule } from './modules/order/order.module';
 import { ResponseModule } from './modules/response/response-module';
 import { UserModule } from './modules/user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-
+import { ShopCartModule } from './modules/shop-cart/shop-cart.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -54,8 +55,10 @@ import { join } from 'path';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', process.env.SSD),
     }),
+    ShopCartModule,
     GoodsModule,
     UserModule,
+    OrderModule,
     ResponseModule,
   ],
   // controllers: [AppController],

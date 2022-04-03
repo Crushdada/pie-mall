@@ -1,5 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Order } from '../../order/entities/order.entity';
 @Entity()
 export class Goods {
   @PrimaryGeneratedColumn('uuid')
@@ -14,9 +14,9 @@ export class Goods {
   @Column()
   G_info?: string;
 
-  @Column()
+  @Column({ type: 'int' })
   G_price: number;
 
-  @Column()
+  @Column({ type: 'int' })
   G_stock: number;
 }
