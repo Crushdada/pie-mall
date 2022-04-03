@@ -63,7 +63,7 @@ export default defineConfig({
   server: {
     host: 'localhost',
     open: true, // 是否自动打开浏览器
-    port: 8081,
+    port: parseInt(process.env.PORT) || 8081,
     proxy: {
       '/api': {
         changeOrigin: true,

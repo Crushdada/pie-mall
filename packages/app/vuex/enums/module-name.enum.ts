@@ -5,5 +5,7 @@
  * @enum {number}
  */
 export enum VuexModuleName {
-  FOO_BAR = "bar-bar",
+  AUTH = 'auth',
+  USER = 'user',
+  GOODS = 'goods',
 }

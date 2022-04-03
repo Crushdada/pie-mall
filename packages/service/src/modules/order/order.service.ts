@@ -32,7 +32,7 @@ export class OrderService {
     const { address } = payload;
     const tryExecution = async () => {
       const guest = await this._guestRepo.findOne({ id: guestId });
-      const goods_maps = await guest.shop_cart.goods_maps;
+      const goods_maps = await guest?.shop_cart?.goods_maps;
       // 默认初始订单状态为TO_PAY 待支付
       await this._orderRepo.create({ guest, goods_maps });
       // 保存新地址
