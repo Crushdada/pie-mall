@@ -2,9 +2,9 @@ $primary: #FF6A00;
 // $secondary: #1976d2;
 $gray-text:#B0B0B0;
 $bk-light:#F5F5F5;
-$goods-text:#424242;
+$dark-text:#424242;
 $bar-text:#333333;
-// $bk-dark:#F5F5F5;
+$bk-dark:#333333;
 
 /* 
  * 全局样式 👇 
@@ -16,7 +16,6 @@ $bar-text:#333333;
   font-family: 'MiSans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  color: $primary;
 }
 
 /* 
@@ -28,8 +27,8 @@ $--color-primary: $primary;
 
 // 滚动条
 ::-webkit-scrollbar {
-  width: 15px;
-  height: 15px;
+  width: 12px;
+  height: 12px;
   border-radius: 15px;
   -webkit-border-radius: 15px;
 }
@@ -46,7 +45,7 @@ $--color-primary: $primary;
   opacity: 0.2;
 }
 ::-webkit-scrollbar-thumb:horizontal {
-  width: 15px;
+  width: 12px;
   background-color: rgba(144, 147, 153, 0.3);
   border-radius: 15px;
   -webkit-border-radius: 15px;

@@ -162,7 +162,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Ref } from 'vue-property-decorator';
 import { getProfilesOfGuests } from '@/api/guest/get-guests';
 import { deleteGuests } from '@/api/guest/cancel-account';
 import { insertGuest } from '@/api/guest/insert-guest';
@@ -171,7 +171,6 @@ import { cloneDeep } from 'lodash';
 import CreateRowDrawer from '@/components/CreateRowDrawer.vue';
 import { AddUserForm } from './add-user-form';
 import { Drawer } from 'element-ui';
-import { Ref } from 'vue-property-decorator';
 import { isString } from '../../utils/getType';
 @Component({
   components: { TableToolBar, CreateRowDrawer },

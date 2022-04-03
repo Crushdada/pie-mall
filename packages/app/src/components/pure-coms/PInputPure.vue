@@ -14,7 +14,15 @@
         :disabled="disabled"
         :required="required"
         :clearable="clearable"
-      ></el-input>
+      >
+        <el-button
+          class="search-btn"
+          v-if="triggerBtn"
+          slot="append"
+          icon="el-icon-search"
+          @click="$emit('handleSearch')"
+        ></el-button>
+      </el-input>
     </form>
   </div>
 </template>
@@ -36,6 +44,7 @@ export default class PInputPure extends Vue {
   @Prop({ type: Boolean, default: false }) readonly showPassword!: boolean; // 是否显示密码
   @Prop({ type: Boolean, default: false }) readonly required!: boolean;
   @Prop({ type: Boolean, default: true }) readonly clearable!: boolean;
+  @Prop({ type: Boolean, default: false }) readonly triggerBtn!: boolean;
 
   @Model('change', { type: String }) readonly value!: string;
 
@@ -47,7 +56,12 @@ export default class PInputPure extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/styles/base.scss';
+
 ::v-deep .el-input__inner {
   padding-right: 0 !important;
+}
+.search-btn:hover {
+  color: $primary !important;
 }
 </style>
