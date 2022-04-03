@@ -1,7 +1,7 @@
 <template>
-  <el-header
+  <div
     class="flex flex-row justify-between items-center"
-    style="height: 60px"
+    style="height: 100px"
   >
     <!-- logo -->
     <img
@@ -29,7 +29,7 @@
       @handleSearch="handleSearch"
       triggerBtn
     />
-  </el-header>
+  </div>
 </template>
 
 <script lang="ts">

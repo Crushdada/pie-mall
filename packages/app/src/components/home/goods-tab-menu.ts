@@ -1,5 +1,5 @@
 /**
- * HomePage 商城管理模块列表
+ * Home 商品分区tab栏
  * @export goods-tab
  */
 export const goodsTabMenu = [

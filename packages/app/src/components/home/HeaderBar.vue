@@ -3,12 +3,7 @@
     class="header flex flex-row justify-between items-center"
     style="padding: 0 15%; text-align: right"
   >
-    <!-- <img
-      class="flex w-10 object-cover object-center"
-      src="@/assets/pie-app-logo.svg"
-      alt="pie mall logo"
-    /> -->
-    <a href="//localhost:8080/" class="link-hover">派 · 在线数码商城</a>
+    <a href="//localhost:8080/" class="link-hover">派 · 数码产品在线商城</a>
     <div class="flex flex-row flex-nowrap items-center">
       <!-- 用户名 + 个人中心菜单 -->
       <el-dropdown v-if="signed" :show-timeout="20">

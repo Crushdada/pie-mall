@@ -23,14 +23,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Ref } from 'vue-property-decorator';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { getUserProfile } from '@/api/user/get-user-profile';
 import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
 import HomeMenu from './menu/Menu.vue';
 import { initComRoute } from './menu/menu-list';
 import HeaderBar from '@/components/HeaderBar.vue';
-import { Ref } from 'vue-property-decorator';
 import { Button } from 'element-ui';
 @Component({
   components: { HomeMenu, HeaderBar },

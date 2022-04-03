@@ -228,7 +228,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Ref } from 'vue-property-decorator';
 import { getAllGoods } from '@/api/goods/get-goods';
 import { deleteGoods } from '@/api/goods/delete-goods';
 import { insertGood } from '@/api/goods/insert-good';
@@ -238,7 +238,6 @@ import { cloneDeep, slice } from 'lodash';
 import CreateRowDrawer from '@/components/CreateRowDrawer.vue';
 import { AddGoodForm } from './add-good-form';
 import { Drawer, Table } from 'element-ui';
-import { Ref } from 'vue-property-decorator';
 import { isString } from '../../utils/getType';
 import { SET_GOODS_DATASET } from '@/store/goods.module/mutations/set-goods-dataset.mutation';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
