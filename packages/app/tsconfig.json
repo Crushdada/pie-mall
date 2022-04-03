@@ -45,7 +45,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "src/utils/data-utils.js",
+    "src/utils/data-utils.js", "src/components/home/goods-tab-menuts",
   ],
   "exclude": [
     "node_modules",
