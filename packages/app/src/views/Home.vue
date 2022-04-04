@@ -4,24 +4,21 @@
       <!-- header -->
       <header-bar class="full-width" style="height: 40px; background-color: " />
       <!-- body -->
-      <main class="bg-gray-100">
-        <section class="main-section bg-white" style="padding: 0 184px">
+      <main class="bg-gray-100 pb-10">
+        <section class="main-section bg-white" style="padding: 0 160px">
           <!-- 顶部tab栏 + 搜索框 -->
-          <goods-tab-bar class="tab-header"></goods-tab-bar>
+          <goods-tab-bar class="tab-header" />
           <!-- 轮播图 -->
-          <home-caroucel></home-caroucel>
+          <home-caroucel />
           <!-- 个性化推荐(图片组) -->
-          <div class="perosonal-reco"></div>
+          <personal-reco-goods class="perosonal-reco pt-2 pb-8" />
         </section>
         <!-- 分区商品列表 -->
-        <div class="good-zones"></div>
+        <good-zones style="padding: 0 160px" />
       </main>
       <!-- Footer -->
-      <footer
-        class="text-center align-middle inline-block py-2"
-        style="line-height: 30px"
-      >
-        🌏 © 2022 Piemall-background , code by Crushdada - Beijing
+      <footer class="text-center py-2">
+        🌏 © 2022 Pie-Mall , code by Crushdada - Beijing
       </footer>
     </el-container>
   </div>
@@ -35,9 +32,17 @@ import HeaderBar from '@/components/home/HeaderBar.vue';
 import { Button } from 'element-ui';
 import GoodsTabBar from '../components/home/GoodsTabBar.vue';
 import HomeCaroucel from '../components/home/HomeCarousel.vue';
+import PersonalRecoGoods from '../components/home/PersonalRecoGoods.vue';
+import GoodZones from '../components/home/GoodZones.vue';
 
 @Component({
-  components: { HeaderBar, GoodsTabBar, HomeCaroucel },
+  components: {
+    HeaderBar,
+    GoodsTabBar,
+    HomeCaroucel,
+    PersonalRecoGoods,
+    GoodZones,
+  },
 })
 export default class Home extends Vue {
   /** Computed*/

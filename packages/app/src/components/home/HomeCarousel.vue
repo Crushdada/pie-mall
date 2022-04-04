@@ -2,7 +2,7 @@
   <div>
     <el-carousel class="carousel-thumb" trigger="click" height="460px">
       <el-carousel-item v-for="(item, idx) in goodsCarouselList" :key="idx">
-        <h3 class="small">{{ item.thumb }}</h3>
+        <el-image class="rounded-md" :src="item.thumb"> </el-image>
       </el-carousel-item>
     </el-carousel>
   </div>
