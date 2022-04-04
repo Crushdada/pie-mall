@@ -1,7 +1,7 @@
 <template>
   <el-header
     class="header flex flex-row justify-between items-center"
-    style="padding: 0 15%; text-align: right"
+    style="text-align: right"
   >
     <a href="//localhost:8080/" class="link-hover">派 · 数码产品在线商城</a>
     <div class="flex flex-row flex-nowrap items-center">
