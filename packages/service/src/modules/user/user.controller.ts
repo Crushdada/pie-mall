@@ -101,8 +101,7 @@ export class UserController {
     @Headers('userTicket') token: string,
     @Session() session: Record<string, any>,
   ) {
-    const { userId } = session;
-    return await this._userSrv.getUserProfile(token, userId);
+    return await this._userSrv.getUserProfile(token, session);
   }
 
   @Delete('userSession')

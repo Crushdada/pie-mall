@@ -5,7 +5,7 @@
   >
     <!-- logo -->
     <img
-      class="flex object-cover object-center cursor-pointer"
+      class="object-cover object-center cursor-pointer"
       style="width: 56px; height: 56px"
       src="@/assets/pie-app-logo.svg"
       alt="pie mall logo"
