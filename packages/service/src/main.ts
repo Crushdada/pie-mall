@@ -7,7 +7,10 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: { origin: 'http://localhost:8081', credentials: true },
+    cors: {
+      origin: ['http://localhost:8081', 'http://localhost:8080'],
+      credentials: true,
+    },
   });
 
   // auto validate dtos

@@ -9,5 +9,5 @@ export const USER_PROFILE: UserProfileInterface = {
   avatar: '',
   account: '',
   password: '',
-  role: 'admin',
+  role: 'guest',
 };

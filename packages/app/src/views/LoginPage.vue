@@ -1,11 +1,12 @@
 <template>
   <div class="loginpage flex flex-row flex-nowrap">
     <!-- Left Thumb -->
-    <div class="login-thumb h-full" style="width: 24.5vw; height: 100vh">
+    <div class="login-thumb h-full">
       <img
         class="h-full object-cover object-center"
         alt="login page thumb"
-        src="@/assets/loginThumb.jpg"
+        style="width: 24.5vw; height: 100vh"
+        src="https://cdn.web-global.fds.api.mi-img.com/mcfe--mi-account/static/static/media/banner.5b1efcd8.jpg"
       />
     </div>
     <!-- Right Login Section -->
@@ -15,7 +16,7 @@
         <div class="float-left flex flex-row flex-nowrap items-center">
           <img
             class="w-10 mr-3 object-cover object-center"
-            src="@/assets/pie-mall-bk-logo.png"
+            src="@/assets/pie-app-logo.svg"
             alt="pie mall logo"
             style="display: inline-block"
           />
@@ -70,6 +71,20 @@
               desc="Enter your password"
               showPassword
             />
+            <el-checkbox
+              v-model="checkedIn"
+              class="privacy-policy"
+              style="width: 355px"
+            >
+              Agreed to our
+              <a style="color: #333" class="cursor-pointer break-all">
+                User Agreement
+              </a>
+              and
+              <a style="color: #333" class="cursor-pointer break-all">
+                Privacy Policy </a
+              >.
+            </el-checkbox>
             <span class="mt-2 mb-6 text-xs" style="color: #f04645">
               {{ verifyFailedTip }}
             </span>
@@ -110,6 +125,20 @@
               desc="Enter your password"
               showPassword
             />
+            <el-checkbox
+              v-model="checkedUp"
+              class="privacy-policy"
+              style="width: 355px; height: fix-content"
+            >
+              Agreed to our
+              <span style="color: #333" class="cursor-pointer break-all">
+                User Agreement
+              </span>
+              and
+              <span style="color: #333" class="cursor-pointer break-all">
+                Privacy Policy </span
+              >.
+            </el-checkbox>
             <span class="mt-2 mb-6 text-xs" style="color: #f04645">
               {{ verifyFailedTip }}
             </span>
@@ -125,10 +154,10 @@
         </el-tabs>
       </div>
       <!-- Footer -->
-      <div class="login-footer w-15 text-center">
-        🌏 © 2022 Pie-Mall-Background , code by Crushdada - Beijing , just send me an
+      <footer class="text-center py-2">
+        🌏 © 2022 Pie-Mall , code by Crushdada - Beijing , just send me an
         offer, Please.
-      </div>
+      </footer>
     </div>
   </div>
 </template>
@@ -140,10 +169,11 @@ import { checkSpecialCharacter } from '@/utils/string-validation';
 import { ERROR_TYPE } from '../../../types/response/error-type.enum';
 import { SET_AUTH_TICKET } from '@/store/auth.module/mutations/set-auth-ticket.mutation';
 import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
+import { USER_SIGNED } from '@/store/auth.module/mutations/set-user-signed-state.mutation';
 
 @Component({
   components: {
-    PInput: () => import('@/components/PInput.vue'),
+    PInput: () => import('@/components/pure-coms/PInput.vue'),
   },
 })
 export default class LoginPage extends Vue {
@@ -153,6 +183,8 @@ export default class LoginPage extends Vue {
   private passWord = '';
   private activeTab = 'Sign in';
   private verifyFailedTip = '';
+  private checkedIn = false;
+  private checkedUp = false;
 
   /** Methods */
   // ===================================================================
@@ -162,6 +194,13 @@ export default class LoginPage extends Vue {
   }
 
   handleSubmit() {
+    // 是否同意用户隐私协议
+    const checkState =
+      this.activeTab === 'Sign in' ? this.checkedIn : this.checkedUp;
+    if (!checkState) {
+      this.verifyFailedTip = '🧐Agree to Terms and Conditions first';
+      return;
+    }
     // 用户输入合法性校验
     if (!this.accountNumber || !this.passWord) {
       this.verifyFailedTip = '请输入账号密码';
@@ -184,6 +223,8 @@ export default class LoginPage extends Vue {
     // 用户信息前端持久化
     const { userProfile, access_token: userTicket } = data;
     this.$stock.commit(SET_USER_PROFILE, userProfile);
+    // 修改登录状态
+    this.$stock.commit(USER_SIGNED, userTicket);
     // 存储ticket
     this.$stock.commit(SET_AUTH_TICKET, userTicket);
     // 路由跳转
@@ -254,5 +295,8 @@ export default class LoginPage extends Vue {
 .login-card {
   padding: 40px 45px;
   box-shadow: 0 20px 50px 0 hsl(0deg 0% 24% / 10%);
+}
+.privacy-policy {
+  color: #838383;
 }
 </style>

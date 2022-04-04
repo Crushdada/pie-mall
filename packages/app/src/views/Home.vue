@@ -2,7 +2,7 @@
   <div class="home">
     <el-container class="h-screen" direction="vertical">
       <!-- header -->
-      <header-bar class="full-width" style="height: 40px; background-color: " />
+      <header-bar class="full-width" style="height: 40px; padding: 0 160px" />
       <!-- body -->
       <main class="bg-gray-100 pb-10">
         <section class="main-section bg-white" style="padding: 0 160px">
@@ -18,7 +18,7 @@
       </main>
       <!-- Footer -->
       <footer class="text-center py-2">
-        🌏 © 2022 Pie-Mall , code by Crushdada - Beijing
+        🌏 © 2022 Pie-Mall , code by Crushdada - Beijing , just send me an offer, Please.
       </footer>
     </el-container>
   </div>
@@ -34,6 +34,8 @@ import GoodsTabBar from '../components/home/GoodsTabBar.vue';
 import HomeCaroucel from '../components/home/HomeCarousel.vue';
 import PersonalRecoGoods from '../components/home/PersonalRecoGoods.vue';
 import GoodZones from '../components/home/GoodZones.vue';
+import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
+import { USER_SIGNED } from '@/store/auth.module/mutations/set-user-signed-state.mutation';
 
 @Component({
   components: {
@@ -53,12 +55,34 @@ export default class Home extends Vue {
 
   /** Hooks */
   // ===================================================================
-  mounted() {
-    //暂定数据分析页面为初始页面
-    // this.homeMenu.naviPage(initComRoute.PagePath, initComRoute.component);
+  beforeMount() {
+    this.checkTicket();
   }
   // Methods
   // ===================================================================
+  /**
+   * 身份认证 & 获取用户信息
+   * @param { string } store.userTicket
+   */
+  async checkTicket() {
+    // 持久化用户登录状态
+    if (this.userTicket) {
+      try {
+        const res = await getUserProfile(this.userTicket);
+        // 认证失败
+        if (res.status !== 0) {
+          throw Error('🙈登录状态失效，请重新登录');
+        }
+        // 认证成功
+        const { data } = res;
+        // 更新用户信息,用户登录
+        this.$stock.commit(SET_USER_PROFILE, data);
+        this.$stock.commit(USER_SIGNED);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>

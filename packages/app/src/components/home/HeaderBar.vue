@@ -13,10 +13,10 @@
           style="width: 120px; height: 40px; font-size: 12px"
           @click="() => $router.push({ name: 'PersonalCenter' })"
         >
-          <a class="link-hover pl-2 pr-4">
+          <a class="link-hover px-2">
             {{ userName || '游客2233' }}
           </a>
-          <i class="el-icon-arrow-right" style="font-size: 14px"></i>
+          <i class="el-icon-caret-bottom" style="font-size: 14px"></i>
         </a>
         <!-- 菜单部分 -->
         <el-dropdown-menu slot="dropdown">
@@ -38,9 +38,7 @@
         </el-dropdown-menu>
       </el-dropdown>
       <!-- 登录 -->
-      <a v-else href="//localhost:8080/messages" class="link-hover px-2">
-        登录
-      </a>
+      <a v-else href="//localhost:8080/login" class="link-hover px-2"> 登录 </a>
       <el-divider v-if="!signed" direction="vertical"></el-divider>
       <!-- 消息通知 -->
       <a href="//localhost:8080/messages" class="link-hover px-2">消息通知</a>
@@ -83,6 +81,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { signOut } from '@/api/user/sign-out';
 import { DELETE_AUTH_TICKET } from '@/store/auth.module/mutations/delete-auth-ticket.mutation';
+import { USER_SIGNED_OUT } from '@/store/auth.module/mutations/set-user-signed-state.mutation';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 
 @Component()
@@ -93,7 +92,7 @@ export default class HeaderBar extends Vue {
     return 3;
   }
   get signed() {
-    return true;
+    return this.$store.state[VuexModuleName.AUTH].signed;
   }
   get userName() {
     return this.$store.state[VuexModuleName.USER].userProfile.name || 'REN.';
@@ -123,9 +122,7 @@ export default class HeaderBar extends Vue {
     // 成功退出登录
     // 删除客户端存储的ticket，更改登录状态
     this.$stock.commit(DELETE_AUTH_TICKET);
-    this.$router.replace({
-      name: 'login',
-    });
+    this.$stock.commit(USER_SIGNED_OUT);
   }
 }
 </script>

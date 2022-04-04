@@ -18,9 +18,9 @@ export class UserService {
     @InjectRepository(Admin)
     private readonly _adminRepo: Repository<Admin>,
     @InjectRepository(Guest)
-    private readonly __guestRepo: Repository<Guest>,
+    private readonly _guestRepo: Repository<Guest>,
     @InjectRepository(ReceivingAddress)
-    private readonly __guestAddressRepo: Repository<ReceivingAddress>,
+    private readonly _guestAddressRepo: Repository<ReceivingAddress>,
     private readonly _responseSrv: ResponseService,
     private readonly _jwtSrv: JwtAuthService,
     private readonly _staticResourceSrv: StaticResourceService,
@@ -33,14 +33,14 @@ export class UserService {
    */
   public async addGuest(userProfile: Partial<UserProfileInterface>) {
     return this._responseSrv.tryExecute(async () => {
-      const guest = await this.addUser(userProfile, this.__guestRepo);
+      const guest = await this.addUser(userProfile, this._guestRepo);
       // 账号已存在
       if (!guest) {
         return this._responseSrv.error(ERROR_TYPE.ALREADY_EXIST, null);
       }
       const { address } = userProfile;
       // userId 作为地址表的外键
-      const exeResult = await this.__guestAddressRepo.insert({
+      const exeResult = await this._guestAddressRepo.insert({
         address,
         user: guest,
       });
@@ -80,7 +80,7 @@ export class UserService {
   deleteGuestsByIds(ids: string[]) {
     return this._responseSrv.tryExecute(async () => {
       console.log(ids);
-      const exeResult = await this.__guestRepo.delete(ids);
+      const exeResult = await this._guestRepo.delete(ids);
       console.log(exeResult);
       return this._responseSrv.success({});
     });
@@ -92,7 +92,7 @@ export class UserService {
    */
   async getProfilesOfGuests() {
     return this._responseSrv.tryExecute(async () => {
-      const guests = await this.__guestRepo.find({
+      const guests = await this._guestRepo.find({
         select: ['id', 'account', 'name', 'role'],
         relations: ['receiving_address'],
       });
@@ -167,9 +167,10 @@ export class UserService {
    */
   public async getUserProfile(
     token: string,
-    userId: string,
+    session: Record<string, any>,
   ): Promise<ResponseBody<any>> {
     return this._responseSrv.tryExecute(async () => {
+      const { userId, client } = session;
       // 验证session，只有二次登录，session中才有该字段
       if (!userId) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
@@ -185,7 +186,14 @@ export class UserService {
         });
       }
       // 通过身份认证校验
-      const userProfile = await this.getUserProfileById(userId);
+      const _userRepo = {
+        [process.env.PIEMALL_APP]: '_guestRepo',
+        [process.env.PIEMALL_ADMIN]: '_adminRepo',
+      }[client];
+      const userProfile = await this.getUserProfileById(
+        userId,
+        this[_userRepo],
+      );
       if (!userProfile) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }
@@ -199,12 +207,9 @@ export class UserService {
    */
   public async getUserProfileById(
     userId: string,
-    // project: 'B' | 'C',
+    repo: Repository<any>,
   ): Promise<UserProfileInterface> {
-    // return project === 'B'
-    //   ? this._adminRepo.findOne({ id: userId })
-    //   : this.__guestRepo.findOne({ id: userId });
-    return await this._adminRepo.findOne({ id: userId });
+    return await repo.findOne({ id: userId });
   }
 
   /**
@@ -218,11 +223,11 @@ export class UserService {
   ): Promise<ResponseBody<any>> {
     const { account, password } = userProfile;
     return this._responseSrv.tryExecute(async () => {
-      const _userRepo = {
+      const _guestRepo = {
         [process.env.PIEMALL_APP]: '_guestRepo',
         [process.env.PIEMALL_ADMIN]: '_adminRepo',
       }[session.client];
-      const user = await this[_userRepo].findOne({
+      const user = await this[_guestRepo].findOne({
         account,
         password,
       });
@@ -250,7 +255,7 @@ export class UserService {
   ): Promise<ResponseBody<any>> {
     return this._responseSrv.tryExecute(() => {
       const _userRepo = {
-        [process.env.PIEMALL_APP]: this.__guestRepo,
+        [process.env.PIEMALL_APP]: this._guestRepo,
         [process.env.PIEMALL_ADMIN]: this._adminRepo,
       }[client];
       _userRepo;
