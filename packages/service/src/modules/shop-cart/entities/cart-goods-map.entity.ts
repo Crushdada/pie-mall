@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { ShopCart } from './shop-cart.entity';
 import { Goods } from '../../goods/entities/goods.entity';
 import { Order } from '../../order/entities/order.entity';
@@ -22,6 +17,12 @@ export class CartGoodsMap {
     orphanedRowAction: 'delete',
   })
   cart: ShopCart;
+
+  /**
+   * 商品购买数目
+   */
+  @Column({ type: 'int' })
+  quanity: number;
 
   /**
    * many to one 一种商品可以有多种映射记录
@@ -44,10 +45,4 @@ export class CartGoodsMap {
     orphanedRowAction: 'delete',
   })
   order: Order;
-
-  /**
-   * 商品购买数目
-   */
-  @Column({ type: 'int' })
-  quanity: number;
 }

@@ -238,7 +238,7 @@ import { cloneDeep, slice } from 'lodash';
 import CreateRowDrawer from '@/components/CreateRowDrawer.vue';
 import { AddGoodForm } from './add-good-form';
 import { Drawer, Table } from 'element-ui';
-import { isString } from '../../utils/getType';
+import { isString } from '@/utils/getType';
 import { SET_GOODS_DATASET } from '@/store/goods.module/mutations/set-goods-dataset.mutation';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { uint8Array2JSON } from '@/utils/data-utils';

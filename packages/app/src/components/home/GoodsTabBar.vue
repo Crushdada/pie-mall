@@ -13,7 +13,7 @@
     <!-- tab -->
     <div class="" @click="handleNaviGoodsZone">
       <a
-        class="tab-item w-10 py-5 px-2.5 cursor-pointer"
+        class="w-10 py-5 px-2.5"
         v-for="(menuItem, idx) in goodsTabMenu"
         :key="idx"
         :data-index="idx"
@@ -72,9 +72,4 @@ export default class GoodsTabBar extends Vue {
 </script>
 <style lang="scss" scoped>
 @import '@/styles/base.scss';
-.tab-item {
-  &:hover {
-    color: $primary;
-  }
-}
 </style>

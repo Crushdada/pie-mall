@@ -1,34 +1,53 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Session,
+} from '@nestjs/common';
 import { ShopCartService } from './shop-cart.service';
 import { CreateShopCartDto } from './dto/create-shop-cart.dto';
 import { UpdateShopCartDto } from './dto/update-shop-cart.dto';
 
 @Controller('shop-cart')
 export class ShopCartController {
-  constructor(private readonly shopCartService: ShopCartService) {}
+  constructor(private readonly _shopCartSrv: ShopCartService) {}
 
   @Post()
   create(@Body() createShopCartDto: CreateShopCartDto) {
-    return this.shopCartService.create(createShopCartDto);
+    return this._shopCartSrv.create(createShopCartDto);
   }
 
   @Get()
   findAll() {
-    return this.shopCartService.findAll();
+    return this._shopCartSrv.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.shopCartService.findOne(+id);
+    return this._shopCartSrv.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateShopCartDto: UpdateShopCartDto) {
-    return this.shopCartService.update(+id, updateShopCartDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateShopCartDto: UpdateShopCartDto,
+  ) {
+    return this._shopCartSrv.update(+id, updateShopCartDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.shopCartService.remove(+id);
+  deleteById(@Session() session, @Param('id') id: string) {
+    const { shopcartId } = session.userProfile;
+    return this._shopCartSrv.delete(shopcartId, id);
+  }
+
+  @Delete()
+  deleteByIds(@Session() session, @Body() delIds: Array<string>) {
+    const { shopcartId } = session.userProfile;
+    return this._shopCartSrv.delete(shopcartId, delIds);
   }
 }

@@ -12,6 +12,6 @@ export class ShopCart {
   /**
    * one to many 一个订单拥有多对商品<=>数目映射
    */
-  @OneToMany(() => CartGoodsMap, CartGoodsMap => CartGoodsMap.order)
+  @OneToMany(() => CartGoodsMap, CartGoodsMap => CartGoodsMap.cart)
   goods_maps: CartGoodsMap[];
 }

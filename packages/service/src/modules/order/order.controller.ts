@@ -8,7 +8,8 @@ export class OrderController {
 
   @Post()
   create(@Body() createOrderDto, @Session() session: Record<string, any>) {
-    return this.orderService.create(session.userId, createOrderDto);
+    const { userId } = session.userProfile;
+    return this.orderService.create(userId, createOrderDto);
   }
 
   @Get()

@@ -20,13 +20,29 @@ const routes: Array<RouteConfig> = [
     name: 'home',
     component: () => import('../views/Home.vue'),
     // children: [
-      // {
-      //   path: '/personal/center',
-      //   name: 'PersonalCenter',
-      //   component: () => import('../views/PersonalCenter.vue'),
-      //   // children: menuRoutes,
-      // },
+    // {
+    //   path: '/personal/center',
+    //   name: 'PersonalCenter',
+    //   component: () => import('../views/PersonalCenter.vue'),
+    //   // children: menuRoutes,
+    // },
     // ],
+  },
+  {
+    path: '/billing',
+    name: 'billing-page',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import('../views/BillingPage.vue'),
+  },
+  {
+    path: '/shop-cart',
+    name: 'shop-cart',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import('../views/ShopCart.vue'),
   },
   {
     path: '/login',
