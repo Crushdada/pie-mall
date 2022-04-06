@@ -24,7 +24,9 @@
         <div class="right-tab text-xs">
           <PersonalDropdownMenu style="color: #757575" />
           <span class="divider">|</span>
-          <a class="pl-4" href="">我的订单</a>
+          <a class="pl-4" @click="() => $router.push({ name: 'order' })"
+            >我的订单</a
+          >
         </div>
       </el-header>
       <!-- body -->
@@ -73,7 +75,7 @@
               </template>
               <template slot-scope="scope">
                 <div class="pl-14">
-                  <a href="`goodsPage/${scope.row.id}`">
+                  <a @click="() => $router.push({ path: `goods/${scope.row.id}` })">
                     {{ scope.row.name }}
                   </a>
                 </div>
@@ -148,7 +150,9 @@
         <div class="total-bar sticky bottom-0 text-sm bg-white my-4 z-10">
           <div class="flex flex-row justify-between items-center">
             <div class="inline-block pl-5" style="color: #757575">
-              <a class="pr-2">继续购物</a>
+              <a @click="() => $router.push({ name: 'home' })" class="pr-2"
+                >继续购物</a
+              >
               <el-divider direction="vertical"></el-divider>
               <span class="pl-1">
                 已选择

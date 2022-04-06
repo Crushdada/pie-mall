@@ -3,18 +3,32 @@
     class="header flex flex-row justify-between items-center"
     style="text-align: right"
   >
-    <a href="//localhost:8080/" class="link-hover">派 · 数码产品在线商城</a>
+    <a href="" class="link-hover">派 · 数码产品在线商城</a>
     <div class="flex flex-row flex-nowrap items-center">
       <!-- 用户名 + 个人中心菜单 -->
-      <PersonalDropdownMenu v-if="signed" style="color: #B0B0B0"/>
+      <PersonalDropdownMenu v-if="signed" style="color: #b0b0b0" />
       <!-- 登录 -->
-      <a v-else href="//localhost:8080/login" class="link-hover px-2"> 登录 </a>
+      <a
+        v-else
+        @click="() => $router.push({ name: 'login' })"
+        class="link-hover px-2"
+      >
+        登录
+      </a>
       <el-divider v-if="!signed" direction="vertical"></el-divider>
       <!-- 消息通知 -->
-      <a href="//localhost:8080/messages" class="link-hover px-2">消息通知</a>
+      <a
+        @click="() => $router.push({ name: 'messages' })"
+        class="link-hover px-2"
+        >消息通知</a
+      >
       <!-- 我的订单 -->
       <el-divider v-if="signed" direction="vertical"></el-divider>
-      <a v-if="signed" href="//localhost:8080/messages" class="link-hover px-2">
+      <a
+        v-if="signed"
+        @click="() => $router.push({ name: 'order' })"
+        class="link-hover px-2"
+      >
         我的订单
       </a>
       <!-- 购物车+下拉菜单 -->
@@ -43,10 +57,7 @@
                   src="//cdn.cnbj1.fds.api.mi-img.com/mi-mall/18d2099cb0b05bbd23cb1915dfc9d0d6.jpg?thumb=1&w=250&h=250&f=webp&q=90"
                 >
                 </el-image>
-                <a
-                  class="h-8"
-                  style="width: 100px"
-                >
+                <a class="h-8" style="width: 100px">
                   Redmi K50 Pro 8GB+128GB墨
                 </a>
                 <span>2999元 × 1</span>
@@ -94,11 +105,10 @@ export default class HeaderBar extends Vue {
   get signed() {
     return this.$store.state[VuexModuleName.AUTH].signed;
   }
- 
+
   handleOpenCart() {
     // 尝试跳转到购物车，如果没登录就跳转到登录
   }
-
 }
 </script>
 <style lang="scss" scoped>
@@ -125,6 +135,5 @@ export default class HeaderBar extends Vue {
       color: $primary;
     }
   }
-
 }
 </style>
