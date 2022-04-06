@@ -28,72 +28,104 @@
         </div>
       </el-header>
       <!-- body -->
-      <main class="bg-gray-100 pb-10" style="padding: 0 160px">
+      <main class="bg-gray-100 relative pb-10" style="padding: 0 160px">
         <el-card class="main-section bg-white mt-8">
           <el-table
             ref="goodsTable"
             tooltip-effect="dark"
             row-key="id"
             v-loading="loading"
-            :cell-style="{ padding: '5px 3px' }"
+            :cell-style="{ padding: '5px 3px', 'font-size': '18px' }"
             :header-cell-style="{
-              padding: '8px 3px',
+              padding: '20px 3px',
               color: '#424242',
             }"
             :data="tableData"
             @selection-change="handleSelectionChange"
           >
             <!-- 复选框 -->
-            <el-table-column type="selection" width="50" align="center">
+            <el-table-column
+              label="全选"
+              type="selection"
+              width="50"
+              align="center"
+            >
             </el-table-column>
             <!-- 样图 -->
             <el-table-column
               prop="thumb"
               label="样图"
-              width="120"
+              width="100"
               align="center"
             >
               <template slot-scope="scope">
                 <el-image
                   lazy
-                  class="h-10 w-10"
+                  style="width: 80px; height: 80px"
                   :src="scope.row.thumb"
                 ></el-image>
               </template>
             </el-table-column>
             <!-- 名称 -->
-            <el-table-column
-              prop="name"
-              label="名称"
-              width="350"
-              align="center"
-            >
+            <el-table-column prop="name" label="名称" width="380" align="left">
+              <template slot="header">
+                <span class="pl-14">商品名称</span>
+              </template>
               <template slot-scope="scope">
-                <a href="`goodsPage/${scope.row.id}`"></a>
+                <div class="pl-14">
+                  <a href="`goodsPage/${scope.row.id}`">
+                    {{ scope.row.name }}
+                  </a>
+                </div>
               </template>
             </el-table-column>
             <!-- 单价 -->
             <el-table-column
               prop="price"
               label="单价"
-              width="80"
+              width="140"
               show-overflow-tooltip
               align="center"
-            ></el-table-column>
+            >
+              <template slot-scope="scope">
+                <span class="text-base"> {{ scope.row.price }}元 </span>
+              </template>
+            </el-table-column>
             <!-- 数量 -->
             <el-table-column
               prop="quantity"
               label="数量"
-              width="80"
+              width="180"
               align="center"
-            ></el-table-column>
+            >
+              <template slot-scope="scope">
+                <el-input-number
+                  v-model="scope.row.quantity"
+                  @change="
+                    (curVal, oldVal) => {
+                      debounceQuantityChange(curVal, oldVal, scope.row);
+                    }
+                  "
+                  :min="1"
+                  :max="100"
+                  size="mini"
+                  label="购买数量"
+                ></el-input-number>
+              </template>
+            </el-table-column>
             <!-- 小计 -->
             <el-table-column
               prop="subTotal"
               label="小计"
-              width="80"
+              width="160"
               align="center"
-            ></el-table-column>
+            >
+              <template slot-scope="scope">
+                <span class="text-base primary">
+                  {{ scope.row.quantity * scope.row.price }}元</span
+                >
+              </template>
+            </el-table-column>
             <el-table-column
               fixed="right"
               align="center"
@@ -111,9 +143,36 @@
               </template>
             </el-table-column>
           </el-table>
-          <!-- 统计栏 -->
-          <div class="statistics"></div>
         </el-card>
+        <!-- 统计栏 -->
+        <div class="total-bar sticky bottom-0 text-sm bg-white my-4 z-10">
+          <div class="flex flex-row justify-between items-center">
+            <div class="inline-block pl-5" style="color: #757575">
+              <a class="pr-2">继续购物</a>
+              <el-divider direction="vertical"></el-divider>
+              <span class="pl-1">
+                已选择
+                <strong class="primary">&nbsp;{{ totalNums }} </strong>
+                件
+              </span>
+            </div>
+            <div class="inline-block">
+              <span class="primary pr-10">
+                合计
+                <em class="translate-bottom text-3xl font-bold"
+                  >&nbsp;{{ totalPrice }} </em
+                >元
+              </span>
+              <el-button
+                style="width: 200px; height: 50px; font-size: 18px"
+                type="primary"
+                icon="el-icon-edit-outline"
+              >
+                去结算
+              </el-button>
+            </div>
+          </div>
+        </div>
       </main>
       <!-- Footer -->
       <footer class="text-center py-2">
@@ -130,6 +189,8 @@ import PersonalDropdownMenu from '@/components/home/personal-dropdown-menu.vue';
 import { cartGoodsList } from './mock-shop-cart.js';
 import { isString } from '@/utils/getType';
 import { deleteGoodsFromCart } from '@/api/shop-cart/delete-goods-from-cart.ts';
+import { debounce } from 'lodash';
+import { setGoodsQuantityMap } from '@/api/shop-cart/set-goods-quantity-map.ts';
 
 @Component({
   components: { PersonalDropdownMenu },
@@ -137,29 +198,28 @@ import { deleteGoodsFromCart } from '@/api/shop-cart/delete-goods-from-cart.ts';
 export default class ShopCart extends Vue {
   private selectedGoods = []; // 已选中的rows
   private tableData = [];
+  private loading = true;
   /** Computed*/
   // ===================================================================
   get shopCartData() {
     // 待修改为从vuex拿
     return cartGoodsList;
   }
-  get cartGoodsList(): string | undefined {
-    return this.shopCartData.map(function getSubTotal(good) {
-      const { price, quantity } = good;
-      const subTotal = price * quantity;
-      good.subTotal = subTotal;
-      return good;
-    });
+  get totalNums() {
+    return this.tableData.reduce(function getTotalNums(total, good) {
+      return (total += good.quantity);
+    }, 0);
   }
   get totalPrice() {
-    return cartGoodsList.reduce(function getSubTotal(total, good) {
-      return (total += good.subTotal);
+    return this.tableData.reduce(function getTotalPrice(total, good) {
+      return (total += good.price * good.quantity);
     }, 0);
   }
   /** Hooks */
   // ===================================================================
   mounted() {
-    this.tableData = this.cartGoodsList;
+    this.tableData = this.shopCartData;
+    this.loading = false;
   }
   // Methods
   // ===================================================================
@@ -203,6 +263,33 @@ export default class ShopCart extends Vue {
     }
     this.loading = false;
   }
+  // 防抖
+  debounceQuantityChange = debounce(
+    (newQuantity, oldQuantity, row) => {
+      this.updateGoodsQuantityMap(newQuantity, oldQuantity, row);
+    },
+    1000,
+    { maxWait: 3000 },
+  );
+  // 调整购买商品的数量
+  async updateGoodsQuantityMap(newQuantity, oldQuantity, row) {
+    const { id } = row;
+    // try {
+    //   const res = await setGoodsQuantityMap(id, newQuantity);
+    //   if (res.status !== 0) {
+    //     this.$message({
+    //       showClose: true,
+    //       message: 'Patched shopcart goods failed,Please try again later.',
+    //       type: 'error',
+    //       center: true,
+    //     });
+    //     this.$set(row, 'quantity', oldQuantity);
+    //     throw Error(JSON.stringify(res));
+    //   }
+    // } catch (err) {
+    //   console.log(err);
+    // }
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -214,7 +301,14 @@ export default class ShopCart extends Vue {
 h1 {
   color: $dark-text;
 }
-
+.translate-bottom {
+  display: inline-block;
+  transform: translateY(5px) !important;
+  padding-right: 10px;
+}
+.total-bar {
+  box-shadow: 0 2px 5px 4px hsl(0deg 0% 24% / 10%);
+}
 .header {
   box-shadow: 0 2px 5px 0 hsl(0deg 0% 24% / 10%);
   border-bottom: 2px $primary solid;

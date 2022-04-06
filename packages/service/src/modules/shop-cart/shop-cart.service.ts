@@ -25,12 +25,37 @@ export class ShopCartService {
     return `This action returns all shopCart`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} shopCart`;
   }
+  /**
+   * 从购物车更新指定商品-数目映射
+   * @param id
+   * @param newQuantity
+   * @returns ResponseBody<any>
+   */
+  update(
+    shopcartId: string,
+    goodsId: string,
+    newQuantity: number,
+  ): Promise<ResponseBody<any>> {
+    const tryExecution = async () => {
+      if (!newQuantity || !goodsId) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
+      }
+      // const shopCart = await this._shopCartRepo.findOne(shopcartId);
+      const map = await this._shopCartRepo
+        .createQueryBuilder('shopcart')
+        .leftJoinAndSelect('shopcart.goods_maps', 'goodMap')
+        .where('shopcart.id = :id', { id: shopcartId })
+        .andWhere('goodMap.goodGId = :id', { id: goodsId })
+        .getOne();
+      // console.log(map);
 
-  update(id: number, updateShopCartDto: UpdateShopCartDto) {
-    return `This action updates a #${id} shopCart`;
+      // this._shopCartRepo.save(shopCart);
+      return this._responseSrv.success(null);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
   }
 
   /**

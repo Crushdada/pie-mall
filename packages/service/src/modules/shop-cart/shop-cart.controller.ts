@@ -28,15 +28,17 @@ export class ShopCartController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this._shopCartSrv.findOne(+id);
+    return this._shopCartSrv.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
-    @Body() updateShopCartDto: UpdateShopCartDto,
+    @Session() session,
+    @Param('id') goodsId: string,
+    @Body() { newQuantity }: { newQuantity: number },
   ) {
-    return this._shopCartSrv.update(+id, updateShopCartDto);
+    const { shopcartId } = session.userProfile;
+    return this._shopCartSrv.update(shopcartId, goodsId, newQuantity);
   }
 
   @Delete(':id')

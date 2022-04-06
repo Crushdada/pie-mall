@@ -72,6 +72,8 @@ export default class PersonalDropdownMenu extends Vue {
     }
     // 成功退出登录
     // 删除客户端存储的ticket，更改登录状态
+    const currPath = this.$route.path;
+    if (currPath !== '/home') this.$router.push({ name: 'home' });
     this.$stock.commit(DELETE_AUTH_TICKET);
     this.$stock.commit(USER_SIGNED_OUT);
   }

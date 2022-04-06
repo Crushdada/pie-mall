@@ -97,9 +97,7 @@
             class="flex flex-col flex-nowrap items-center"
           >
             <!-- 自定义tab栏 -->
-            <span slot="label" style="font-size: 22px">
-              Sign up
-            </span>
+            <span slot="label" style="font-size: 22px"> Sign up </span>
             <!-- 账号 -->
             <p-input
               class="my-4"

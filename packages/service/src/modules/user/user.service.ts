@@ -239,14 +239,16 @@ export class UserService {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }
       const { name, id, shop_cart } = user;
-      if (!shop_cart && session.client === process.env.PIEMALL_APP) {
-        user.shop_cart = this._shopCartRepo.create();
-        this._guestRepo.save(user);
+      session.userProfile = {};
+      if (session.client === process.env.PIEMALL_APP) {
+        if (!shop_cart) {
+          user.shop_cart = this._shopCartRepo.create();
+          this._guestRepo.save(user);
+        }
         const { id: shopcartId } = user.shop_cart;
-        session.userProfile = { userId: id, shopcartId };
-      } else {
-        session.userProfile = { userId: id };
+        session.userProfile.shopcartId = shopcartId;
       }
+      session.userProfile.userId = id;
       const access_token = await this._jwtSrv.signAccessToken(id);
       return this._responseSrv.success({
         userProfile: { name },
