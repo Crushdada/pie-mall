@@ -49,9 +49,7 @@
             class="flex flex-col flex-nowrap items-center"
           >
             <!-- 自定义tab栏 -->
-            <span slot="label" style="font-size: 22px; color: $primary">
-              Sign in</span
-            >
+            <span slot="label" style="font-size: 22px"> Sign in </span>
             <!-- 账号 -->
             <p-input
               class="my-4"
@@ -77,13 +75,9 @@
               style="width: 355px"
             >
               Agreed to our
-              <a style="color: #333" class="cursor-pointer break-all">
-                User Agreement
-              </a>
+              <a style="color: #333"> User Agreement </a>
               and
-              <a style="color: #333" class="cursor-pointer break-all">
-                Privacy Policy </a
-              >.
+              <a style="color: #333"> Privacy Policy </a>.
             </el-checkbox>
             <span class="mt-2 mb-6 text-xs" style="color: #f04645">
               {{ verifyFailedTip }}
@@ -103,9 +97,7 @@
             class="flex flex-col flex-nowrap items-center"
           >
             <!-- 自定义tab栏 -->
-            <span slot="label" style="font-size: 22px; color: $primary">
-              Sign up
-            </span>
+            <span slot="label" style="font-size: 22px"> Sign up </span>
             <!-- 账号 -->
             <p-input
               class="my-4"
@@ -131,13 +123,9 @@
               style="width: 355px; height: fix-content"
             >
               Agreed to our
-              <span style="color: #333" class="cursor-pointer break-all">
-                User Agreement
-              </span>
+              <a style="color: #333"> User Agreement </a>
               and
-              <span style="color: #333" class="cursor-pointer break-all">
-                Privacy Policy </span
-              >.
+              <a style="color: #333"> Privacy Policy </a>.
             </el-checkbox>
             <span class="mt-2 mb-6 text-xs" style="color: #f04645">
               {{ verifyFailedTip }}
@@ -288,9 +276,6 @@ export default class LoginPage extends Vue {
 
 .login-nav-about {
   color: #838383;
-  &:hover {
-    color: $primary;
-  }
 }
 .login-card {
   padding: 40px 45px;

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from './entities/admin.entity';
-import { Repository } from 'typeorm';
+import { Entity, Repository } from 'typeorm';
 import { ResponseService } from '../response/response-service';
 import { ResponseBody } from '../../../../types/response/response-body.interface';
 import { ERROR_TYPE } from '../../../../types/response/error-type.enum';
@@ -11,6 +11,7 @@ import { UserProfileInterface } from '../../../../types/user/user-profile.interf
 import { Guest } from './entities/guest.entity';
 import { ReceivingAddress } from './entities/guest-address.entity';
 import { StaticResourceService } from '../static-resource/static-resource.service';
+import { ShopCart } from '../shop-cart/entities/shop-cart.entity';
 
 @Injectable()
 export class UserService {
@@ -19,6 +20,8 @@ export class UserService {
     private readonly _adminRepo: Repository<Admin>,
     @InjectRepository(Guest)
     private readonly _guestRepo: Repository<Guest>,
+    @InjectRepository(ShopCart)
+    private readonly _shopCartRepo: Repository<ShopCart>,
     @InjectRepository(ReceivingAddress)
     private readonly _guestAddressRepo: Repository<ReceivingAddress>,
     private readonly _responseSrv: ResponseService,
@@ -170,7 +173,8 @@ export class UserService {
     session: Record<string, any>,
   ): Promise<ResponseBody<any>> {
     return this._responseSrv.tryExecute(async () => {
-      const { userId, client } = session;
+      const { userProfile, client } = session;
+      const { userId } = userProfile;
       // 验证session，只有二次登录，session中才有该字段
       if (!userId) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
@@ -190,14 +194,14 @@ export class UserService {
         [process.env.PIEMALL_APP]: '_guestRepo',
         [process.env.PIEMALL_ADMIN]: '_adminRepo',
       }[client];
-      const userProfile = await this.getUserProfileById(
+      const userProfiles = await this.getUserProfileById(
         userId,
         this[_userRepo],
       );
-      if (!userProfile) {
+      if (!userProfiles) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }
-      return this._responseSrv.success(userProfile);
+      return this._responseSrv.success(userProfiles);
     });
   }
   /**
@@ -223,19 +227,28 @@ export class UserService {
   ): Promise<ResponseBody<any>> {
     const { account, password } = userProfile;
     return this._responseSrv.tryExecute(async () => {
-      const _guestRepo = {
+      const _userRepo = {
         [process.env.PIEMALL_APP]: '_guestRepo',
         [process.env.PIEMALL_ADMIN]: '_adminRepo',
       }[session.client];
-      const user = await this[_guestRepo].findOne({
+      const user = await this[_userRepo].findOne({
         account,
         password,
       });
       if (!user) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }
-      const { name, id } = user;
-      session.userId = id;
+      const { name, id, shop_cart } = user;
+      session.userProfile = {};
+      if (session.client === process.env.PIEMALL_APP) {
+        if (!shop_cart) {
+          user.shop_cart = this._shopCartRepo.create();
+          this._guestRepo.save(user);
+        }
+        const { id: shopcartId } = user.shop_cart;
+        session.userProfile.shopcartId = shopcartId;
+      }
+      session.userProfile.userId = id;
       const access_token = await this._jwtSrv.signAccessToken(id);
       return this._responseSrv.success({
         userProfile: { name },

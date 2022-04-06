@@ -1,15 +1,29 @@
 $primary: #FF6A00;
 // $secondary: #1976d2;
-$gray-text:#B0B0B0;
+$gray-text1:#B0B0B0;
+$gray-text2: #808080;
 $bk-light:#F5F5F5;
 $dark-text:#424242;
 $bar-text:#333333;
 $bk-dark:#333333;
 
 $card-shadow1: 0 15px 30px rgb(0 0 0 / 10%);
+
 /* 
  * 全局样式 👇 
  */
+.primary{
+   color:$primary;
+}
+.hover-primary:hover{
+  color:$primary;
+}
+a {
+  cursor: pointer;
+  &:hover{
+  color: $primary;
+  }
+}
 #app {
   margin: 0;
   padding: 0;

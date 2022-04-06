@@ -27,6 +27,7 @@ export class Guest extends UserProfile {
    */
   @OneToMany(() => Order, Order => Order.guest)
   orders: Order[];
+  
   /**
    * 购物车
    */

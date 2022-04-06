@@ -16,7 +16,7 @@
         :clearable="clearable"
       >
         <el-button
-          class="search-btn"
+          class="hover-primary"
           v-if="triggerBtn"
           slot="append"
           icon="el-icon-search"
@@ -61,7 +61,5 @@ export default class PInputPure extends Vue {
 ::v-deep .el-input__inner {
   padding-right: 0 !important;
 }
-.search-btn:hover {
-  color: $primary !important;
-}
+
 </style>

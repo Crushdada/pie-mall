@@ -7,12 +7,12 @@ import { JwtAuthModule } from '../jwt-auth/jwt-auth.module';
 import { Guest } from './entities/guest.entity';
 import { ReceivingAddress } from './entities/guest-address.entity';
 import { StaticResourceService } from '../static-resource/static-resource.service';
-
+import { ShopCart } from '../shop-cart/entities/shop-cart.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, Guest, ReceivingAddress]),
+    TypeOrmModule.forFeature([Admin, Guest, ReceivingAddress, ShopCart]),
     JwtAuthModule,
-  ], // 还未引入Guest
+  ],
   providers: [UserService, StaticResourceService],
   controllers: [UserController],
 })

@@ -52,11 +52,9 @@ export class UserController {
     @Body() { userName }: { userName: string },
     @Session() session: Record<string, any>,
   ) {
-    return await this._userSrv.setUserName(
-      session.client,
-      userName,
-      session.userId,
-    );
+    const { client, userProfile } = session;
+    const { userId } = userProfile;
+    return await this._userSrv.setUserName(client, userName, userId);
   }
 
   @Post('avatar')
@@ -68,11 +66,9 @@ export class UserController {
     @Session() session: Record<string, any>,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this._userSrv.updateAvatar(
-      session.client,
-      file,
-      session.userId,
-    );
+    const { client, userProfile } = session;
+    const { userId } = userProfile;
+    return await this._userSrv.updateAvatar(client, file, userId);
   }
 
   @Post()

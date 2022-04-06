@@ -27,7 +27,7 @@
           class="login-nav-bar float-right h-full flex flex-row flex-nowrap items-center"
         >
           <a
-            class="login-nav-about"
+            class="hover-primary"
             href="https://github.com/Crushdada"
             style="font-size: 14px; font-weight: 400"
           >
@@ -48,7 +48,7 @@
             class="flex flex-col flex-nowrap items-center"
           >
             <!-- 自定义tab栏 -->
-            <span slot="label" style="font-size: 22px; color: $primary">
+            <span class="primary" slot="label" style="font-size: 22px">
               Sign in</span
             >
             <!-- 账号 -->
@@ -88,7 +88,7 @@
             class="flex flex-col flex-nowrap items-center"
           >
             <!-- 自定义tab栏 -->
-            <span slot="label" style="font-size: 22px; color: $primary">
+            <span class="primary" slot="label" style="font-size: 22px">
               Sign up
             </span>
             <!-- 账号 -->
@@ -126,8 +126,8 @@
       </div>
       <!-- Footer -->
       <div class="login-footer w-15 text-center">
-        🌏 © 2022 Pie-Mall-Background , code by Crushdada - Beijing , just send me an
-        offer, Please.
+        🌏 © 2022 Pie-Mall-Background , code by Crushdada - Beijing , just send
+        me an offer, Please.
       </div>
     </div>
   </div>
@@ -247,9 +247,6 @@ export default class LoginPage extends Vue {
 
 .login-nav-about {
   color: #838383;
-  &:hover {
-    color: $primary;
-  }
 }
 .login-card {
   padding: 40px 45px;

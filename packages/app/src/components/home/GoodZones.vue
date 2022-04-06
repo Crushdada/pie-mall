@@ -3,7 +3,7 @@
     <div v-for="(item, idx) in goodsZonesList" :key="idx">
       <el-image
         v-if="item.type === 'promotion'"
-        class="rounded-md my-4 cursor-pointer"
+        class="rounded-md mt-8 cursor-pointer"
         style="height: 120px"
         :src="item.thumb"
         @click="handleLink2(item.link)"
