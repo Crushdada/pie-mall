@@ -8,13 +8,14 @@ import {
   deleteAuthTicket,
 } from './mutations/delete-auth-ticket.mutation';
 
-
 import {
   USER_SIGNED,
   USER_SIGNED_OUT,
   setUserSigned,
   setUserSignedOut,
 } from './mutations/set-user-signed-state.mutation';
+
+import { SIGNED_OUT, userSignedOut } from './actions/set-user-signed-state.action';
 
 export default {
   namespaced: false,
@@ -28,5 +29,5 @@ export default {
     [USER_SIGNED]: setUserSigned,
     [USER_SIGNED_OUT]: setUserSignedOut,
   },
-  actions: {},
+  actions: { [SIGNED_OUT]: userSignedOut },
 };

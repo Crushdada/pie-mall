@@ -12,7 +12,7 @@ export function setUserSigned(state: AuthModuleState) {
   state.signed = true;
 }
 /**
- * 更新身份认证ticket
+ * 更新用户登出状态
  * @param {AuthModuleState} state 模块的局部状态对象
  */
 export function setUserSignedOut(state: AuthModuleState) {

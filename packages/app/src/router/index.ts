@@ -21,15 +21,36 @@ const routes: Array<RouteConfig> = [
     component: () => import('../views/Home.vue'),
   },
   {
-    path: '/billing',
-    name: 'billing-page',
-    component: () => import('../views/BillingPage.vue'),
+    path: '/goods-zone/:id',
+    name: 'goods-zone',
+    component: () => import('../views/goods/GoodsZone.vue'),
+  },
+  {
+    path: '/goods',
+    name: 'goods-details',
+    component: () => import('../views/goods/Goods.vue'),
+    children: [
+      {
+        path: ':id',
+        component: () => import('../views/goods/GoodsDetails.vue'),
+      },
+      {
+        path: 'success-tip',
+        component: () => import('../views/goods/Add2ShopCartSuccess.vue'),
+      },
+    ],
   },
   {
     path: '/shop-cart',
     name: 'shop-cart',
     component: () => import('../views/ShopCart.vue'),
   },
+  {
+    path: '/billing',
+    name: 'billing-page',
+    component: () => import('../views/BillingPage.vue'),
+  },
+
   // 个人中心，以及订单等在一个页面
   // {
   //   path: '/user',

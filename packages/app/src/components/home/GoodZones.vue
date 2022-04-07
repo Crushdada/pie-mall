@@ -12,23 +12,25 @@
       <div v-else class="pt-4">
         <div class="flex felx-row flex-nowrap justify-between items-center">
           <span class="py-4 text-2xl">{{ item.label }}</span>
-          <el-button class="h-10" type="primary" icon="">查看更多</el-button>
+          <el-button class="h-10" type="primary" icon="el-icon-caret-right">查看更多</el-button>
         </div>
-
         <div class="grid grid-cols-4 gap-6">
           <el-card
-            class="rounded-md goods-thumb cursor-pointer"
+            class="rounded-md goods-thumb cursor-pointer text-center py-4"
+            style="height: 360px"
             v-for="(goods, idx) in item.goodsList"
             :key="idx"
           >
             <el-image
               class=""
-              style="height: 300px"
+              style="height: 190px"
               :src="goods.thumb"
               @click="handleNavi2GoodsPage(goods.goodsID)"
             >
-            </el-image
-          ></el-card>
+            </el-image>
+            <p class="pt-4 goods-info">{{ goods.info }}</p>
+            <span class="inline-block primary py-2">{{ goods.price }}元</span>
+          </el-card>
         </div>
       </div>
     </div>
@@ -39,18 +41,18 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { goodsZonesList } from './goods-zones-list';
-
+import { navi2GoodsDetailPage } from '@/utils/navi-2-goods-detail-page';
 @Component()
 export default class GoodZones extends Vue {
   private goodsZonesList = goodsZonesList || [];
   /** Computed*/
   // ===================================================================
   handleLink2(linkUrl) {
-    // 处理推广广告的link跳转
+    // 处理推广告的link跳转
   }
+  // 跳转到商品详情页
   handleNavi2GoodsPage(id) {
-    // console.log(id);
-    // 最好封装成一个api/util
+    navi2GoodsDetailPage(id);
   }
 }
 </script>
@@ -67,6 +69,14 @@ export default class GoodZones extends Vue {
       transition-duration: 1s;
       transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
     }
+  }
+  .goods-info {
+    word-break: break-word; //换行模式
+    overflow: hidden;
+    text-overflow: ellipsis; //修剪文字
+    display: -webkit-box;
+    -webkit-line-clamp: 2; //此处为上限行数
+    -webkit-box-orient: vertical;
   }
 }
 </style>

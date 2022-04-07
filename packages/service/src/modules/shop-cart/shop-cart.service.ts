@@ -8,9 +8,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ShopCart } from './entities/shop-cart.entity';
 import { Repository } from 'typeorm';
 import { CartGoodsMap } from './entities/cart-goods-map.entity';
+import { Goods } from '../goods/entities/goods.entity';
 @Injectable()
 export class ShopCartService {
   constructor(
+    @InjectRepository(Goods)
+    private readonly _goodsRepo: Repository<Goods>,
     @InjectRepository(ShopCart)
     private readonly _shopCartRepo: Repository<ShopCart>,
     @InjectRepository(CartGoodsMap)
@@ -25,8 +28,35 @@ export class ShopCartService {
     return `This action returns all shopCart`;
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} shopCart`;
+  findOne(id) {
+    return `This action returns all shopCart`;
+  }
+
+  /**
+   * 根据id检查商品是否已加入购物车
+   * @param goodsId
+   * @returns Promise<ResponseBody<boolean>>
+   */
+  async findGoodsMapOrNot(
+    shopcartId: string,
+    goodsId: string,
+  ): Promise<ResponseBody<boolean>> {
+    const tryExecution = async () => {
+      const shopCart = await this._shopCartRepo.findOne(shopcartId);
+      const good = await this._goodsRepo.findOne(goodsId);
+      const map = await this._cartGoodsMapRepo.findOne({
+        good,
+        cart: shopCart,
+      });
+      // 购物车没有该商品
+      if (!map) {
+        return this._responseSrv.success(false);
+      } else {
+        // 已存在
+        return this._responseSrv.success(true);
+      }
+    };
+    return this._responseSrv.tryExecute(tryExecution);
   }
   /**
    * 从购物车更新指定商品-数目映射
@@ -43,16 +73,25 @@ export class ShopCartService {
       if (!newQuantity || !goodsId) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }
-      // const shopCart = await this._shopCartRepo.findOne(shopcartId);
-      const map = await this._shopCartRepo
-        .createQueryBuilder('shopcart')
-        .leftJoinAndSelect('shopcart.goods_maps', 'goodMap')
-        .where('shopcart.id = :id', { id: shopcartId })
-        .andWhere('goodMap.goodGId = :id', { id: goodsId })
-        .getOne();
-      // console.log(map);
-
-      // this._shopCartRepo.save(shopCart);
+      const shopCart = await this._shopCartRepo.findOne(shopcartId);
+      const good = await this._goodsRepo.findOne(goodsId);
+      const map = await this._cartGoodsMapRepo.findOne({
+        good,
+        cart: shopCart,
+      });
+      // 没有，则为加入购物车
+      if (!map) {
+        const new_map = this._cartGoodsMapRepo.create({
+          good,
+          quanity: newQuantity,
+        });
+        shopCart.goods_maps.push(new_map);
+      } else {
+        // 已存在，更新对应的数目
+        map.quanity = newQuantity;
+      }
+      console.log('map=', map);
+      this._shopCartRepo.save(shopCart);
       return this._responseSrv.success(null);
     };
     return this._responseSrv.tryExecute(tryExecution);
