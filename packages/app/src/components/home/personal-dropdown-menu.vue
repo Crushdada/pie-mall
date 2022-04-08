@@ -35,8 +35,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { signOut } from '@/api/user/sign-out';
-import { DELETE_AUTH_TICKET } from '@/store/auth.module/mutations/delete-auth-ticket.mutation';
-import { USER_SIGNED_OUT } from '@/store/auth.module/mutations/set-user-signed-state.mutation';
+import { SIGNED_OUT } from '@/store/auth.module/actions/set-user-signed-state.action';
 @Component({
   components: {},
 })
@@ -74,8 +73,7 @@ export default class PersonalDropdownMenu extends Vue {
     // 删除客户端存储的ticket，更改登录状态
     const currPath = this.$route.path;
     if (currPath !== '/home') this.$router.push({ name: 'home' });
-    this.$stock.commit(DELETE_AUTH_TICKET);
-    this.$stock.commit(USER_SIGNED_OUT);
+    this.$stock.dispatch(SIGNED_OUT);
   }
 }
 </script>

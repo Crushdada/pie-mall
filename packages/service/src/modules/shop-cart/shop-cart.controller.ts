@@ -10,20 +10,32 @@ import {
 } from '@nestjs/common';
 import { ShopCartService } from './shop-cart.service';
 import { CreateShopCartDto } from './dto/create-shop-cart.dto';
-import { UpdateShopCartDto } from './dto/update-shop-cart.dto';
 
 @Controller('shop-cart')
 export class ShopCartController {
   constructor(private readonly _shopCartSrv: ShopCartService) {}
 
-  @Post()
-  create(@Body() createShopCartDto: CreateShopCartDto) {
-    return this._shopCartSrv.create(createShopCartDto);
+  @Post('goods')
+  create(
+    @Session() session: Record<string, any>,
+    @Body() { goodsId, newQuantity }: { goodsId: string; newQuantity: number },
+  ) {
+    const { shopcartId } = session.userProfile;
+    return this._shopCartSrv.create(shopcartId, goodsId, newQuantity);
   }
 
   @Get()
   findAll() {
     return this._shopCartSrv.findAll();
+  }
+
+  @Get('/goods-map/:id')
+  findGoodsMapOrNot(
+    @Session() session: Record<string, any>,
+    @Param('id') goodsId: string,
+  ) {
+    const { shopcartId } = session.userProfile;
+    return this._shopCartSrv.findGoodsMapOrNot(shopcartId, goodsId);
   }
 
   @Get(':id')
@@ -33,22 +45,23 @@ export class ShopCartController {
 
   @Patch(':id')
   update(
-    @Session() session,
-    @Param('id') goodsId: string,
+    @Param('id') goodsMapId: string,
     @Body() { newQuantity }: { newQuantity: number },
   ) {
-    const { shopcartId } = session.userProfile;
-    return this._shopCartSrv.update(shopcartId, goodsId, newQuantity);
+    return this._shopCartSrv.update(goodsMapId, newQuantity);
   }
 
   @Delete(':id')
-  deleteById(@Session() session, @Param('id') id: string) {
+  deleteById(@Session() session: Record<string, any>, @Param('id') id: string) {
     const { shopcartId } = session.userProfile;
     return this._shopCartSrv.delete(shopcartId, id);
   }
 
   @Delete()
-  deleteByIds(@Session() session, @Body() delIds: Array<string>) {
+  deleteByIds(
+    @Session() session: Record<string, any>,
+    @Body() delIds: Array<string>,
+  ) {
     const { shopcartId } = session.userProfile;
     return this._shopCartSrv.delete(shopcartId, delIds);
   }

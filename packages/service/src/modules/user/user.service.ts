@@ -173,12 +173,12 @@ export class UserService {
     session: Record<string, any>,
   ): Promise<ResponseBody<any>> {
     return this._responseSrv.tryExecute(async () => {
-      const { userProfile, client } = session;
-      const { userId } = userProfile;
+      const { client } = session;
+      const userId  = session.userProfile?.userId;
       // 验证session，只有二次登录，session中才有该字段
       if (!userId) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
-          detail: '身份认证失败, 您没有权限执行此操作',
+          detail: '🙈登录状态失效，请重新登录',
         });
       }
       // 1. 验证token
@@ -186,7 +186,7 @@ export class UserService {
 
       if (!verifyRes) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
-          detail: '身份认证失败, 您没有权限执行此操作',
+          detail: '🙈登录状态失效，请重新登录',
         });
       }
       // 通过身份认证校验

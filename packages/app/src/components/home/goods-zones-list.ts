@@ -17,26 +17,36 @@ export const goodsZonesList = [
         thumb:
           'https://img10.360buyimg.com/n7/jfs/t1/104720/28/22084/91279/61e6a88aE0969a120/d8ba469961a5f217.jpg',
         goodsID: '75cd7fe8-4da0-4be8-98e5-f1a0f109c8a6',
+        info: '阿斯顿撒啊客服啊按时分',
+        price: 132,
       },
       {
         thumb:
           'https://img11.360buyimg.com/n7/jfs/t1/128341/4/21571/87376/61e69c8bEced8f778/8c646afe7d516c1d.jpg',
         goodsID: '7b22dc17-06aa-4df7-be71-8b8efca3dce8',
+        info: '阿斯阿顺丰啊按时分',
+        price: 132,
       },
       {
         thumb:
           'https://img14.360buyimg.com/n7/jfs/t1/166740/20/26252/219183/61e82009E2b3f303d/aed8706aa86d4518.jpg',
         goodsID: '7e2f5412-f1eb-42e0-8c85-c66073ed20a9',
+        info: '阿斯阿顺丰啊按时分',
+        price: 132,
       },
       {
         thumb:
           'https://img13.360buyimg.com/n7/jfs/t1/208945/4/14496/112578/61ce6e22E14b8c9ab/68fefdd1ffa9b2c6.jpg',
         goodsID: '83704704-320d-44b3-84cc-515c317198d9',
+        info: '阿斯阿顺丰恩爱法尔尔是恩爱啊恩爱肺癌是恩爱啊恩爱肺癌尔是恩爱啊恩爱肺癌阿诗丹顿按时分',
+        price: 132,
       },
       {
         thumb:
           'https://img10.360buyimg.com/n7/jfs/t1/142720/20/26941/104355/61e11de7E7f2b6341/04c4ab32243efd2c.jpg',
         goodsID: '8b8a648a-ab74-4fbb-819f-5ad89181f200',
+        info: '阿斯阿顺丰啊按时分',
+        price: 132,
       },
       {
         thumb:

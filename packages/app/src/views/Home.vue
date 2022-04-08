@@ -36,7 +36,7 @@ import PersonalRecoGoods from '../components/home/PersonalRecoGoods.vue';
 import GoodZones from '../components/home/GoodZones.vue';
 import { SET_USER_PROFILE } from '@/store/user.module/mutations/set-user-profile.mutation';
 import { USER_SIGNED } from '@/store/auth.module/mutations/set-user-signed-state.mutation';
-import { USER_SIGNED_OUT } from '@/store/auth.module/mutations/set-user-signed-state.mutation';
+import { SIGNED_OUT } from '@/store/auth.module/actions/set-user-signed-state.action';
 
 @Component({
   components: {
@@ -72,7 +72,7 @@ export default class Home extends Vue {
         const res = await getUserProfile(this.userTicket);
         // 认证失败
         if (res.status !== 0) {
-          this.$stock.commit(USER_SIGNED_OUT);
+          this.$stock.dispatch(SIGNED_OUT);
           throw Error('🙈登录状态失效，请重新登录');
         }
         // 认证成功
