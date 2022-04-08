@@ -31,11 +31,12 @@ const routes: Array<RouteConfig> = [
     component: () => import('../views/goods/Goods.vue'),
     children: [
       {
-        path: ':id',
+        path: '/goods/:id',
         component: () => import('../views/goods/GoodsDetails.vue'),
       },
       {
-        path: 'success-tip',
+        path: '/goods/success-tip',
+        name:'success-tip',
         component: () => import('../views/goods/Add2ShopCartSuccess.vue'),
       },
     ],

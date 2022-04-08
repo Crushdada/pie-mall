@@ -20,9 +20,6 @@ export class ShopCartService {
     private readonly _cartGoodsMapRepo: Repository<CartGoodsMap>,
     private readonly _responseSrv: ResponseService,
   ) {}
-  create(createShopCartDto: CreateShopCartDto) {
-    return 'This action adds a new shopCart';
-  }
 
   findAll() {
     return `This action returns all shopCart`;
@@ -33,7 +30,28 @@ export class ShopCartService {
   }
 
   /**
-   * 根据id检查商品是否已加入购物车
+   * 商品加入购物车
+   * @param goodsId
+   * @param quantity
+   */
+  create(shopcartId: string, goodsId: string, quantity: number) {
+    const tryExecution = async () => {
+      const shop_cart = await this._shopCartRepo.findOne(shopcartId);
+      const good = await this._goodsRepo.findOne(goodsId);
+      const new_map = await this._cartGoodsMapRepo.save({
+        good,
+        quantity,
+      });
+      if (!shop_cart.hasOwnProperty('goods_maps')) shop_cart.goods_maps = [];
+      shop_cart.goods_maps.push(new_map);
+      await this._shopCartRepo.save(shop_cart);
+      return this._responseSrv.success(null);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
+   * 根据商品id检查商品是否已加入购物车
    * @param goodsId
    * @returns Promise<ResponseBody<boolean>>
    */
@@ -65,33 +83,18 @@ export class ShopCartService {
    * @returns ResponseBody<any>
    */
   update(
-    shopcartId: string,
-    goodsId: string,
+    // shopcartId: string,
+    goodsMapId: string,
     newQuantity: number,
   ): Promise<ResponseBody<any>> {
     const tryExecution = async () => {
-      if (!newQuantity || !goodsId) {
+      if (!newQuantity || !goodsMapId) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }
-      const shopCart = await this._shopCartRepo.findOne(shopcartId);
-      const good = await this._goodsRepo.findOne(goodsId);
-      const map = await this._cartGoodsMapRepo.findOne({
-        good,
-        cart: shopCart,
-      });
-      // 没有，则为加入购物车
-      if (!map) {
-        const new_map = this._cartGoodsMapRepo.create({
-          good,
-          quanity: newQuantity,
-        });
-        shopCart.goods_maps.push(new_map);
-      } else {
-        // 已存在，更新对应的数目
-        map.quanity = newQuantity;
-      }
-      console.log('map=', map);
-      this._shopCartRepo.save(shopCart);
+      const map = await this._cartGoodsMapRepo.findOne(goodsMapId);
+      // 更新对应的数目
+      map.quantity = newQuantity;
+      this._cartGoodsMapRepo.save(map);
       return this._responseSrv.success(null);
     };
     return this._responseSrv.tryExecute(tryExecution);

@@ -232,15 +232,15 @@ export default class ShopCart extends Vue {
     this.selectedGoods = selectedGoods;
   }
   // 从购物车删除单个商品
-  async handleDeleteGood(index, good) {
-    this.deleteGoodsByIds(good.id);
+  async handleDeleteGood(index, goodsMap) {
+    this.deleteGoodsByIds(goodsMap.id);
   }
   // 从购物车批量删除商品
   async handleDeleteGoods() {
-    const deleteGoodsIds = this.selectedGoods.map(good => good.id);
+    const deleteGoodsIds = this.selectedGoods.map(goodsMap => goodsMap.id);
     this.deleteGoodsByIds(deleteGoodsIds);
   }
-  // 根据id从购物车删除商品
+  // 根据goods-map id从购物车删除商品
   async deleteGoodsByIds(delIds: string[] | string) {
     this.loading = true;
     try {
@@ -255,11 +255,11 @@ export default class ShopCart extends Vue {
         throw Error(JSON.stringify(res));
       }
       if (isString(delIds)) {
-        const delIndex = this.tableData.findIndex(item => item.id === delIds);
+        const delIndex = this.tableData.findIndex(goodsMap => goodsMap.id === delIds);
         this.tableData.splice(delIndex, 1);
       } else {
-        this.tableData = this.tableData.filter(good => {
-          return !delIds.includes(good.id);
+        this.tableData = this.tableData.filter(goodsMap => {
+          return !delIds.includes(goodsMap.id);
         });
       }
     } catch (err) {
@@ -277,22 +277,22 @@ export default class ShopCart extends Vue {
   );
   // 调整购买商品的数量
   async updateGoodsQuantityMap(newQuantity, oldQuantity, row) {
-    const { id } = row;
-    // try {
-    //   const res = await setGoodsQuantityMap(id, newQuantity);
-    //   if (res.status !== 0) {
-    //     this.$message({
-    //       showClose: true,
-    //       message: 'Patched shopcart goods failed,Please try again later.',
-    //       type: 'error',
-    //       center: true,
-    //     });
-    //     this.$set(row, 'quantity', oldQuantity);
-    //     throw Error(JSON.stringify(res));
-    //   }
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    const { id:goodsMapId } = row;
+    try {
+      const res = await setGoodsQuantityMap(goodsMapId, newQuantity);
+      if (res.status !== 0) {
+        this.$message({
+          showClose: true,
+          message: 'Patched shopcart goods failed,Please try again later.',
+          type: 'error',
+          center: true,
+        });
+        this.$set(row, 'quantity', oldQuantity);
+        throw Error(JSON.stringify(res));
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 </script>

@@ -1,59 +1,84 @@
 <template>
-  <div v-loading="loading" class="goods-details">
-    <el-image
-      :src="goods.thumb"
-      class="inline-block"
-      style="width: 450px; height: 450px"
-    ></el-image>
-    <section class="inline-block flex flex-col flex-nowrap">
-      <h1 class="">{{ goods.info }}</h1>
-      <div class="mt-4 p-2">
-        <span class="pr-4">价&nbsp;&nbsp;格</span>
-        <em class="primary">￥{{ goods.price }}</em
-        ><br />
-        <span class="pr-4">促&nbsp;&nbsp;销</span>
-        <div class="inline-block">
-          <span>
-            <el-tag type="primary" effect="plain"> 整点赠礼 </el-tag>
-            &nbsp;整点预订限量赠智能插座，限10点/12点/16点/20点，每个整点限量赠20个
-          </span>
-          <span>
-            <el-tag type="primary" effect="plain"> 分期免息 </el-tag>
-            &nbsp;银联、花呗、掌上生活、工行分期支付可享免息（免息活动适用于单款免息商品订单，含多款商品订单仅在免息活动一致时可享用）
-          </span>
-          <span>
-            <el-tag type="primary" effect="plain"> 赠送积分</el-tag>
-            购买即赠商城积分，积分可抵现~
-          </span>
+  <div class="goods-details">
+    <el-card class="mt-8">
+      <div
+        class="flex flex-row flex-nowrap justify-between items-center"
+        style="padding: 0 140px"
+      >
+        <div class="pt-2">
+          <el-image
+            v-if="goods.thumb"
+            :src="goods.thumb"
+            style="width: 450px; height: 450px; border-radius: 5px"
+          ></el-image>
         </div>
-        <!-- 加入购物车 & 收藏 -->
-        <div>
-          <el-input-number
-            v-model="buyNum"
-            class="w-12"
-            controls-position="right"
-            :min="1"
-            :max="100"
-          ></el-input-number>
-          <el-button
-            class="h-10"
-            type="primary"
-            icon=""
-            @click.native="handleAdd2Shopcart"
-          >
-            加入购物车
-          </el-button>
-          <!-- 收藏 -->
-          <el-tooltip content="收藏" placement="top" effect="light">
-            <el-button
-              type="warning"
-              icon="el-icon-star-off"
-              circle
-            ></el-button>
-          </el-tooltip>
-        </div>
+
+        <section class="flex flex-col flex-nowrap py-4" style="width: 690px">
+          <h1 class="text-2xl py-2">{{ goods.info }}</h1>
+          <!-- 灰色背景框 -->
+          <div class="mt-4 py-4 px-2 rounded" style="background: #f5f5f5">
+            <span class="py-2 pr-4">价&nbsp;&nbsp;格</span>
+            <em class="primary text-2xl">￥{{ goods.price }}</em
+            ><br />
+            <div class="flex flex-row flex-nowrap pt-4">
+              <span class="pr-4">促&nbsp;&nbsp;销</span>
+              <div class="text-xs">
+                <div class="pt-0.5 leading-6">
+                  <el-tag type="primary" size="mini" effect="plain">
+                    整点赠礼
+                  </el-tag>
+                  &nbsp;整点预订限量赠智能插座，限10点/12点/16点/20点，每个整点限量赠20个
+                </div>
+                <br />
+                <div class="leading-6">
+                  <el-tag size="mini" type="primary" effect="plain">
+                    分期免息
+                  </el-tag>
+                  &nbsp;银联、花呗、掌上生活、工行分期支付可享免息（免息活动适用于单款免息商品订单，含多款商品订单仅在免息活动一致时可享用）
+                </div>
+                <br />
+                <div class="leading-6">
+                  <el-tag size="mini" type="primary" effect="plain">
+                    赠送积分</el-tag
+                  >
+                  购买即赠商城积分，积分可抵现~
+                </div>
+                <br />
+              </div>
+            </div>
+            <!-- 加入购物车 & 收藏 -->
+            <div class="pt-2">
+              <el-input-number
+                v-model="buyNum"
+                controls-position="right"
+                :min="1"
+                :max="100"
+                style="width: 100px"
+              ></el-input-number>
+              <div class="inline px-6">
+                <el-button
+                  class="h-10"
+                  type="primary"
+                  icon=""
+                  @click.native="handleAdd2Shopcart"
+                >
+                  加入购物车
+                </el-button>
+              </div>
+
+              <!-- 收藏 -->
+              <el-tooltip content="收藏" placement="top" effect="light">
+                <el-button
+                  type="warning"
+                  icon="el-icon-star-off"
+                  circle
+                ></el-button>
+              </el-tooltip>
+            </div>
+          </div>
+        </section>
       </div>
-    </section>
+    </el-card>
   </div>
 </template>
 
@@ -63,7 +88,7 @@ import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import PersonalRecoGoods from '../../components/home/PersonalRecoGoods.vue';
 import GoodZones from '../../components/home/GoodZones.vue';
 import { getGoodsById } from '@/api/goods/get-goods-by-id';
-import { setGoodsQuantityMap } from '@/api/shop-cart/set-goods-quantity-map.ts';
+import { addGoodsQuantityMap } from '@/api/shop-cart/add-goods-map.ts';
 import { findGoodsMapOrNot } from '@/api/shop-cart/find-goods-map.ts';
 
 @Component({
@@ -73,7 +98,6 @@ import { findGoodsMapOrNot } from '@/api/shop-cart/find-goods-map.ts';
   },
 })
 export default class GoodsDetails extends Vue {
-  private loading = true;
   private buyNum = 1;
   private goods = {};
   /** Computed*/
@@ -86,9 +110,6 @@ export default class GoodsDetails extends Vue {
   beforeMount() {
     const { id } = this.$route.params;
     this.getGoodsDetails(id);
-    this.$nextTick(() => {
-      this.loading = false;
-    });
   }
   // Methods
   // ===================================================================
@@ -128,7 +149,17 @@ export default class GoodsDetails extends Vue {
     if (!id) return;
     try {
       // 判断商品是否已加入购物车，提示“商品已加入购物车，请前往查看”
-      const mapExisted = await findGoodsMapOrNot(id);
+      const res1 = await findGoodsMapOrNot(id);
+      if (res1.status !== 0) {
+        this.$message({
+          showClose: true,
+          message: 'Failed to load shopcart data , Please try again later.',
+          type: 'error',
+          center: true,
+        });
+        throw Error(JSON.stringify(res));
+      }
+      const { data: mapExisted } = res1;
       if (mapExisted) {
         // 已经存在，提示
         this.$message({
@@ -140,7 +171,7 @@ export default class GoodsDetails extends Vue {
         return;
       }
       // 不存在，尝试发送请求添加到购物车
-      const res = await setGoodsQuantityMap(id, this.buyNum);
+      const res = await addGoodsQuantityMap(id, this.buyNum);
       if (res.status !== 0) {
         this.$message({
           showClose: true,

@@ -12,21 +12,20 @@
       <div v-else class="pt-4">
         <div class="flex felx-row flex-nowrap justify-between items-center">
           <span class="py-4 text-2xl">{{ item.label }}</span>
-          <el-button class="h-10" type="primary" icon="el-icon-caret-right">查看更多</el-button>
+          <el-button class="h-10" type="primary">
+            查看更多
+            <i class="el-icon-caret-right el-icon--right"></i>
+          </el-button>
         </div>
         <div class="grid grid-cols-4 gap-6">
           <el-card
             class="rounded-md goods-thumb cursor-pointer text-center py-4"
             style="height: 360px"
+            @click.native="handleNavi2GoodsPage(goods.goodsID)"
             v-for="(goods, idx) in item.goodsList"
             :key="idx"
           >
-            <el-image
-              class=""
-              style="height: 190px"
-              :src="goods.thumb"
-              @click="handleNavi2GoodsPage(goods.goodsID)"
-            >
+            <el-image class="" style="height: 190px" :src="goods.thumb">
             </el-image>
             <p class="pt-4 goods-info">{{ goods.info }}</p>
             <span class="inline-block primary py-2">{{ goods.price }}元</span>

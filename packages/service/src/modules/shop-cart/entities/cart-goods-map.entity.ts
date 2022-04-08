@@ -22,7 +22,7 @@ export class CartGoodsMap {
    * 商品购买数目
    */
   @Column({ type: 'int' })
-  quanity: number;
+  quantity: number;
 
   /**
    * many to one 一种商品可以有多种映射记录
