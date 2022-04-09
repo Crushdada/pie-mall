@@ -9,7 +9,6 @@ import {
   Session,
 } from '@nestjs/common';
 import { ShopCartService } from './shop-cart.service';
-import { CreateShopCartDto } from './dto/create-shop-cart.dto';
 
 @Controller('shop-cart')
 export class ShopCartController {
@@ -38,9 +37,10 @@ export class ShopCartController {
     return this._shopCartSrv.findGoodsMapOrNot(shopcartId, goodsId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this._shopCartSrv.findOne(id);
+  @Get('atom')
+  findOne(@Session() session: Record<string, any>) {
+    const { shopcartId } = session.userProfile;
+    return this._shopCartSrv.findOne(shopcartId);
   }
 
   @Patch(':id')

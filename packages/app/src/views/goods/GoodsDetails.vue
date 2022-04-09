@@ -109,6 +109,7 @@ export default class GoodsDetails extends Vue {
   // ===================================================================
   beforeMount() {
     const { id } = this.$route.params;
+    if(id !== 'success-tip')
     this.getGoodsDetails(id);
   }
   // Methods

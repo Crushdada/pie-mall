@@ -15,6 +15,7 @@ VueRouter.prototype.push = function push(location) {
 
 const routes: Array<RouteConfig> = [
   { path: '/', redirect: '/home' },
+  { path: '/goods', redirect: '/home' },
   {
     path: '/home',
     name: 'home',
@@ -36,7 +37,7 @@ const routes: Array<RouteConfig> = [
       },
       {
         path: '/goods/success-tip',
-        name:'success-tip',
+        name: 'success-tip',
         component: () => import('../views/goods/Add2ShopCartSuccess.vue'),
       },
     ],
