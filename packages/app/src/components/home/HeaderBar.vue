@@ -32,7 +32,7 @@
         我的订单
       </a>
       <!-- 购物车+下拉菜单 -->
-      <el-dropdown :show-timeout="20" trigger="click">
+      <el-dropdown :show-timeout="20" trigger="hover">
         <!-- 展示部分 -->
         <a
           class="shop-cart-btn space-x-2 flex flex-row flex-nowrap justify-center items-center"
@@ -41,46 +41,65 @@
         >
           <i class="el-icon-shopping-cart-full" style="font-size: 20px"></i>
           <span>购物车</span>
-          <span>({{ cartGoodsCount }})</span>
+          <span>({{ totalNums || 0 }})</span>
         </a>
         <!-- 菜单部分 -->
         <el-dropdown-menu slot="dropdown">
-          <div class="flex flex-col flex-nowrap pt-4 px-6" style="width: 320px">
-            <!-- 购物车商品列表 -->
-            <div class="text-xs">
-              <div
-                class="flex flex-row flex-nowrap justify-around items-center"
-              >
-                <!-- v-for,只显示最多5个 -->
-                <el-image
-                  style="width: 66px; height: 45px"
-                  src="//cdn.cnbj1.fds.api.mi-img.com/mi-mall/18d2099cb0b05bbd23cb1915dfc9d0d6.jpg?thumb=1&w=250&h=250&f=webp&q=90"
-                >
-                </el-image>
-                <a class="h-8" style="width: 100px">
-                  Redmi K50 Pro 8GB+128GB墨
-                </a>
-                <span>2999元 × 1</span>
-              </div>
-              <el-divider></el-divider>
-            </div>
-          </div>
-          <!-- 购物车统计信息 -->
-          <div
-            class="px-8 flex flex-row flex-nowrap justify-between items-center"
-            style="background: #fafafa"
-          >
-            <div class="left-total">
-              <span class="goods-total-text"> 共3件商品</span><br />
-              <span class="primary text-xl">9998元</span>
-            </div>
-            <el-button
-              class="h-10 w-30 relative"
-              type="primary"
-              @click="() => $router.push({ name: 'shop-cart' })"
+          <template v-if="signed && totalNums !== 0">
+            <div
+              class="flex flex-col flex-nowrap pt-4 px-6"
+              style="width: 320px"
             >
-              去购物车结算
-            </el-button>
+              <!-- 购物车商品列表 -->
+              <div class="text-xs">
+                <div
+                  class="flex flex-row flex-nowrap justify-around items-center"
+                  v-for="(goodsMap, i) in shopcart"
+                  :key="i"
+                >
+                  <!-- v-for,只显示最多5个 -->
+                  <el-image
+                    style="width: 66px; height: 45px"
+                    :src="goodsMap.thumb"
+                  >
+                  </el-image>
+                  <a class="h-8 goods-info" style="width: 100px">
+                    {{ goodsMap.name }}
+                  </a>
+                  <span>{{ goodsMap.price }}元 × {{ goodsMap.quantity }}</span>
+                </div>
+                <el-divider></el-divider>
+              </div>
+            </div>
+            <!-- 购物车统计信息 -->
+            <div
+              class="px-8 flex flex-row flex-nowrap justify-between items-center"
+              style="background: #fafafa"
+            >
+              <div class="left-total">
+                <span class="goods-total-text"> 共{{ totalNums }}件商品</span>
+                <br />
+                <span class="primary text-xl">{{ totalPrice }}元</span>
+              </div>
+              <el-button
+                class="h-10 w-30 relative"
+                type="primary"
+                @click="() => $router.push({ name: 'shop-cart' })"
+              >
+                去购物车结算
+              </el-button>
+            </div>
+          </template>
+          <div v-else-if="signed" class="text-center px-4">
+            <span class="text-sm">购物车中还没有商品，赶紧选购吧！</span>
+          </div>
+          <div
+            v-else
+            class="text-center"
+            style="width: 120px"
+            @click="() => $router.push({ name: 'login' })"
+          >
+            <a class="link-hover">前往登录</a>
           </div>
         </el-dropdown-menu>
       </el-dropdown>
@@ -89,25 +108,28 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import Component from 'vue-class-component';
-import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import PersonalDropdownMenu from './personal-dropdown-menu.vue';
+import { Mixins } from 'vue-property-decorator';
+import ShopCartMixin from '@/mixins/shop-cart.mixin';
 @Component({
   components: { PersonalDropdownMenu },
 })
-export default class HeaderBar extends Vue {
-  /** Computed*/
+export default class HeaderBar extends Mixins(ShopCartMixin) {
+  /** Hooks*/
   // ===================================================================
-  get cartGoodsCount() {
-    return 3;
+  async mounted() {
+    await this.loadShopCart(); // 加载购物车数据
   }
-  get signed() {
-    return this.$store.state[VuexModuleName.AUTH].signed;
-  }
-
+  /** Methods*/
+  // ===================================================================
   handleOpenCart() {
-    // 尝试跳转到购物车，如果没登录就跳转到登录
+    // 如果未登录，跳转到登录页面
+    if (!this.signed) {
+      this.$router.push({ name: 'login' });
+      return;
+    }
+    this.$router.push({ name: 'shop-cart' });
   }
 }
 </script>
@@ -135,5 +157,13 @@ export default class HeaderBar extends Vue {
       color: $primary;
     }
   }
+}
+.goods-info {
+  word-break: break-word; //换行模式
+  overflow: hidden;
+  text-overflow: ellipsis; //修剪文字
+  display: -webkit-box;
+  -webkit-line-clamp: 2; //此处为上限行数
+  -webkit-box-orient: vertical;
 }
 </style>

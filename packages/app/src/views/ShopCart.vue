@@ -75,7 +75,10 @@
               </template>
               <template slot-scope="scope">
                 <div class="pl-14">
-                  <a @click="() => $router.push({ path: `goods/${scope.row.id}` })">
+                  <a
+                    @click="
+                      () => $router.push({ path: `goods/${scope.row.id}` })"
+                  >
                     {{ scope.row.name }}
                   </a>
                 </div>
@@ -156,7 +159,9 @@
               <el-divider direction="vertical"></el-divider>
               <span class="pl-1">
                 已选择
-                <strong class="primary">&nbsp;{{ totalNums }} </strong>
+                <strong class="primary"
+                  >&nbsp;{{ selectedGoods.length }}
+                </strong>
                 件
               </span>
             </div>
@@ -164,7 +169,7 @@
               <span class="primary pr-10">
                 合计
                 <em class="translate-bottom text-3xl font-bold"
-                  >&nbsp;{{ totalPrice }} </em
+                  >&nbsp;{{ selectedTotalPrice }} </em
                 >元
               </span>
               <el-button
@@ -188,41 +193,36 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Mixins } from 'vue-property-decorator';
 import PersonalDropdownMenu from '@/components/home/personal-dropdown-menu.vue';
-import { cartGoodsList } from './mock-shop-cart.js';
 import { isString } from '@/utils/getType';
 import { deleteGoodsFromCart } from '@/api/shop-cart/delete-goods-from-cart.ts';
 import { debounce } from 'lodash';
 import { setGoodsQuantityMap } from '@/api/shop-cart/set-goods-quantity-map.ts';
-
+import ShopCartMixin from '@/mixins/shop-cart.mixin.ts';
 @Component({
   components: { PersonalDropdownMenu },
 })
-export default class ShopCart extends Vue {
+export default class ShopCart extends Mixins(ShopCartMixin) {
   private selectedGoods = []; // 已选中的rows
   private tableData = [];
   private loading = true;
-  /** Computed*/
+  // Computed
   // ===================================================================
-  get shopCartData() {
-    // 待修改为从vuex拿
-    return cartGoodsList;
-  }
-  get totalNums() {
-    return this.tableData.reduce(function getTotalNums(total, good) {
-      return (total += good.quantity);
-    }, 0);
-  }
-  get totalPrice() {
-    return this.tableData.reduce(function getTotalPrice(total, good) {
+  get selectedTotalPrice() {
+    return this.selectedGoods.reduce(function getSelectedTotalPrice(
+      total,
+      good,
+    ) {
       return (total += good.price * good.quantity);
-    }, 0);
+    },
+    0);
   }
   /** Hooks */
   // ===================================================================
-  mounted() {
-    this.tableData = this.shopCartData;
+  async mounted() {
+    await this.loadShopCart(); // 加载购物车数据
+    this.tableData = this.shopcart;
     this.loading = false;
   }
   // Methods
@@ -255,7 +255,9 @@ export default class ShopCart extends Vue {
         throw Error(JSON.stringify(res));
       }
       if (isString(delIds)) {
-        const delIndex = this.tableData.findIndex(goodsMap => goodsMap.id === delIds);
+        const delIndex = this.tableData.findIndex(
+          goodsMap => goodsMap.id === delIds,
+        );
         this.tableData.splice(delIndex, 1);
       } else {
         this.tableData = this.tableData.filter(goodsMap => {
@@ -277,7 +279,7 @@ export default class ShopCart extends Vue {
   );
   // 调整购买商品的数量
   async updateGoodsQuantityMap(newQuantity, oldQuantity, row) {
-    const { id:goodsMapId } = row;
+    const { id: goodsMapId } = row;
     try {
       const res = await setGoodsQuantityMap(goodsMapId, newQuantity);
       if (res.status !== 0) {

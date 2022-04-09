@@ -5684,6 +5684,7 @@
 }
 .el-loading-spinner {
   top: 50%;
+  left: 50%;
   margin-top: -21px;
   width: 100%;
   text-align: center;

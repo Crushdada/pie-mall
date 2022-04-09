@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="flex flex-row justify-between items-center"
-    style="height: 100px"
-  >
+  <div class="flex flex-row justify-between items-center" style="height: 100px">
     <!-- logo -->
     <img
       class="object-cover object-center cursor-pointer"
@@ -47,7 +44,7 @@ export default class GoodsTabBar extends Vue {
   private searchKey = '';
   /** Computed*/
   // ===================================================================
-  get cartGoodsCount() {
+  get totalNums() {
     return 3;
   }
   /** Methods*/

@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateShopCartDto } from './dto/create-shop-cart.dto';
-import { UpdateShopCartDto } from './dto/update-shop-cart.dto';
 import { ResponseBody } from '../../../../types/response/response-body.interface';
 import { ERROR_TYPE } from '../../../../types/response/error-type.enum';
 import { ResponseService } from '../response/response-service';
@@ -9,6 +7,7 @@ import { ShopCart } from './entities/shop-cart.entity';
 import { Repository } from 'typeorm';
 import { CartGoodsMap } from './entities/cart-goods-map.entity';
 import { Goods } from '../goods/entities/goods.entity';
+import { ShopCartInterface } from '../../../../types/shop-cart/shop-cart.interface';
 @Injectable()
 export class ShopCartService {
   constructor(
@@ -25,8 +24,32 @@ export class ShopCartService {
     return `This action returns all shopCart`;
   }
 
-  findOne(id) {
-    return `This action returns all shopCart`;
+  /**
+   * 查询当前用户的购物车数据
+   * @param shopcartId
+   * @returns
+   */
+  findOne(shopcartId): Promise<ResponseBody<ShopCartInterface>> {
+    const tryExecution = async () => {
+      const shop_cart = await this._shopCartRepo.findOne({
+        where: { id: shopcartId },
+        relations: ['goods_maps'],
+      });
+      const { goods_maps } = shop_cart;
+      const struturedMaps = goods_maps.map(map => {
+        const {
+          G_id: goodsId,
+          G_thumb: thumb,
+          G_info: name,
+          G_price: price,
+        } = map.good;
+        const { id, quantity } = map;
+        const struturedMap = { id, goodsId, name, thumb, price,quantity };
+        return struturedMap;
+      });
+      return this._responseSrv.success(struturedMaps);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
   }
 
   /**
@@ -36,14 +59,16 @@ export class ShopCartService {
    */
   create(shopcartId: string, goodsId: string, quantity: number) {
     const tryExecution = async () => {
-      const shop_cart = await this._shopCartRepo.findOne(shopcartId);
+      const shop_cart = await this._shopCartRepo.findOne(shopcartId, {
+        relations: ['goods_maps'],
+      });
       const good = await this._goodsRepo.findOne(goodsId);
-      const new_map = await this._cartGoodsMapRepo.save({
+      const new_map = await this._cartGoodsMapRepo.create({
         good,
         quantity,
       });
-      if (!shop_cart.hasOwnProperty('goods_maps')) shop_cart.goods_maps = [];
       shop_cart.goods_maps.push(new_map);
+      await this._cartGoodsMapRepo.insert(new_map);
       await this._shopCartRepo.save(shop_cart);
       return this._responseSrv.success(null);
     };
