@@ -109,8 +109,7 @@ export default class GoodsDetails extends Vue {
   // ===================================================================
   beforeMount() {
     const { id } = this.$route.params;
-    if(id !== 'success-tip')
-    this.getGoodsDetails(id);
+    if (id !== 'success-tip') this.getGoodsDetails(id);
   }
   // Methods
   // ===================================================================
@@ -119,12 +118,6 @@ export default class GoodsDetails extends Vue {
     try {
       const res = await getGoodsById(goodsId);
       if (res.status !== 0) {
-        this.$message({
-          showClose: true,
-          message: 'Failed to load goods data ,Service Error',
-          type: 'error',
-          center: true,
-        });
         throw Error(JSON.stringify(res));
       }
       const {
@@ -136,6 +129,12 @@ export default class GoodsDetails extends Vue {
       } = res.data?.good;
       this.goods = { category, id, info, price, thumb };
     } catch (err) {
+      this.$message({
+        showClose: true,
+        message: 'Failed to load goods data ,Service Error',
+        type: 'error',
+        center: true,
+      });
       console.log(err);
     }
   }
@@ -174,17 +173,17 @@ export default class GoodsDetails extends Vue {
       // 不存在，尝试发送请求添加到购物车
       const res = await addGoodsQuantityMap(id, this.buyNum);
       if (res.status !== 0) {
-        this.$message({
-          showClose: true,
-          message: 'Failed to add goods to shopcart , Please try again later.',
-          type: 'error',
-          center: true,
-        });
         throw Error(JSON.stringify(res));
       }
       // 跳转到成功添加的提示页
       this.$router.push({ name: 'success-tip' });
     } catch (err) {
+      this.$message({
+        showClose: true,
+        message: 'Failed to add goods to shopcart , Please try again later.',
+        type: 'error',
+        center: true,
+      });
       console.log(err);
     }
   }

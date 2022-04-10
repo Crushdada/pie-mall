@@ -246,12 +246,6 @@ export default class ShopCart extends Mixins(ShopCartMixin) {
     try {
       const res = await deleteGoodsFromCart(delIds);
       if (res.status !== 0) {
-        this.$message({
-          showClose: true,
-          message: 'Delete goods failed,Please try again later.',
-          type: 'error',
-          center: true,
-        });
         throw Error(JSON.stringify(res));
       }
       if (isString(delIds)) {
@@ -265,6 +259,12 @@ export default class ShopCart extends Mixins(ShopCartMixin) {
         });
       }
     } catch (err) {
+      this.$message({
+        showClose: true,
+        message: 'Delete goods failed,Please try again later.',
+        type: 'error',
+        center: true,
+      });
       console.log(err);
     }
     this.loading = false;
@@ -283,16 +283,16 @@ export default class ShopCart extends Mixins(ShopCartMixin) {
     try {
       const res = await setGoodsQuantityMap(goodsMapId, newQuantity);
       if (res.status !== 0) {
-        this.$message({
-          showClose: true,
-          message: 'Patched shopcart goods failed,Please try again later.',
-          type: 'error',
-          center: true,
-        });
         this.$set(row, 'quantity', oldQuantity);
         throw Error(JSON.stringify(res));
       }
     } catch (err) {
+      this.$message({
+        showClose: true,
+        message: 'Patched shopcart goods failed,Please try again later.',
+        type: 'error',
+        center: true,
+      });
       console.log(err);
     }
   }

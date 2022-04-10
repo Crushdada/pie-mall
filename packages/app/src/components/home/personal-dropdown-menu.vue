@@ -57,17 +57,16 @@ export default class PersonalDropdownMenu extends Vue {
       const res = await signOut(this.userTicket);
       // 请求失败
       if (res.status !== 0) {
-        console.log(`🙈${res.detail}`);
-        this.$message({
-          showClose: true,
-          message: 'Log out failed',
-          type: 'error',
-          center: true,
-        });
-        throw Error('🙈退出登录失败，请重试');
+        throw Error(JSON.stringify(res));
       }
     } catch (err) {
       console.log(err);
+      this.$message({
+        showClose: true,
+        message: 'Log out failed',
+        type: 'error',
+        center: true,
+      });
     }
     // 成功退出登录
     // 删除客户端存储的ticket，更改登录状态

@@ -119,7 +119,7 @@ export default class HeaderBar extends Mixins(ShopCartMixin) {
   /** Hooks*/
   // ===================================================================
   async mounted() {
-    await this.loadShopCart(); // 加载购物车数据
+    if (this.signed) await this.loadShopCart(); // 加载购物车数据
   }
   /** Methods*/
   // ===================================================================

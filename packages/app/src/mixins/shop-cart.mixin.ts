@@ -33,17 +33,15 @@ export default class ShopCartMixin extends Vue {
     }, 0);
   }
 
-  @Watch('signed', { immediate: true })
+  @Watch('signed')
   onSignedStateChange(newVal: boolean) {
     if (!newVal) return;
     // 如果是登录状态，请求购物车数据
     this.loadShopCart();
   }
   @Watch('shopcart', { deep: true })
-  onShopCartChange(newVal: boolean) {
-    if (!newVal) return;
-    // 如果是登录状态，请求购物车数据
-    this.loadShopCart();
+  onShopCartChange() {
+    this.$forceUpdate();
   }
   /**
    * 登录状态改变后，加载购物车数据
@@ -52,24 +50,16 @@ export default class ShopCartMixin extends Vue {
     try {
       const res = await getShopCart();
       if (res.status !== 0) {
-        this.$message({
-          showClose: true,
-          message: 'Loading shopcart goods failed,Please try again later.',
-          type: 'error',
-          center: true,
-        });
         throw Error(JSON.stringify(res));
-      }
-      if (!res.data) {
-        this.$message({
-          showClose: true,
-          message: 'Loading shopcart goods failed,Please try again later.',
-          type: 'error',
-          center: true,
-        });
       }
       this.shopcart = res.data;
     } catch (err) {
+      this.$message({
+        showClose: true,
+        message: 'Loading shopcart goods failed,Please try again later.',
+        type: 'error',
+        center: true,
+      });
       console.log(err);
     }
   }
