@@ -19,6 +19,14 @@ export class ShopCartService {
     private readonly _cartGoodsMapRepo: Repository<CartGoodsMap>,
     private readonly _responseSrv: ResponseService,
   ) {}
+  /**
+   * return ResponseBody<err>
+   */
+  sessionExpired() {
+    return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+      detail: '🙈登录状态失效，请重新登录',
+    });
+  }
 
   findAll() {
     return `This action returns all shopCart`;
@@ -44,7 +52,7 @@ export class ShopCartService {
           G_price: price,
         } = map.good;
         const { id, quantity } = map;
-        const struturedMap = { id, goodsId, name, thumb, price,quantity };
+        const struturedMap = { id, goodsId, name, thumb, price, quantity };
         return struturedMap;
       });
       return this._responseSrv.success(struturedMaps);
@@ -126,24 +134,22 @@ export class ShopCartService {
   }
 
   /**
-   * 从购物车删除商品
+   * 根据商品映射id从购物车删除商品
    * @param ids
    * @returns ResponseBody<any>
    */
-  delete(
-    shopcartId: string,
-    delIds: string | Array<string>,
-  ): Promise<ResponseBody<any>> {
+  delete(delIds: string | Array<string>): Promise<ResponseBody<any>> {
     const tryExecution = async () => {
-      if (!shopcartId) {
-        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {});
-      }
-      const shopCart = await this._shopCartRepo.findOne(shopcartId);
+      // const shopCart = await this._shopCartRepo.findOne(shopcartId);
       // 删除映射，能否同时删除goods_map实体？
-      shopCart.goods_maps = shopCart.goods_maps.filter(goods_map => {
-        return !delIds.includes(goods_map.good.G_id);
-      });
-      this._shopCartRepo.save(shopCart);
+      // shopCart.goods_maps = shopCart.goods_maps.filter(goods_map => {
+      //   return !delIds.includes(goods_map.good.G_id);
+      // });
+      // this._shopCartRepo.save(shopCart);
+      if (!delIds || delIds.length === 0) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
+      }
+      this._cartGoodsMapRepo.delete(delIds);
       return this._responseSrv.success(null);
     };
     return this._responseSrv.tryExecute(tryExecution);

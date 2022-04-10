@@ -174,7 +174,7 @@ export class UserService {
   ): Promise<ResponseBody<any>> {
     return this._responseSrv.tryExecute(async () => {
       const { client } = session;
-      const userId  = session.userProfile?.userId;
+      const userId  = session?.userProfile?.userId;
       // 验证session，只有二次登录，session中才有该字段
       if (!userId) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
