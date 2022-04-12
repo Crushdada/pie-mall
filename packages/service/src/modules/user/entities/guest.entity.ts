@@ -17,6 +17,17 @@ export class Guest extends UserProfile {
   role: GuestRole;
 
   /**
+   * 默认收货地址
+   */
+  @OneToOne(() => ReceivingAddress, {
+    eager: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  default_address: ReceivingAddress;
+
+  /**
    * 收货地址
    */
   @OneToMany(() => ReceivingAddress, ReceivingAddress => ReceivingAddress.user)
@@ -27,7 +38,7 @@ export class Guest extends UserProfile {
    */
   @OneToMany(() => Order, Order => Order.guest)
   orders: Order[];
-  
+
   /**
    * 购物车
    */

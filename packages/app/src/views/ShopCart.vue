@@ -2,33 +2,10 @@
   <div class="shop-cart">
     <el-container class="h-screen" direction="vertical">
       <!-- header -->
-      <el-header
-        class="header flex flex-row flex-nowrap justify-between items-center"
-        style="height: 100px; padding: 0 160px; color: #757575"
-      >
-        <div
-          class="flex flex-row flex-nowrap justify-around items-center space-x-4"
-        >
-          <img
-            class="mr-6 object-cover object-center cursor-pointer"
-            style="width: 56px; height: 56px"
-            src="@/assets/pie-app-logo.svg"
-            alt="pie mall logo"
-          />
-          <h1 style="font-size: 28px">我的购物车</h1>
-          <span class="text-xs self-end pb-3">
-            温馨提示：产品是否购买成功，以最终下单为准哦，请尽快结算
-          </span>
-        </div>
-
-        <div class="right-tab text-xs">
-          <PersonalDropdownMenu style="color: #757575" />
-          <span class="divider">|</span>
-          <a class="pl-4" @click="() => $router.push({ name: 'order' })"
-            >我的订单</a
-          >
-        </div>
-      </el-header>
+      <processing-header
+        title="我的购物车"
+        desc="温馨提示：产品是否购买成功，以最终下单为准哦，请尽快结算"
+      />
       <!-- body -->
       <main class="bg-gray-100 relative pb-10" style="padding: 0 160px">
         <el-card class="main-section bg-white mt-8">
@@ -75,10 +52,7 @@
               </template>
               <template slot-scope="scope">
                 <div class="pl-14">
-                  <a
-                    @click="
-                      () => $router.push({ path: `goods/${scope.row.id}` })"
-                  >
+                  <a @click="navi2GoodsDetails(scope.row.id)">
                     {{ scope.row.name }}
                   </a>
                 </div>
@@ -176,6 +150,7 @@
                 style="width: 200px; height: 50px; font-size: 18px"
                 type="primary"
                 icon="el-icon-edit-outline"
+                @click.native="handleNavi2BillingPage"
               >
                 去结算
               </el-button>
@@ -194,14 +169,16 @@
 
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
-import PersonalDropdownMenu from '@/components/home/personal-dropdown-menu.vue';
-import { isString } from '@/utils/getType';
-import { deleteGoodsFromCart } from '@/api/shop-cart/delete-goods-from-cart.ts';
 import { debounce } from 'lodash';
-import { setGoodsQuantityMap } from '@/api/shop-cart/set-goods-quantity-map.ts';
+import { isString } from '@/utils/getType';
 import ShopCartMixin from '@/mixins/shop-cart.mixin.ts';
+import { deleteGoodsFromCart } from '@/api/shop-cart/delete-goods-from-cart.ts';
+import { setGoodsQuantityMap } from '@/api/shop-cart/set-goods-quantity-map.ts';
+import PersonalDropdownMenu from '@/components/home/personal-dropdown-menu.vue';
+import ProcessingHeader from '@/components/ProcessingHeader.vue';
+
 @Component({
-  components: { PersonalDropdownMenu },
+  components: { PersonalDropdownMenu, ProcessingHeader },
 })
 export default class ShopCart extends Mixins(ShopCartMixin) {
   private selectedGoods = []; // 已选中的rows
@@ -227,6 +204,9 @@ export default class ShopCart extends Mixins(ShopCartMixin) {
   }
   // Methods
   // ===================================================================
+  navi2GoodsDetails(id) {
+    this.$router.push({ path: `goods/${id}` });
+  }
   // 表格已选项变化
   handleSelectionChange(selectedGoods) {
     this.selectedGoods = selectedGoods;
@@ -296,6 +276,13 @@ export default class ShopCart extends Mixins(ShopCartMixin) {
       console.log(err);
     }
   }
+  // 在跳转到订单页面之前，用事件车传递勾选的商品
+  handleNavi2BillingPage() {
+    this.$router.push({
+      name: 'billing-page',
+      query: { selectedGoods: this.selectedGoods },
+    });
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -303,8 +290,7 @@ export default class ShopCart extends Mixins(ShopCartMixin) {
 .divider {
   color: $gray-text1;
 }
-.main-section,
-h1 {
+.main-section {
   color: $dark-text;
 }
 .translate-bottom {
@@ -314,9 +300,5 @@ h1 {
 }
 .total-bar {
   box-shadow: 0 2px 5px 4px hsl(0deg 0% 24% / 10%);
-}
-.header {
-  box-shadow: 0 2px 5px 0 hsl(0deg 0% 24% / 10%);
-  border-bottom: 2px $primary solid;
 }
 </style>
