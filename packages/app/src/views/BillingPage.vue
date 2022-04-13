@@ -76,13 +76,17 @@
               </el-drawer>
             </div>
             <!-- 默认收货地址 -->
-            <li class="flex flex-row items-center p-4" style="font-size: 14px">
+            <li
+              v-if="defaultAddress.address"
+              class="flex flex-row items-center p-4"
+              style="font-size: 14px"
+            >
               <!-- 收货人 -->
               <div
-                class="default-address-btn flex items-center justify-center relative cursor-pointer w-40 rounded"
+                class="default-address-btn flex items-center justify-center relative cursor-pointer w-40 rounded pl-4 pr-2"
                 style="height: 30px"
               >
-                <span>{{ defaultAddress.consignee_name }}</span
+                <span class="truncate">{{ defaultAddress.consignee_name }}</span
                 >&nbsp;
                 <b></b>
               </div>
@@ -96,7 +100,12 @@
                   <span>{{ defaultAddress.phone }}</span>
                 </div>
                 <div class="pr-10 operation-bar">
-                  <el-button type="text" class="primary">编辑</el-button>
+                  <el-button
+                    type="text"
+                    class="primary"
+                    @click.native="handleEditAddress(defaultAddress)"
+                    >编辑</el-button
+                  >
                 </div>
               </div>
             </li>
@@ -104,7 +113,7 @@
             <el-collapse accordion class="">
               <el-collapse-item>
                 <template slot="title">
-                  <span class="pl-14"> 选择其他收货地址</span>
+                  <span class="pl-11"> 选择其他收货地址</span>
                 </template>
                 <ul class="" style="font-size: 14px">
                   <li
@@ -114,12 +123,14 @@
                   >
                     <!-- 收货人 -->
                     <div
-                      class="address-select-btn flex items-center justify-center relative w-40 cursor-pointer rounded"
+                      class="address-select-btn flex items-center justify-center relative w-40 cursor-pointer rounded pl-4 pr-2"
                       style="height: 30px"
-                      @click="changeDefaultAddress(addressItem.id)"
+                      @click="changeDefaultAddress(addressItem, i)"
                     >
-                      <span>{{ addressItem.consignee_name }}</span
-                      >&nbsp;
+                      <span class="truncate">
+                        {{ addressItem.consignee_name }}
+                      </span>
+                      &nbsp;
                     </div>
                     <!-- 收货信息 & 操作栏 -->
                     <div
@@ -133,11 +144,24 @@
                       </div>
                       <!-- 操作栏 -->
                       <div class="pr-10 operation-bar">
-                        <el-button type="text" class="">
+                        <el-button
+                          type="text"
+                          @click.native="changeDefaultAddress(addressItem, i)"
+                        >
                           设为默认地址
                         </el-button>
-                        <el-button type="text" class=""> 编辑 </el-button>
-                        <el-button type="text" class=""> 删除 </el-button>
+                        <el-button
+                          type="text"
+                          @click.native="handleEditAddress(addressItem)"
+                        >
+                          编辑
+                        </el-button>
+                        <el-button
+                          type="text"
+                          @click.native="handleDeleteAddress(addressItem, i)"
+                        >
+                          删除
+                        </el-button>
                       </div>
                     </div>
                   </li>
@@ -158,17 +182,17 @@
 
 <script lang="ts">
 import { Component, Vue, Ref } from 'vue-property-decorator';
-import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
-import { getUserProfile } from '@/api/user/get-user-profile';
-import HeaderBar from '@/components/home/HeaderBar.vue';
-import GoodsTabBar from '../components/home/GoodsTabBar.vue';
-import HomeCaroucel from '../components/home/HomeCarousel.vue';
-import PersonalRecoGoods from '../components/home/PersonalRecoGoods.vue';
-import GoodZones from '../components/home/GoodZones.vue';
 import PersonalDropdownMenu from '@/components/home/personal-dropdown-menu.vue';
 import ProcessingHeader from '@/components/ProcessingHeader.vue';
-import { Drawer, Button } from 'element-ui';
+import { Drawer } from 'element-ui';
 import PInputPure from '@/components/pure-coms/PInputPure.vue';
+import { insertAddress } from '@/api/receiving-address/add-new-address.ts';
+import { getAddresses } from '@/api/receiving-address/get-addresses.ts';
+import { updateAddress } from '@/api/receiving-address/update-address.ts';
+import { setDefaultAddress } from '@/api/receiving-address/set-default-address.ts';
+import { deleteAddress } from '@/api/receiving-address/delete-address.ts';
+import { cloneDeep } from 'lodash';
+
 @Component({
   components: { PersonalDropdownMenu, ProcessingHeader, PInputPure },
 })
@@ -199,11 +223,9 @@ export default class BillingPage extends Vue {
   private loading = false; // 抽屉表单(按钮)提交状态
   private timer = null; // 配合动画时延关闭抽屉使用的计时器
   private showDrawer = false; // 展示抽屉
-  private formData = {
-    address: '',
-    consignee_name: '',
-    phone: '',
-  };
+  private isUpdate = false; // 触发抽屉的是否为了“更新地址”
+  private formData = {}; // 抽屉表单的状态
+  private triggerEditAddress = {}; // 记录编辑地址的触发源
 
   @Ref('drawer') readonly drawer: Drawer;
 
@@ -212,6 +234,40 @@ export default class BillingPage extends Vue {
   /** Hooks */
   // ===================================================================
   mounted() {
+    this.initState();
+    this.routeParamsPersistence();
+  }
+  destroyed() {
+    localStorage.removeItem('orderGoods');
+  }
+  // Methods
+  // ===================================================================
+  // 请求服务端数据
+  async initState() {
+    try {
+      const res = await getAddresses();
+      if (res.status !== 0) {
+        throw Error(JSON.stringify(res));
+      }
+      const { data } = res;
+      const { defaultAddress, addressList } = data;
+      this.defaultAddress = defaultAddress;
+      // 从地址列表删去默认地址
+      this.addressList = addressList.filter(
+        addressInfo => addressInfo.id !== defaultAddress.id,
+      );
+    } catch (err) {
+      console.log(err);
+      this.$message({
+        showClose: true,
+        message: '购物车数据请求失败,请稍后重试',
+        type: 'error',
+        center: true,
+      });
+    }
+  }
+  // 持久化路由传参
+  routeParamsPersistence() {
     if (!localStorage.getItem('orderGoods')) {
       const oriGoods = this.$route.query.selectedGoods;
       this.orderGoods = oriGoods;
@@ -221,66 +277,110 @@ export default class BillingPage extends Vue {
       this.orderGoods = JSON.parse(orderGoodsStr);
     }
   }
-  destroyed() {
-    localStorage.removeItem('orderGoods');
+  // 编辑地址
+  handleEditAddress(addressInfo) {
+    // 为了复用drawer组件，用一个boolean类型的flag区分一下新增和更新地址
+    this.isUpdate = true;
+    this.triggerEditAddress = addressInfo;
+    this.formData = cloneDeep(addressInfo);
+    this.showDrawer = true;
   }
-  // Methods
-  // ===================================================================
-  changeDefaultAddress(addressId) {
-    console.log('addressId=', addressId);
+  // 删除地址
+  async handleDeleteAddress(addressItem, index) {
+    try {
+      const { id } = addressItem;
+      const res = await deleteAddress(id);
+      if (res.status !== 0) {
+        throw Error(JSON.stringify(res));
+      }
+      // 从地址列表删去该地址
+      this.addressList.splice(index, 1);
+    } catch (err) {
+      console.log(err);
+      this.$message({
+        showClose: true,
+        message: '更改默认地址失败,请稍后重试',
+        type: 'error',
+        center: true,
+      });
+    }
+  }
+  // 更改默认地址
+  async changeDefaultAddress(addressInfo, index) {
+    try {
+      const { id } = addressInfo;
+      const res = await setDefaultAddress(id);
+      if (res.status !== 0) {
+        throw Error(JSON.stringify(res));
+      }
+      this.addressList.push(cloneDeep(this.defaultAddress));
+      this.defaultAddress = addressInfo;
+      // 从地址列表删去默认地址,同时把默认地址填入地址列表
+      this.addressList.splice(index, 1);
+    } catch (err) {
+      console.log(err);
+      this.$message({
+        showClose: true,
+        message: '更改默认地址失败,请稍后重试',
+        type: 'error',
+        center: true,
+      });
+    }
   }
   // 关闭表单前提问是否提交
   handleSubmitNewAddress(done) {
     if (this.loading) {
+      if (this.isUpdate) this.isUpdate = false;
       return;
     }
     this.$confirm('确定要提交表单吗？')
       .then(async _ => {
         this.loading = true;
         // 请求新增一条收货信息
-        console.log(this.formData);
-        // const res = await insertAddress(this.formData);
-        // 失败
-        // if (res.status !== 0) {
-        //   console.log(`🙈${res.detail}`);
-        //   this.$message({
-        //     showClose: true,
-        //     message: '新增收货地址失败，请重试',
-        //     type: 'error',
-        //     center: true,
-        //   });
-        //   return;
-        // }
-        // // 成功
-        // setTimeout(() => {
-        //   this.$message({
-        //     showClose: true,
-        //     message: '成功新增一条收货地址！',
-        //     type: 'success',
-        //     center: true,
-        //   });
-        // }, 2000);
-
-        // this.timer = setTimeout(() => {
-        //   done();
-        //   // 动画关闭需要一定的时间
-        //   setTimeout(() => {
-        //     this.loading = false;
-        //     // 清空抽屉的表单状态
-        //     Object.keys(this.formData).forEach(key => {
-        //       this.formData[key] = '';
-        //     });
-        //   }, 400);
-        // }, 2000);
+        const res = this.isUpdate
+          ? await updateAddress(this.formData)
+          : await insertAddress(this.formData);
+        //失败
+        if (res.status !== 0) {
+          this.$message({
+            showClose: true,
+            message: '更新地址失败',
+            type: 'error',
+            center: true,
+          });
+          throw Error(JSON.stringify(res));
+        }
+        // 成功
+        if (this.isUpdate) {
+          this.triggerEditAddress = Object.assign(
+            this.triggerEditAddress,
+            cloneDeep(this.formData),
+          );
+          this.isUpdate = false;
+        }
+        this.initState();
+        this.timer = setTimeout(() => {
+          done();
+          // 动画关闭需要一定的时间
+          setTimeout(() => {
+            this.loading = false;
+            // 清空抽屉的表单状态
+            Object.keys(this.formData).forEach(key => {
+              this.formData[key] = '';
+            });
+          }, 400);
+        }, 2000);
       })
       .catch(err => {
         console.log(err);
+        if (this.isUpdate) this.isUpdate = false;
       });
   }
   // 取消提交新增数据的表单
   cancelForm() {
     this.loading = false;
     this.showDrawer = false;
+    if (this.isUpdate) this.isUpdate = false;
     clearTimeout(this.timer);
   }
 }

@@ -12,6 +12,8 @@ import { Guest } from './entities/guest.entity';
 import { ReceivingAddress } from './entities/guest-address.entity';
 import { StaticResourceService } from '../static-resource/static-resource.service';
 import { ShopCart } from '../shop-cart/entities/shop-cart.entity';
+import { insertAddressDto } from './dto/insert-address.dto';
+import { updateAddressDto } from './dto/update-address.dto';
 
 @Injectable()
 export class UserService {
@@ -28,13 +30,91 @@ export class UserService {
     private readonly _jwtSrv: JwtAuthService,
     private readonly _staticResourceSrv: StaticResourceService,
   ) {}
+  /**
+   * app端用户删除一条收货地址
+   * @param addressId
+   */
+  deleteAddress(addressId: string) {
+    return this._responseSrv.tryExecute(async () => {
+      await this._guestAddressRepo.delete(addressId);
+      return this._responseSrv.success(null);
+    });
+  }
+
+  /**
+   * 用户选择默认收货地址
+   * @param userId
+   * @param defaultAddressId
+   */
+  setDefaultAddress(userId: string, defaultAddressId: string) {
+    return this._responseSrv.tryExecute(async () => {
+      const guest = await this._guestRepo.findOne(userId);
+      const address = await this._guestAddressRepo.findOne(defaultAddressId);
+      guest.default_address = address;
+      await this._guestRepo.save(guest);
+      return this._responseSrv.success(null);
+    });
+  }
+
+  /**
+   * 用户编辑更新收货地址
+   * @param userId
+   * @param addressInfo
+   */
+  updateAddress(addressInfo: updateAddressDto) {
+    return this._responseSrv.tryExecute(async () => {
+      await this._guestAddressRepo.save(addressInfo);
+      return this._responseSrv.success(null);
+    });
+  }
+
+  /**
+   * 用户新增收货地址
+   * @param userId
+   * @param addressInfo
+   */
+  insertAddress(userId: string, addressInfo: insertAddressDto) {
+    return this._responseSrv.tryExecute(async () => {
+      const guest = await this._guestRepo.findOne(userId);
+      const newAddress = await this._guestAddressRepo.save({
+        ...addressInfo,
+        user: guest,
+      });
+      guest.default_address = newAddress;
+      await this._guestRepo.save(guest);
+      return this._responseSrv.success(null);
+    });
+  }
+
+  /**
+   * 查询用户的默认收货地址及收货地址列表
+   * @param userId
+   * @returns { string } defaultAddress
+   * @returns { Array<string> } addressList
+   */
+  findAddresses(userId: string) {
+    return this._responseSrv.tryExecute(async () => {
+      const guest = await this._guestRepo.findOne({
+        where: { id: userId },
+        relations: ['receiving_address'],
+      });
+      let { default_address: defaultAddress } = guest;
+      const { receiving_address: addressList } = guest;
+      if (!defaultAddress && addressList.length !== 0) {
+        guest.default_address = addressList[0];
+        defaultAddress = addressList[0];
+        this._guestRepo.save(guest);
+      }
+      return this._responseSrv.success({ defaultAddress, addressList });
+    });
+  }
 
   /**
    * 后台添加app端用户
    * @param userProfile
    * @returns
    */
-  public async addGuest(userProfile: Partial<UserProfileInterface>) {
+  addGuest(userProfile: Partial<UserProfileInterface>) {
     return this._responseSrv.tryExecute(async () => {
       const guest = await this.addUser(userProfile, this._guestRepo);
       // 账号已存在
@@ -43,13 +123,12 @@ export class UserService {
       }
       const { address } = userProfile;
       // userId 作为地址表的外键
-      const exeResult = await this._guestAddressRepo.insert({
+      const createdAddress = await this._guestAddressRepo.create({
         address,
         user: guest,
       });
-      if (!exeResult) {
-        return this._responseSrv.error(ERROR_TYPE.UNKNOW, null);
-      }
+      guest.default_address = createdAddress;
+      await this._guestRepo.save(guest);
       // 添加账户成功
       return this._responseSrv.success({});
     });
@@ -61,7 +140,7 @@ export class UserService {
    * @param repo
    * @returns row | false
    */
-  public async addUser(
+  async addUser(
     userProfile: Partial<UserProfileInterface>,
     repo: Repository<any>,
   ) {
@@ -91,7 +170,7 @@ export class UserService {
    * 获取app端全部用户信息
    * @returns guestArray
    */
-  async getProfilesOfGuests() {
+  getProfilesOfGuests() {
     return this._responseSrv.tryExecute(async () => {
       const guests = await this._guestRepo.find({
         select: ['id', 'account', 'name', 'role'],
@@ -114,7 +193,7 @@ export class UserService {
    * @param name
    * @param userId
    */
-  public async setUserName(client: string, name: string, userId: string) {
+  setUserName(client: string, name: string, userId: string) {
     const _userRepo = {
       [process.env.PIEMALL_APP]: '_appUserRepo',
       [process.env.PIEMALL_ADMIN]: '_adminRepo',
@@ -135,7 +214,7 @@ export class UserService {
    * @param userId
    * @returns
    */
-  public async updateAvatar(
+  updateAvatar(
     client: string,
     file: Express.Multer.File,
     userId: string,
@@ -166,7 +245,7 @@ export class UserService {
    * @param userId
    * @returns
    */
-  public async getUserProfile(
+  getUserProfile(
     token: string,
     session: Record<string, any>,
   ): Promise<ResponseBody<any>> {
@@ -207,11 +286,13 @@ export class UserService {
    * @param userId
    * @returns userProfile
    */
-  public async getUserProfileById(
+  getUserProfileById(
     userId: string,
     repo: Repository<any>,
   ): Promise<UserProfileInterface> {
-    return await repo.findOne({ id: userId });
+    return this._responseSrv.tryExecute(async () => {
+      return await repo.findOne({ id: userId });
+    });
   }
 
   /**
@@ -219,7 +300,7 @@ export class UserService {
    * @param {SignAdminDto} userProfile
    * @returns ResponseBody
    */
-  public async userLogin(
+  userLogin(
     userProfile: SignDto,
     session: Record<string, any>,
   ): Promise<ResponseBody<any>> {
@@ -260,7 +341,7 @@ export class UserService {
    * @param {SignAdminDto} userProfile
    * @returns ResponseBody
    */
-  public userRegister(
+  userRegister(
     userProfile: SignDto,
     client: string,
   ): Promise<ResponseBody<any>> {
@@ -286,7 +367,7 @@ export class UserService {
    * @param session
    * @returns ResponseBody
    */
-  public async deleteUserSession(
+  deleteUserSession(
     token: string,
     session: Record<string, any>,
   ): Promise<ResponseBody<any>> {
