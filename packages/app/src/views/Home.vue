@@ -73,7 +73,7 @@ export default class Home extends Vue {
         // 认证失败
         if (res.status !== 0) {
           this.$stock.dispatch(SIGNED_OUT);
-          throw Error('🙈登录状态失效，请重新登录');
+          throw Error(JSON.stringify(res));
         }
         // 认证成功
         const { data } = res;
@@ -81,7 +81,14 @@ export default class Home extends Vue {
         this.$stock.commit(SET_USER_PROFILE, data);
         this.$stock.commit(USER_SIGNED);
       } catch (err) {
+        this.$stock.dispatch(SIGNED_OUT);
         console.log(err);
+        this.$message({
+          showClose: true,
+          message: '身份认证失败，请重试',
+          type: 'error',
+          center: true,
+        });
       }
     }
   }

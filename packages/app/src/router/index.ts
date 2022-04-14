@@ -36,7 +36,7 @@ const routes: Array<RouteConfig> = [
         component: () => import('../views/goods/GoodsDetails.vue'),
       },
       {
-        path: '/goods/success-tip',
+        path: '/goods/:id/success-tip',
         name: 'success-tip',
         component: () => import('../views/goods/Add2ShopCartSuccess.vue'),
       },

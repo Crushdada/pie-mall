@@ -14,8 +14,13 @@ export class ReceivingAddress {
   @Column()
   address: string;
 
+  @Column()
+  consignee_name: string;
+
+  @Column()
+  phone: string;
+
   @ManyToOne(() => Guest, Guest => Guest.receiving_address, {
-    eager: true,
     cascade: true,
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',

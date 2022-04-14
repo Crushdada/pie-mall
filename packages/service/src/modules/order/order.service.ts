@@ -21,6 +21,15 @@ export class OrderService {
   ) {}
 
   /**
+   * return ResponseBody<err>
+   */
+  sessionExpired() {
+    return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+      detail: '🙈登录状态失效，请重新登录',
+    });
+  }
+
+  /**
    * This action adds a new order
    * @param guestId
    * @returns ResponseBody
@@ -29,6 +38,10 @@ export class OrderService {
     guestId: string,
     payload: CreateOrderDto,
   ): Promise<ResponseBody<any>> {
+    if (!guestId)
+      return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+        detail: `🙈请求失败，找不到Id=${guestId}的用户！`,
+      });
     const { address } = payload;
     const tryExecution = async () => {
       const guest = await this._guestRepo.findOne({ id: guestId });
