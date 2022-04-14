@@ -108,7 +108,7 @@ export default class GoodsDetails extends Vue {
   }
   /** Hooks */
   // ===================================================================
-  beforeMount() {
+  created() {
     const { id } = this.$route.params;
     this.getGoodsDetails(id);
   }

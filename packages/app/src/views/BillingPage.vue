@@ -7,10 +7,10 @@
         desc="温馨提示：产品是否购买成功，以最终下单为准哦，请尽快结算"
       />
       <!-- body -->
-      <main class="bg-gray-100 relative pb-10 h-full" style="padding: 0 160px">
-        <el-card class="main-section flex flex-col bg-white mt-8">
+      <main class="bg-gray-100 relative pb-10 h-max" style="padding: 0 160px">
+        <el-card class="main-section flex flex-col bg-white mt-8 mb-8 p-4">
           <!-- 收货地址信息 -->
-          <div class="p-4">
+          <div>
             <!-- 顶部header -->
             <div class="flex justify-between">
               <strong class="text-lg">收货人信息</strong>
@@ -169,6 +169,135 @@
               </el-collapse-item>
             </el-collapse>
           </div>
+          <!-- 支付方式 -->
+          <div class="my-6">
+            <div class="flex justify-between">
+              <strong class="text-lg">支付方式</strong>
+            </div>
+            <div
+              class="default-address-btn flex items-center justify-center relative cursor-pointer w-40 rounded mt-4 ml-4 pl-2 pr-2"
+              style="height: 30px"
+            >
+              <span>在线支付</span>
+              <b></b>
+            </div>
+          </div>
+          <el-divider></el-divider>
+          <!-- 配送方式 -->
+          <div class="my-6">
+            <div class="flex justify-between">
+              <strong class="text-lg">配送方式</strong>
+            </div>
+            <div
+              class="default-address-btn flex items-center justify-center relative cursor-pointer w-40 rounded mt-4 ml-4 pl-2 pr-2"
+              style="height: 30px"
+            >
+              <span>包邮</span>
+              <b></b>
+            </div>
+          </div>
+          <el-divider></el-divider>
+          <!-- 送货清单 -->
+          <div class="my-6">
+            <div class="flex justify-between pb-4">
+              <strong class="text-lg">送货清单</strong>
+            </div>
+            <div
+              v-for="(goodsMap, i) in orderGoods"
+              :key="i"
+              class="goods-list rounded p-4 text-sm"
+            >
+              <div class="inline-block">
+                <a @click="navi2GoodsPage(goodsMap.goodsId)">
+                  <img
+                    class="object-cover object-center cursor-pointer"
+                    style="width: 100px; height: 100px"
+                    :src="goodsMap.thumb"
+                    alt
+                  />
+                </a>
+              </div>
+              <div class="inline-block pt-4 pl-4 align-top">
+                <p
+                  class="inline-block truncate cursor-pointer hover-primary"
+                  style="width: 700px"
+                  @click="navi2GoodsPage(goodsMap.goodsId)"
+                >
+                  {{ goodsMap.name }}
+                </p>
+                <span class="primary text-lg pl-16">
+                  <em>￥{{ goodsMap.price }}</em></span
+                >
+                <span class="pl-6">x{{ goodsMap.quantity }}</span>
+                <br />
+                <el-tag class="mt-4" type="primary" size="small">
+                  <i class="el-icon-s-goods" style="font-size: 16px"></i>
+                  支持7天无理由退货（防伪签、密封条损毁不支持）
+                </el-tag>
+              </div>
+            </div>
+          </div>
+          <el-divider></el-divider>
+          <!-- 订单统计 -->
+          <div
+            class="my-6 p-4 rounded"
+            style="background: #f5f5f5; color: #999; overflow: hidden"
+          >
+            <!-- float-left -->
+            <div
+              class="conut-lines flex flex-col space-y-1"
+              style="float: left"
+            >
+              <div>
+                商品件数：<em class="primary">{{ totalNums }}件</em>
+              </div>
+              <div>
+                商品总价：<em class="primary">￥{{ totalPrice }}</em>
+              </div>
+              <div>活动优惠：<em class="primary">-0</em></div>
+              <div>优惠券抵扣：<em class="primary">-0</em></div>
+              <div>运费：<em class="primary">-0</em></div>
+              <div>
+                应付总额：<em class="primary">￥{{ totalPrice }}</em>
+              </div>
+            </div>
+            <!-- float-right -->
+            <div
+              class="flex flex-col h-40 justify-end float-right overflow-hidden space-y-1 pr-1"
+            >
+              <div class="float-right">
+                应付总额：<em class="primary text-lg font-bold"
+                  >￥{{ totalPrice }}</em
+                >
+              </div>
+              <div class="float-right">
+                寄送至：<em class="primary">{{ defaultAddress.address }}</em>
+              </div>
+              <div class="float-right">
+                收货人：<em class="primary">{{
+                  defaultAddress.consignee_name
+                }}</em>
+              </div>
+            </div>
+          </div>
+          <!-- btns -->
+          <div class="float-right space-x-6">
+            <el-button
+              class="h-10 w-36 relative"
+              plain
+              style="color: gray"
+              @click="() => $router.push({ name: 'shop-cart' })"
+            >
+              返回购物车
+            </el-button>
+            <el-button
+              class="h-10 w-36 relative"
+              type="primary"
+              @click="() => $router.push({ name: 'shop-cart' })"
+            >
+              提交订单
+            </el-button>
+          </div>
         </el-card>
       </main>
       <!-- Footer -->
@@ -192,33 +321,20 @@ import { updateAddress } from '@/api/receiving-address/update-address.ts';
 import { setDefaultAddress } from '@/api/receiving-address/set-default-address.ts';
 import { deleteAddress } from '@/api/receiving-address/delete-address.ts';
 import { cloneDeep } from 'lodash';
+import { navi2GoodsDetailPage } from '@/utils/navi-2-goods-detail-page';
 
 @Component({
   components: { PersonalDropdownMenu, ProcessingHeader, PInputPure },
+  beforeRouteEnter(to, from, next) {
+    if (from.name === 'shop-cart') localStorage.removeItem('orderGoods');
+    next();
+  },
 })
 export default class BillingPage extends Vue {
   private orderGoods = [];
   // 收货地址信息
-  private defaultAddress = {
-    id: 'as',
-    consignee_name: '小西八',
-    phone: '12321332',
-    address: '旧金山佛旧金山佛罗罗旧金山佛罗里变态e里变态e',
-  };
-  private addressList = [
-    {
-      id: 'as',
-      consignee_name: '小西八',
-      phone: '12321332',
-      address: '旧金山佛旧金山佛罗罗旧金山佛罗里变态e里变态e',
-    },
-    {
-      id: 'as',
-      consignee_name: '小西八',
-      phone: '12321332',
-      address: '旧金山佛旧金山佛罗罗旧金山佛罗里变态e里变态e',
-    },
-  ]; //该用户曾用的收货地址
+  private defaultAddress = {};
+  private addressList = []; //该用户曾用的收货地址
   // drawer抽屉 (form提交表单)
   private loading = false; // 抽屉表单(按钮)提交状态
   private timer = null; // 配合动画时延关闭抽屉使用的计时器
@@ -231,14 +347,24 @@ export default class BillingPage extends Vue {
 
   /** Computed*/
   // ===================================================================
+
+  //购物车商品件数
+  get totalNums() {
+    return this.orderGoods.reduce(function getTotalNums(total, good) {
+      return (total += parseInt(good.quantity));
+    }, 0);
+  }
+  // 购物车商品总价
+  get totalPrice() {
+    return this.orderGoods.reduce(function getTotalPrice(total, good) {
+      return (total += parseInt(good.price) * parseInt(good.quantity));
+    }, 0);
+  }
   /** Hooks */
   // ===================================================================
   mounted() {
     this.initState();
     this.routeParamsPersistence();
-  }
-  destroyed() {
-    localStorage.removeItem('orderGoods');
   }
   // Methods
   // ===================================================================
@@ -277,6 +403,12 @@ export default class BillingPage extends Vue {
       this.orderGoods = JSON.parse(orderGoodsStr);
     }
   }
+
+  // 跳转到商品详情页
+  navi2GoodsPage(goodsId) {
+    navi2GoodsDetailPage(goodsId);
+  }
+
   // 编辑地址
   handleEditAddress(addressInfo) {
     // 为了复用drawer组件，用一个boolean类型的flag区分一下新增和更新地址
@@ -416,6 +548,16 @@ b {
   color: #005ea7;
   &:hover {
     color: $primary;
+  }
+}
+.goods-list {
+  background-color: #f3fbfe;
+}
+
+.conut-lines > div {
+  width: 200px;
+  & > em {
+    float: right;
   }
 }
 </style>
