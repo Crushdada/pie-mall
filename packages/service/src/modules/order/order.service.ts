@@ -8,6 +8,7 @@ import { Order } from './entities/order.entity';
 import { Guest } from '../user/entities/guest.entity';
 import { ReceivingAddress } from '../user/entities/guest-address.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { createClient } from 'redis';
 @Injectable()
 export class OrderService {
   constructor(
@@ -19,6 +20,39 @@ export class OrderService {
     @InjectRepository(ReceivingAddress)
     private readonly _addressRepo: Repository<ReceivingAddress>,
   ) {}
+
+   orderExpirationProcessing(orderId: string) {
+    if (!orderId) {
+      return;
+    }
+    const CONF = {
+      port: 6379,
+      host: 'localhost',
+      db: 0, // 要与redis服务器的redis.windows-service.conf 配置的db一致
+      orderExpired: 15 * 60, // 15分钟
+    };
+    const client = createClient(CONF.port, CONF.host);
+    client.set(orderId, '');
+    client.expire(orderId, CONF.orderExpired);
+    client.send_command(
+      'config',
+      ['set', 'notify-keyspace-events', 'Ex'],
+      SubscribeExpired,
+    );
+    function SubscribeExpired(err, res) {
+      if (err) {
+        return;
+      }
+      const expired_subKey = `__keyevent@${CONF.db}__:expired`; //订阅key过期事件
+      client.subscribe(expired_subKey, () => {
+        client.on('message', function (event, orderId) {
+          // 第二个参数是msg | key
+          // 根据orderId，查找order状态，如果未支付，删除order；最后删除redis_key
+          console.log('Id:' + orderId);
+        });
+      });
+    }
+  }
 
   /**
    * return ResponseBody<err>

@@ -7,7 +7,10 @@ import { UserModule } from '../user/user.module';
 import { Guest } from '../user/entities/guest.entity';
 import { ReceivingAddress } from '../user/entities/guest-address.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([Order,Guest,ReceivingAddress]), UserModule],
+  imports: [
+    TypeOrmModule.forFeature([Order, Guest, ReceivingAddress]),
+    UserModule,
+  ],
   controllers: [OrderController],
   providers: [OrderService],
 })
