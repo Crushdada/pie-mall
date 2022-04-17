@@ -15,14 +15,13 @@ import { CreateOrderDto } from './dto/create-order.dto';
 export class OrderController {
   constructor(private readonly _orderSrv: OrderService) {}
 
-  @Get('test/:id')
-  test(@Param('id') id: string) {
-    return this._orderSrv.orderExpirationProcessing(id);
-  }
   @Post()
-  create(@Body() createOrderDto, @Session() session: Record<string, any>) {
+  create(
+    @Body() goodsMapIds: Array<string>,
+    @Session() session: Record<string, any>,
+  ) {
     const { userId } = session.userProfile;
-    return this._orderSrv.create(userId, createOrderDto);
+    return this._orderSrv.create(userId, goodsMapIds);
   }
 
   @Get()

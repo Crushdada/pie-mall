@@ -140,12 +140,6 @@ export class ShopCartService {
    */
   delete(delIds: string | Array<string>): Promise<ResponseBody<any>> {
     const tryExecution = async () => {
-      // const shopCart = await this._shopCartRepo.findOne(shopcartId);
-      // 删除映射，能否同时删除goods_map实体？
-      // shopCart.goods_maps = shopCart.goods_maps.filter(goods_map => {
-      //   return !delIds.includes(goods_map.good.G_id);
-      // });
-      // this._shopCartRepo.save(shopCart);
       if (!delIds || delIds.length === 0) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }

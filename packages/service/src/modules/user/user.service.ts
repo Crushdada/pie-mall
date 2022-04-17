@@ -30,13 +30,22 @@ export class UserService {
     private readonly _jwtSrv: JwtAuthService,
     private readonly _staticResourceSrv: StaticResourceService,
   ) {}
+
   /**
    * app端用户删除一条收货地址
+   * @param userId
    * @param addressId
    */
-  deleteAddress(addressId: string) {
+  deleteAddress(userId: string, addressId: string) {
     return this._responseSrv.tryExecute(async () => {
-      await this._guestAddressRepo.delete(addressId);
+      const guest = await this._guestRepo.findOne({
+        where: { id: userId },
+        relations: ['receiving_address'],
+      });
+      guest.receiving_address = guest.receiving_address.filter(
+        address => address.id !== addressId,
+      );
+      await this._guestRepo.save(guest);
       return this._responseSrv.success(null);
     });
   }

@@ -293,7 +293,7 @@
             <el-button
               class="h-10 w-36 relative"
               type="primary"
-              @click="() => $router.push({ name: 'shop-cart' })"
+              @click="handleNavi2PaymentPage"
             >
               提交订单
             </el-button>
@@ -320,6 +320,7 @@ import { getAddresses } from '@/api/receiving-address/get-addresses.ts';
 import { updateAddress } from '@/api/receiving-address/update-address.ts';
 import { setDefaultAddress } from '@/api/receiving-address/set-default-address.ts';
 import { deleteAddress } from '@/api/receiving-address/delete-address.ts';
+import { createOrder } from '@/api/order/create-order.ts';
 import { cloneDeep } from 'lodash';
 import { navi2GoodsDetailPage } from '@/utils/navi-2-goods-detail-page';
 
@@ -401,6 +402,35 @@ export default class BillingPage extends Vue {
     } else {
       const orderGoodsStr = localStorage.getItem('orderGoods');
       this.orderGoods = JSON.parse(orderGoodsStr);
+    }
+  }
+  // 跳转到付款页面
+  async handleNavi2PaymentPage() {
+    if (this.orderGoods.length === 0) return;
+    // 请求下单
+    try {
+      const goodsMapIds = this.orderGoods.map(goodsMap => goodsMap.id);
+      const res = await createOrder(goodsMapIds);
+      if (!res) {
+        throw Error(JSON.stringify(res));
+      }
+      const { orderId, expiredTime } = res.data; // 秒钟转为分钟
+      // 路由传参，再加个订单号
+      this.$router.push({
+        name: 'payment-page',
+        query: {
+          orderId,
+          expiredTime: expiredTime / 60,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      this.$message({
+        showClose: true,
+        message: '订单提交失败,请稍后重试',
+        type: 'error',
+        center: true,
+      });
     }
   }
 

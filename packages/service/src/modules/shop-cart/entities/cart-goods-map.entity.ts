@@ -11,7 +11,6 @@ export class CartGoodsMap {
    *  many to one 一个购物车拥有多对商品<=>数目映射
    */
   @ManyToOne(() => ShopCart, shopCart => shopCart.goods_maps, {
-    eager: true,
     cascade: true,
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
@@ -39,7 +38,6 @@ export class CartGoodsMap {
    * many to one 一个订单可以有多对商品<=>数目映射，需要有orderID区分哪次订单
    */
   @ManyToOne(() => Order, order => order.goods_maps, {
-    eager: true,
     cascade: true,
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',

@@ -52,7 +52,11 @@ const routes: Array<RouteConfig> = [
     name: 'billing-page',
     component: () => import('../views/BillingPage.vue'),
   },
-
+  {
+    path: '/pay',
+    name: 'payment-page',
+    component: () => import('../views/PaymentPage.vue'),
+  },
   // 个人中心，以及订单等在一个页面
   // {
   //   path: '/user',
