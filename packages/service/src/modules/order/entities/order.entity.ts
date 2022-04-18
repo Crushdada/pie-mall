@@ -5,9 +5,8 @@ import {
   ManyToOne,
   CreateDateColumn,
   OneToMany,
-  JoinColumn,
 } from 'typeorm';
-import { OrderStatus } from '../enums/order-status.enum';
+import { OrderStatus } from '../../../../../types/order/order-status.enum';
 import { Guest } from '../../user/entities/guest.entity';
 import { CartGoodsMap } from '../../shop-cart/entities/cart-goods-map.entity';
 import { ReceivingAddress } from '../../user/entities/guest-address.entity';

@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { OrderStatus } from '../../../../types/order/order-status.enum';
 
 @Controller('order')
 export class OrderController {
@@ -34,10 +35,13 @@ export class OrderController {
     return this._orderSrv.findOne(id);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-  //   return this._orderSrv.update(id, updateOrderDto);
-  // }
+  @Patch(':id/:status')
+  payForOrder(
+    @Param('id') orderId: string,
+    @Param('status') status: OrderStatus,
+  ) {
+    return this._orderSrv.updateOrderStatus(orderId, status);
+  }
 
   @Delete(':id')
   delete(@Param('id') id: string) {

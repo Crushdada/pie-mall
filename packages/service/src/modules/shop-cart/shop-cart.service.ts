@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ResponseBody } from '../../../../types/response/response-body.interface';
+import {
+  ErrorResponse,
+  ResponseBody,
+} from '../../../../types/response/response-body.interface';
 import { ERROR_TYPE } from '../../../../types/response/error-type.enum';
 import { ResponseService } from '../response/response-service';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,14 +22,6 @@ export class ShopCartService {
     private readonly _cartGoodsMapRepo: Repository<CartGoodsMap>,
     private readonly _responseSrv: ResponseService,
   ) {}
-  /**
-   * return ResponseBody<err>
-   */
-  sessionExpired() {
-    return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
-      detail: '🙈登录状态失效，请重新登录',
-    });
-  }
 
   findAll() {
     return `This action returns all shopCart`;
@@ -37,7 +32,12 @@ export class ShopCartService {
    * @param shopcartId
    * @returns
    */
-  findOne(shopcartId): Promise<ResponseBody<ShopCartInterface>> {
+  findOne(
+    shopcartId,
+  ): Promise<ResponseBody<ShopCartInterface>> | ErrorResponse<any> {
+    if (!shopcartId) {
+      return this._responseSrv.sessionExpired();
+    }
     const tryExecution = async () => {
       const shop_cart = await this._shopCartRepo.findOne({
         where: { id: shopcartId },
@@ -66,6 +66,9 @@ export class ShopCartService {
    * @param quantity
    */
   create(shopcartId: string, goodsId: string, quantity: number) {
+    if (!shopcartId) {
+      return this._responseSrv.sessionExpired();
+    }
     const tryExecution = async () => {
       const shop_cart = await this._shopCartRepo.findOne(shopcartId, {
         relations: ['goods_maps'],
@@ -91,7 +94,10 @@ export class ShopCartService {
   async findGoodsMapOrNot(
     shopcartId: string,
     goodsId: string,
-  ): Promise<ResponseBody<boolean>> {
+  ): Promise<ResponseBody<boolean | ErrorResponse<any>>> {
+    if (!shopcartId) {
+      return this._responseSrv.sessionExpired();
+    }
     const tryExecution = async () => {
       const shopCart = await this._shopCartRepo.findOne(shopcartId);
       const good = await this._goodsRepo.findOne(goodsId);
@@ -135,15 +141,26 @@ export class ShopCartService {
 
   /**
    * 根据商品映射id从购物车删除商品
+   * @param shopcartId
    * @param ids
    * @returns ResponseBody<any>
    */
-  delete(delIds: string | Array<string>): Promise<ResponseBody<any>> {
+  delete(
+    shopcartId: string,
+    delIds: string | Array<string>,
+  ): Promise<ResponseBody<any>> | ErrorResponse<any> {
+    if (!shopcartId) {
+      return this._responseSrv.sessionExpired();
+    }
     const tryExecution = async () => {
       if (!delIds || delIds.length === 0) {
         return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, null);
       }
-      this._cartGoodsMapRepo.delete(delIds);
+      const cart = await this._shopCartRepo.findOne(shopcartId);
+      cart.goods_maps = cart.goods_maps.filter(
+        goodMap => !delIds.includes(goodMap.id),
+      );
+      this._shopCartRepo.save(cart);
       return this._responseSrv.success(null);
     };
     return this._responseSrv.tryExecute(tryExecution);

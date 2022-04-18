@@ -8,18 +8,36 @@ import { Order } from './entities/order.entity';
 import { Guest } from '../user/entities/guest.entity';
 import { ReceivingAddress } from '../user/entities/guest-address.entity';
 import { createClient } from 'redis';
-import { OrderStatus } from './enums/order-status.enum';
+import { OrderStatus } from '../../../../types/order/order-status.enum';
+import { ShopCartService } from '../shop-cart/shop-cart.service';
 @Injectable()
 export class OrderService {
   constructor(
     @InjectRepository(Order)
     private readonly _orderRepo: Repository<Order>,
     private readonly _responseSrv: ResponseService,
+    private readonly _shopCartSrv: ShopCartService,
     @InjectRepository(Guest)
     private readonly _guestRepo: Repository<Guest>,
-    @InjectRepository(ReceivingAddress)
-    private readonly _addressRepo: Repository<ReceivingAddress>,
   ) {}
+
+  /**
+   * 更新order状态
+   * @param orderId
+   * @param status
+   */
+  updateOrderStatus(orderId: string, status: OrderStatus) {
+    const tryExecution = async () => {
+      const exeResult = await this._orderRepo.update(orderId, { status });
+      if (!exeResult) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+          detail: `所更新订单id=${orderId}不存在`,
+        });
+      }
+      return this._responseSrv.success(null);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
 
   /**
    * 执行订单过期处理
@@ -65,15 +83,6 @@ export class OrderService {
   }
 
   /**
-   * return ResponseBody<err>
-   */
-  sessionExpired() {
-    return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
-      detail: '🙈登录状态失效，请重新登录',
-    });
-  }
-
-  /**
    * This action adds a new order
    * @param guestId
    * @returns ResponseBody
@@ -89,6 +98,7 @@ export class OrderService {
     const tryExecution = async () => {
       const guest = await this._guestRepo.findOne(guestId);
       const address = guest.default_address;
+      const shopCartId = guest?.shop_cart?.id;
       // 只保留勾选的，即要购买的商品映射
       const order_goods_maps = guest?.shop_cart?.goods_maps.filter(map =>
         orderGoodsMapIds.includes(map.id),
@@ -103,6 +113,8 @@ export class OrderService {
       const orderId = order.id;
       // 执行订单超时
       this.orderExpirationProcessing(orderId);
+      // 删除购物车与已下单的商品的映射逻辑
+      this._shopCartSrv.delete(shopCartId, orderGoodsMapIds);
       return this._responseSrv.success({
         orderId,
         expiredTime: 15 * 60,

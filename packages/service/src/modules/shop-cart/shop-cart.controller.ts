@@ -20,9 +20,6 @@ export class ShopCartController {
     @Body() { goodsId, newQuantity }: { goodsId: string; newQuantity: number },
   ) {
     const shopcartId = session?.userProfile?.shopcartId;
-    if (!shopcartId) {
-      return this._shopCartSrv.sessionExpired();
-    }
     return this._shopCartSrv.create(shopcartId, goodsId, newQuantity);
   }
 
@@ -37,18 +34,12 @@ export class ShopCartController {
     @Param('id') goodsId: string,
   ) {
     const shopcartId = session?.userProfile?.shopcartId;
-    if (!shopcartId) {
-      return this._shopCartSrv.sessionExpired();
-    }
     return this._shopCartSrv.findGoodsMapOrNot(shopcartId, goodsId);
   }
 
   @Get('atom')
   findOne(@Session() session: Record<string, any>) {
     const shopcartId = session?.userProfile?.shopcartId;
-    if (!shopcartId) {
-      return this._shopCartSrv.sessionExpired();
-    }
     if (shopcartId) return this._shopCartSrv.findOne(shopcartId);
   }
 
@@ -61,12 +52,20 @@ export class ShopCartController {
   }
 
   @Delete(':id')
-  deleteById(@Param('id') goodsMapId: string) {
-    return this._shopCartSrv.delete(goodsMapId);
+  deleteById(
+    @Session() session: Record<string, any>,
+    @Param('id') goodsMapId: string,
+  ) {
+    const shopcartId = session?.userProfile?.shopcartId;
+    return this._shopCartSrv.delete(shopcartId, goodsMapId);
   }
 
   @Delete()
-  deleteByGoodsMapIds(@Body() delIds: Array<string>) {
-    return this._shopCartSrv.delete(delIds);
+  deleteByGoodsMapIds(
+    @Session() session: Record<string, any>,
+    @Body() delIds: Array<string>,
+  ) {
+    const shopcartId = session?.userProfile?.shopcartId;
+    return this._shopCartSrv.delete(shopcartId, delIds);
   }
 }
