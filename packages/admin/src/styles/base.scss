@@ -24,8 +24,8 @@ $--color-primary: $primary;
 
 // 滚动条
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 5px;
+  width: 10px;
+  height: 10px;
   border-radius: 15px;
   -webkit-border-radius: 15px;
 }
@@ -42,7 +42,7 @@ $--color-primary: $primary;
   opacity: 0.2;
 }
 ::-webkit-scrollbar-thumb:horizontal {
-  width: 7px;
+  width: 10px;
   background-color: rgba(144, 147, 153, 0.3);
   border-radius: 15px;
   -webkit-border-radius: 15px;

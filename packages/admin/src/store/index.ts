@@ -2,9 +2,10 @@ import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { VuexRootState } from '@types/vuex/root-state.interface';
-import authModule from './auth.module';
-import userModule from './user.module';
-import goodsModule from './goods.module';
+import AuthModule from './auth.module';
+import UserModule from './user.module';
+import GoodsModule from './goods.module';
+import OrderModule from './order.module';
 
 import VuexPersistence from 'vuex-persist';
 
@@ -15,9 +16,10 @@ const vuexLocal = new VuexPersistence<VuexRootState>({
 
 const store = new Vuex.Store<VuexRootState>({
   modules: {
-    [VuexModuleName.AUTH]: authModule,
-    [VuexModuleName.USER]: userModule,
-    [VuexModuleName.GOODS]: goodsModule,
+    [VuexModuleName.AUTH]: AuthModule,
+    [VuexModuleName.USER]: UserModule,
+    [VuexModuleName.GOODS]: GoodsModule,
+    [VuexModuleName.ORDER]: OrderModule,
   },
   plugins: [vuexLocal.plugin],
 });

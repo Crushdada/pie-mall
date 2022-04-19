@@ -6,7 +6,6 @@ import { ResponseBody } from '../../../../types/response/response-body.interface
 import { ERROR_TYPE } from '../../../../types/response/error-type.enum';
 import { Order } from './entities/order.entity';
 import { Guest } from '../user/entities/guest.entity';
-import { ReceivingAddress } from '../user/entities/guest-address.entity';
 import { createClient } from 'redis';
 import { OrderStatus } from '../../../../types/order/order-status.enum';
 import { ShopCartService } from '../shop-cart/shop-cart.service';
@@ -147,7 +146,9 @@ export class OrderService {
    */
   findAll(): Promise<ResponseBody<{ allOrders: Array<Order> }>> {
     const tryExecution = async () => {
-      const allOrders = await this._orderRepo.find();
+      const allOrders = await this._orderRepo.find({
+        relations: ['goods_maps', 'guest'],
+      });
       return this._responseSrv.success({ allOrders });
     };
     return this._responseSrv.tryExecute(tryExecution);

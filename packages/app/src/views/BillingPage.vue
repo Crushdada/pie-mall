@@ -1,5 +1,5 @@
 <template>
-  <div class="shop-cart">
+  <div class="billing">
     <el-container class="h-screen" direction="vertical">
       <!-- header -->
       <processing-header

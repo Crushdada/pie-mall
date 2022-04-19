@@ -17,6 +17,7 @@ VueRouter.prototype.push = function push(location) {
 const menuRoutes = moduleMenu
   .map(menuItem =>
     menuItem.children.map(route => ({
+      name: route.name || '',
       path: (menuItem.path || '') + route.path,
       component: () => import(`../views/homePages/${route.component}.vue`),
     })),
