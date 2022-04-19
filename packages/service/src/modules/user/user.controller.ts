@@ -28,8 +28,12 @@ export class UserController {
   @ApiOperation({
     summary: 'app端用户删除一条收货地址',
   })
-  deleteAddress(@Param('id') addressId: string) {
-    return this._userSrv.deleteAddress(addressId);
+  deleteAddress(
+    @Session() session: Record<string, any>,
+    @Param('id') addressId: string,
+  ) {
+    const { userId } = session?.userProfile;
+    return this._userSrv.deleteAddress(userId, addressId);
   }
 
   @Post('address')

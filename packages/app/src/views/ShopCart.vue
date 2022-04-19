@@ -7,7 +7,7 @@
         desc="温馨提示：产品是否购买成功，以最终下单为准哦，请尽快结算"
       />
       <!-- body -->
-      <main class="bg-gray-100 relative pb-10" style="padding: 0 160px">
+      <main class="bg-gray-100 relative pb-10 h-full" style="padding: 0 160px">
         <el-card class="main-section bg-white mt-8">
           <el-table
             ref="goodsTable"
@@ -278,6 +278,15 @@ export default class ShopCart extends Mixins(ShopCartMixin) {
   }
   // 在跳转到订单页面之前，用事件车传递勾选的商品
   handleNavi2BillingPage() {
+    if (this.selectedGoods.length === 0) {
+      this.$message({
+        showClose: true,
+        message: '请勾选要购买的商品',
+        type: 'info',
+        center: true,
+      });
+      return;
+    }
     this.$router.push({
       name: 'billing-page',
       query: { selectedGoods: this.selectedGoods },

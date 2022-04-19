@@ -4,7 +4,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'; // API 文档插件
 import { ValidationPipe } from '@nestjs/common';
-
+import { createClient } from 'redis';
+import * as ConnectRedis from 'connect-redis';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: {
@@ -12,8 +13,9 @@ async function bootstrap() {
       credentials: true,
     },
   });
+  const redisClient = createClient('6379', '127.0.0.1');
+  const RedisStore = ConnectRedis(session);
 
-  // auto validate dtos
   // 全局参数验证
   app.useGlobalPipes(new ValidationPipe());
 
@@ -22,6 +24,7 @@ async function bootstrap() {
   app.use(
     session({
       secret: 'crushdada',
+      store: new RedisStore({ client: redisClient }),
       cookie: {
         expires: new Date(Date.now() + ExpirationTime),
         maxAge: ExpirationTime,

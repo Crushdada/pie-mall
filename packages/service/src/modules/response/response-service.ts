@@ -61,4 +61,14 @@ export class ResponseService {
       });
     }
   }
+
+  /**
+   * 登录状态失效导致的请求失败的返回体
+   * return ResponseBody<err>
+   */
+  sessionExpired(): ErrorResponse<any> {
+    return this.error(ERROR_TYPE.NOT_FOUND, {
+      detail: '🙈登录状态失效，请重新登录',
+    });
+  }
 }

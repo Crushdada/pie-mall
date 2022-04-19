@@ -1,32 +1,85 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import { ResponseService } from '../response/response-service';
 import { ResponseBody } from '../../../../types/response/response-body.interface';
 import { ERROR_TYPE } from '../../../../types/response/error-type.enum';
 import { Order } from './entities/order.entity';
 import { Guest } from '../user/entities/guest.entity';
 import { ReceivingAddress } from '../user/entities/guest-address.entity';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { createClient } from 'redis';
+import { OrderStatus } from '../../../../types/order/order-status.enum';
+import { ShopCartService } from '../shop-cart/shop-cart.service';
 @Injectable()
 export class OrderService {
   constructor(
     @InjectRepository(Order)
     private readonly _orderRepo: Repository<Order>,
     private readonly _responseSrv: ResponseService,
+    private readonly _shopCartSrv: ShopCartService,
     @InjectRepository(Guest)
     private readonly _guestRepo: Repository<Guest>,
-    @InjectRepository(ReceivingAddress)
-    private readonly _addressRepo: Repository<ReceivingAddress>,
   ) {}
 
   /**
-   * return ResponseBody<err>
+   * 更新order状态
+   * @param orderId
+   * @param status
    */
-  sessionExpired() {
-    return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
-      detail: '🙈登录状态失效，请重新登录',
-    });
+  updateOrderStatus(orderId: string, status: OrderStatus) {
+    const tryExecution = async () => {
+      const exeResult = await this._orderRepo.update(orderId, { status });
+      if (!exeResult) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+          detail: `所更新订单id=${orderId}不存在`,
+        });
+      }
+      return this._responseSrv.success(null);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
+   * 执行订单过期处理
+   * @param orderId
+   */
+  orderExpirationProcessing(orderId: string) {
+    if (!orderId) {
+      return;
+    }
+    const CONF = {
+      port: 6379,
+      host: 'localhost',
+      db: 0, // 要与redis服务器的redis.windows-service.conf 配置的db一致
+      orderExpired: 15 * 60, // 15分钟
+    };
+    const client = createClient(CONF.port, CONF.host);
+    client.set(orderId, '');
+    client.expire(orderId, CONF.orderExpired);
+    client.send_command(
+      'config',
+      ['set', 'notify-keyspace-events', 'Ex'],
+      SubscribeExpired,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const _orderRepo = this._orderRepo;
+    function SubscribeExpired(err, res) {
+      if (err) {
+        return;
+      }
+      const expired_subKey = `__keyevent@${CONF.db}__:expired`; //订阅key过期事件
+      client.subscribe(expired_subKey, () => {
+        client.on('message', async function (event, orderId) {
+          // 第二个参数是msg | key
+          // 根据orderId，查找order状态
+          const order = await _orderRepo.findOne(orderId);
+          // 如果仍未支付，删除order
+          if (orderId && order.status === OrderStatus.TO_PAY) {
+            _orderRepo.delete(orderId);
+          }
+        });
+      });
+    }
   }
 
   /**
@@ -36,32 +89,54 @@ export class OrderService {
    */
   public async create(
     guestId: string,
-    payload: CreateOrderDto,
+    orderGoodsMapIds: Array<string>,
   ): Promise<ResponseBody<any>> {
     if (!guestId)
       return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
         detail: `🙈请求失败，找不到Id=${guestId}的用户！`,
       });
-    const { address } = payload;
     const tryExecution = async () => {
-      const guest = await this._guestRepo.findOne({ id: guestId });
-      const goods_maps = await guest?.shop_cart?.goods_maps;
+      const guest = await this._guestRepo.findOne(guestId);
+      const address = guest.default_address;
+      const shopCartId = guest?.shop_cart?.id;
+      // 只保留勾选的，即要购买的商品映射
+      const order_goods_maps = guest?.shop_cart?.goods_maps.filter(map =>
+        orderGoodsMapIds.includes(map.id),
+      );
       // 默认初始订单状态为TO_PAY 待支付
-      await this._orderRepo.create({ guest, goods_maps });
-      // 保存新地址
-      await this._addressRepo.insert({
-        address: address,
-        user: guest,
+      const order = await this._orderRepo.save({
+        guest,
+        address,
+        goods_maps: order_goods_maps,
+        status: OrderStatus.TO_PAY,
       });
-      // const oldAddress = await this._addressRepo.findOneOrFail({
-      //   address: address,
-      //   user: guest,
-      // });
-      // if (!oldAddress) {
-      //   this._addressRepo.create({ address: address, user: guest });
-      // }
+      const orderId = order.id;
+      // 执行订单超时
+      this.orderExpirationProcessing(orderId);
+      // 删除购物车与已下单的商品的映射逻辑
+      this._shopCartSrv.delete(shopCartId, orderGoodsMapIds);
+      return this._responseSrv.success({
+        orderId,
+        expiredTime: 15 * 60,
+      });
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
 
-      return this._responseSrv.success(null);
+  /**
+   * This action returns a #${id} order
+   * @param id
+   * @returns ResponseBody<order>
+   */
+  findOne(id: string): Promise<ResponseBody<any>> {
+    const tryExecution = async () => {
+      const order = await this._orderRepo.findOne(id);
+      if (!order) {
+        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
+          detail: `所查订单id=${id}不存在`,
+        });
+      }
+      return this._responseSrv.success(order);
     };
     return this._responseSrv.tryExecute(tryExecution);
   }
@@ -74,24 +149,6 @@ export class OrderService {
     const tryExecution = async () => {
       const allOrders = await this._orderRepo.find();
       return this._responseSrv.success({ allOrders });
-    };
-    return this._responseSrv.tryExecute(tryExecution);
-  }
-
-  /**
-   * This action returns a #${id} order
-   * @param id
-   * @returns ResponseBody<false | good>
-   */
-  findOne(id: string): Promise<ResponseBody<any>> {
-    const tryExecution = async () => {
-      const order = await this._orderRepo.findOne(id);
-      if (!order) {
-        return this._responseSrv.error(ERROR_TYPE.NOT_FOUND, {
-          detail: `所查订单id=${id}不存在`,
-        });
-      }
-      return this._responseSrv.success({ order });
     };
     return this._responseSrv.tryExecute(tryExecution);
   }
