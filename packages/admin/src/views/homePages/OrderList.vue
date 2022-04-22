@@ -133,7 +133,10 @@
         filter-placement="bottom-end"
       >
         <template slot-scope="scope">
-          <el-tag disable-transitions>
+          <el-tag
+            disable-transitions
+            :type="scope.row.status === 'to_pay' ? 'danger' : 'primary'"
+          >
             {{ statusDict[scope.row.status] }}
           </el-tag>
         </template>
@@ -141,9 +144,7 @@
       <!-- 下单时间 -->
       <el-table-column label="下单时间" width="160" align="center" sortable>
         <template slot-scope="scope">
-          <el-tag disable-transitions>
-            {{ format(new Date(scope.row.timeStamp), 'yyyy-MM-dd hh:mm:ss') }}
-          </el-tag>
+          {{ format(new Date(scope.row.timeStamp), 'yyyy-MM-dd hh:mm:ss') }}
         </template>
       </el-table-column>
       <!-- 操作栏 -->
@@ -352,7 +353,7 @@ export default class GoodsInfo extends Vue {
       // 去除丢失商品映射的订单，同时计算订单总额、用户名升维
       const processedOrders = allOrders.filter(order => {
         if (order.goods_maps.length === 0) return false;
-        order.guestName = order.guest.name;
+        order.guestName = order.guest.name || '游客';
         order.totalPrice = order.goods_maps.reduce((total, goodsMap) => {
           return (total +=
             parseInt(goodsMap.good.G_price) * parseInt(goodsMap.quantity));

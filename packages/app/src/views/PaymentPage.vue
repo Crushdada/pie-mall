@@ -55,12 +55,23 @@
             <div class="flex-1 overflow-hidden pl-10 leading-8">
               <div class="float-left">
                 <h2 class="text-2xl pb-1">支付成功！即将返回购物车～</h2>
-                <span>
+                <span class="pr-4">
                   倒计时
                   <span class="primary">
                     {{ back2ShopcartRemainingTime }} 秒
                   </span>
                 </span>
+                <el-button
+                  class="w-20"
+                  type="primary"
+                  size="small"
+                  @click.native="
+                    () => {
+                      $router.replace({ name: 'shop-cart' });
+                    }
+                  "
+                  >立即返回
+                </el-button>
               </div>
             </div>
           </div>

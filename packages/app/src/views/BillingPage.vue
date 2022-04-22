@@ -378,7 +378,11 @@ export default class BillingPage extends Vue {
       }
       const { data } = res;
       const { defaultAddress, addressList } = data;
-      this.defaultAddress = defaultAddress;
+      this.defaultAddress = defaultAddress || {
+        address: '',
+        phone: '',
+        consignee_name: '',
+      };
       // 从地址列表删去默认地址
       this.addressList = addressList.filter(
         addressInfo => addressInfo.id !== defaultAddress.id,

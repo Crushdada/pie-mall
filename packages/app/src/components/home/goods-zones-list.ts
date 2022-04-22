@@ -15,53 +15,59 @@ export const goodsZonesList = [
     goodsList: [
       {
         thumb:
-          'https://img10.360buyimg.com/n7/jfs/t1/104720/28/22084/91279/61e6a88aE0969a120/d8ba469961a5f217.jpg',
-        goodsID: '75cd7fe8-4da0-4be8-98e5-f1a0f109c8a6',
-        info: '阿斯顿撒啊客服啊按时分',
-        price: 132,
+          'https://img11.360buyimg.com/n7/jfs/t1/211217/10/16195/134525/61e92f78Ed4d13d9b/8d39774697528a33.jpg',
+        goodsID: '000d8e20-a1b9-4e09-aa30-f3603503c6f8',
+        info: '京品手机 realme 真我GT Neo闪速版 天玑1200 6400万索尼主摄 65W闪充 仅179g 最终幻想 12GB+256GB 双模5g手机gtneo',
+        price: 2199,
       },
       {
         thumb:
-          'https://img11.360buyimg.com/n7/jfs/t1/128341/4/21571/87376/61e69c8bEced8f778/8c646afe7d516c1d.jpg',
-        goodsID: '7b22dc17-06aa-4df7-be71-8b8efca3dce8',
-        info: '阿斯阿顺丰啊按时分',
-        price: 132,
+          'https://img11.360buyimg.com/n7/jfs/t1/184762/30/552/167380/60829049Eefae6168/940b58b8b0e3bfd8.jpg',
+        goodsID: '0f93ef65-6f8b-49d2-a436-7d47c20d1e68',
+        info: '荣耀畅玩20 5000mAh超大电池续航 6.5英寸大屏 莱茵护眼 4GB+128GB 极光蓝 双卡双待 全网通',
+        price: 899,
       },
       {
         thumb:
-          'https://img14.360buyimg.com/n7/jfs/t1/166740/20/26252/219183/61e82009E2b3f303d/aed8706aa86d4518.jpg',
-        goodsID: '7e2f5412-f1eb-42e0-8c85-c66073ed20a9',
-        info: '阿斯阿顺丰啊按时分',
-        price: 132,
+          'https://img13.360buyimg.com/n7/jfs/t1/211850/25/11343/105711/61e94e40E165be351/7d0e4b3ddfdbf551.jpg',
+        goodsID: '10d1e5dd-6f3e-481d-ad3b-fcb24190e4b0',
+        info: 'OPPO K9x 8+128GB 银紫超梦 5000mAh长续航 33W快充 90Hz电竞屏 6400万三摄 拍照5G手机oppok9x',
+        price: 1392,
       },
       {
         thumb:
-          'https://img13.360buyimg.com/n7/jfs/t1/208945/4/14496/112578/61ce6e22E14b8c9ab/68fefdd1ffa9b2c6.jpg',
-        goodsID: '83704704-320d-44b3-84cc-515c317198d9',
-        info: '阿斯阿顺丰恩爱法尔尔是恩爱啊恩爱肺癌是恩爱啊恩爱肺癌尔是恩爱啊恩爱肺癌阿诗丹顿按时分',
-        price: 132,
+          'https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/8e169482b8cbf7a68daaef1464881446.jpg?thumb=1&w=1533&h=575&f=webp&q=90',
+        goodsID: '110ed820-a1b9-4e09-aa30-f3603503c6f8',
+        info: '小米K50,天玑8100 | 2K直屏 | 5500mAh电量',
+        price: 2399,
       },
       {
         thumb:
-          'https://img10.360buyimg.com/n7/jfs/t1/142720/20/26941/104355/61e11de7E7f2b6341/04c4ab32243efd2c.jpg',
-        goodsID: '8b8a648a-ab74-4fbb-819f-5ad89181f200',
-        info: '阿斯阿顺丰啊按时分',
-        price: 132,
+          'https://img14.360buyimg.com/n7/jfs/t1/99692/18/22164/186050/61e950beE0fc9b5bb/df3f71d9dd06bd0e.jpg',
+        goodsID: '12d3856d-b885-44e5-8625-6ddf946b4278',
+        info: 'Apple iPhone 13 Pro Max (A2644) 256GB 远峰蓝色 支持移动联通电信5G 双卡双待手机',
+        price: 9799,
       },
       {
         thumb:
-          'https://img10.360buyimg.com/n7/jfs/t1/150281/31/20736/182864/61e94c80E4f4955f3/88a8627d6ec8641b.jpg',
-        goodsID: '8dfd4cb1-3895-4fd7-a114-6a50e71d9fc6',
+          'https://img12.360buyimg.com/n7/jfs/t1/171473/26/19662/414547/607d2c8aE3ee004cd/dcece9165d090a3f.jpg',
+        goodsID: '15b8ef6d-1571-4b13-98d7-715d6c34aef2',
+        info: '华为 HUAWEI nova 8 Pro 麒麟985 5G SoC芯片 Vlog视频双镜头 120Hz环幕屏8GB+256GB 亮黑色全网通5G手机套餐一（无充电器和数据线）',
+        price: 4199,
       },
       {
         thumb:
-          'https://img13.360buyimg.com/n7/jfs/t1/147057/28/20892/111422/61e12169Eb475a286/d7916343cff6559d.jpg',
-        goodsID: '938713d2-3d5a-4cda-b3a6-8bf904989350',
+          'https://img14.360buyimg.com/n7/jfs/t1/129324/21/21447/88821/61daf2f9E8dcecb0c/f2813d15d6e60ac6.jpg',
+        goodsID: '21b8a248-5066-498d-9b29-462fd492f718',
+        info: 'vivo iQOO Neo5S 骁龙888 独显芯片Pro 双电芯66W闪充 专业电竞游戏手机 双模5G全网通 8GB+128GB 夜行空间',
+        price: 2699,
       },
       {
         thumb:
           'https://img13.360buyimg.com/n7/jfs/t1/219307/1/9821/210394/61ceb8beE31ff4321/503bba8e0091b9c1.jpg',
         goodsID: '9b92a805-ae0a-405c-a73d-9c5864fbdcf0',
+        info: 'Redmi 9A',
+        price: 3699,
       },
     ],
   },
@@ -73,41 +79,57 @@ export const goodsZonesList = [
         thumb:
           'https://img14.360buyimg.com/n7/jfs/t1/210404/37/14634/156474/61cf2b1aE8c59e253/d15d50e7496a1452.jpg',
         goodsID: '8e27dbb3-4611-46ff-8af2-1941ea736e50',
+        info: 'ANC 主动降噪',
+        price: 2799,
       },
       {
         thumb:
           'https://img14.360buyimg.com/n7/jfs/t1/178621/3/10655/70411/60d1ac51E440133d1/38edca7c7c4d78d0.jpg',
         goodsID: '94b31d1a-86bc-45aa-b9c1-bc94962bfc23',
+        info: '华为Free Blus 4 无线耳机',
+        price: 4699,
       },
       {
         thumb:
           'https://img11.360buyimg.com/n7/jfs/t1/174272/34/26820/41336/616fcb9fEa0f328d2/6c9ca16767d06119.jpg',
         goodsID: '99d94e4c-294a-4e09-a156-daa71829362f',
+        info: '小米Air Pro',
+        price: 349,
       },
       {
         thumb:
           'https://img12.360buyimg.com/n7/jfs/t1/162920/27/26225/455997/61e1311dE786f7e99/41a0d21413b11ef2.jpg',
         goodsID: 'a0595df8-74d9-44db-a107-00936603ae04',
+        info: 'BEATS FLEX',
+        price: 3699,
       },
       {
         thumb:
           'https://img14.360buyimg.com/n7/jfs/t1/15778/27/19546/83567/61e768b9Ee1b75c15/39ecad7328a4891a.jpg',
         goodsID: 'a64080ac-6bc9-44e2-a680-14904257a2ef',
+        info: 'Redmi 9A',
+        price: 3699,
       },
       {
         thumb:
           'https://img11.360buyimg.com/n7/jfs/t1/99677/37/20949/401109/61e90c25E24dfca11/fbc928ec741db2f9.jpg',
         goodsID: 'ab2fa731-ba64-48a6-84d2-c7037b7fa7b9',
+        info: '漫步者头戴式耳机',
+        price: 3699,
       },
       {
         thumb:
           'https://img14.360buyimg.com/n7/jfs/t1/205502/21/13169/85170/617a88e9E87af25e8/055465a66f273bb1.jpg',
         goodsID: 'c4621a5d-d1a1-4d4f-9f95-0ea04c1c70b2',
+        info: '华为KOOLIFE Pro 7 无线耳机',
+        price: 3699,
       },
       {
         thumb:
           'https://img12.360buyimg.com/n7/jfs/t1/92213/10/22211/194701/61e8c850E09a9e3c8/7b4356f93a49cbf9.jpg',
         goodsID: 'ca5abcf6-5080-4a7b-92bc-d73cc8a9e94e',
+        info: '小米 Type C专用耳机',
+        price: 3699,
       },
     ],
   },
