@@ -43,7 +43,7 @@ export default class PersonalDropdownMenu extends Vue {
   /** Computed*/
   // ===================================================================
   get userName() {
-    return this.$store.state[VuexModuleName.USER].userProfile.name || 'REN.';
+    return this.$store.state[VuexModuleName.USER].userProfile.name || '游客';
   }
   /** Hooks */
   // ===================================================================

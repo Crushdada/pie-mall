@@ -384,9 +384,9 @@ export default class GoodsInfo extends Vue {
   // 重置搜索
   handleResetSearch() {
     if (!this.dataSearched) return;
-    this.$set(this.searchKeyWord, 'key', '');
-    this.chunk(1);
     this.clickedSearchBtn = false;
+    this.chunk(1);
+    this.$set(this.searchKeyWord, 'key', '');
   }
   // 筛选条件改变
   filterChange(filterOpt) {

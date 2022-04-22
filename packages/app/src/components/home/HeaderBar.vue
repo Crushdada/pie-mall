@@ -51,9 +51,9 @@
               style="width: 320px"
             >
               <!-- 购物车商品列表 -->
-              <div class="text-xs">
+              <div class="text-xs overflow-hidden" style="max-height: 250px">
                 <div
-                  class="flex flex-row flex-nowrap justify-around items-center"
+                  class="flex flex-row flex-nowrap justify-around items-center py-2"
                   v-for="(goodsMap, i) in shopcart"
                   :key="i"
                 >

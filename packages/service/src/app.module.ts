@@ -40,6 +40,9 @@ import { ShopCartModule } from './modules/shop-cart/shop-cart.module';
           username: 'root',
           password: _cfgSrv.get<string>('db.password') || 'root',
           database: _cfgSrv.get<string>('db.db') || 'piemall',
+          pool: {
+            max: 20,
+          },
           extra: {
             connectionLimit: 100,
           },

@@ -13,7 +13,6 @@ export class CartGoodsMap {
   @ManyToOne(() => ShopCart, shopCart => shopCart.goods_maps, {
     cascade: true,
     onDelete: 'CASCADE',
-    orphanedRowAction: 'delete',
   })
   cart: ShopCart;
 
@@ -28,9 +27,6 @@ export class CartGoodsMap {
    */
   @ManyToOne(() => Goods, {
     eager: true,
-    cascade: true,
-    onDelete: 'CASCADE',
-    orphanedRowAction: 'delete',
   })
   good: Goods;
 
@@ -39,8 +35,6 @@ export class CartGoodsMap {
    */
   @ManyToOne(() => Order, order => order.goods_maps, {
     cascade: true,
-    onDelete: 'CASCADE',
-    orphanedRowAction: 'delete',
   })
   order: Order;
 }

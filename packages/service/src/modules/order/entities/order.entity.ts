@@ -56,12 +56,6 @@ export class Order {
   /**
    * 下单时间
    */
-  // @Column({
-  //   type: 'timestamp',
-  //   default: () => new Date().getTime(),
-  //   precision: 6,
-  // })
-
   @CreateDateColumn()
   timeStamp: Date;
 }

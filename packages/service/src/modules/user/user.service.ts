@@ -125,7 +125,11 @@ export class UserService {
    */
   addGuest(userProfile: Partial<UserProfileInterface>) {
     return this._responseSrv.tryExecute(async () => {
-      const guest = await this.addUser(userProfile, this._guestRepo);
+      const guest = await this.addUser(
+        process.env.PIEMALL_APP,
+        userProfile,
+        this._guestRepo,
+      );
       // 账号已存在
       if (!guest) {
         return this._responseSrv.error(ERROR_TYPE.ALREADY_EXIST, null);
@@ -150,6 +154,7 @@ export class UserService {
    * @returns row | false
    */
   async addUser(
+    client: string,
     userProfile: Partial<UserProfileInterface>,
     repo: Repository<any>,
   ) {
@@ -159,8 +164,15 @@ export class UserService {
     if (user) {
       return false;
     }
-    // 添加账户成功
-    return await repo.save(userProfile);
+    const newUser = await repo.create(userProfile);
+
+    // 如果是新增app端用户，初始化shop-cart
+    if (client === process.env.PIEMALL_APP) {
+      const newShopcart = await this._shopCartRepo.create();
+      newUser.shop_cart = newShopcart;
+      await repo.save(newUser);
+    }
+    return newUser;
   }
 
   /**
@@ -359,8 +371,7 @@ export class UserService {
         [process.env.PIEMALL_APP]: this._guestRepo,
         [process.env.PIEMALL_ADMIN]: this._adminRepo,
       }[client];
-      _userRepo;
-      const exeResult = this.addUser(userProfile, _userRepo);
+      const exeResult = this.addUser(client, userProfile, _userRepo);
       // 账号已存在
       if (!exeResult) {
         return this._responseSrv.error(ERROR_TYPE.ALREADY_EXIST, null);
