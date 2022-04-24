@@ -1,231 +1,233 @@
 <template>
-  <div class="goods">
-    <!-- Search Tool Bar -->
-    <div
-      v-show="showSearchBar"
-      class="serch-bar py-2 flex flex-row flex-nowrap justify-center items-center"
-    >
-      商品名：
-      <el-input
-        class="mr-5"
-        v-model="searchKeyWord.key"
-        type="text"
-        clearable
-        placeholder="输入关键字搜索"
-        style="font-size: 17px; width: 200px"
+  <el-card class="p-2" shadow="hover">
+    <div class="goods">
+      <!-- Search Tool Bar -->
+      <div
+        v-show="showSearchBar"
+        class="serch-bar py-2 flex flex-row flex-nowrap justify-center items-center"
+      >
+        商品名：
+        <el-input
+          class="mr-5"
+          v-model="searchKeyWord.key"
+          type="text"
+          clearable
+          placeholder="输入关键字搜索"
+          style="font-size: 17px; width: 200px"
+        />
+        <!-- 搜索按钮 -->
+        <el-button
+          icon="el-icon-search"
+          type="primary"
+          size="medium"
+          @click="searchedTableData"
+          >搜 索</el-button
+        >
+        <!-- 重置按钮 -->
+        <el-button size="medium" @click="handleResetSearch">重 置</el-button>
+      </div>
+      <!-- Table Tool Bar -->
+      <table-tool-bar
+        ref="toolbar"
+        class="my-2"
+        :createRowBtnLabel="`上架商品`"
+        @handleAddNewRow="handleShowDrawer"
+        @handleDeleteRows="handleDeleteGoods"
+        @handleAddRowsByExcel="uploadFile"
+        @handleRefreshTable="getGoods"
+        @closeSearchBar="showSearchBar = !showSearchBar"
+        @closeShowTipBar="showTipBar = !showTipBar"
       />
-      <!-- 搜索按钮 -->
-      <el-button
-        icon="el-icon-search"
-        type="primary"
-        size="medium"
-        @click="searchedTableData"
-        >搜 索</el-button
-      >
-      <!-- 重置按钮 -->
-      <el-button size="medium" @click="handleResetSearch">重 置</el-button>
-    </div>
-    <!-- Table Tool Bar -->
-    <table-tool-bar
-      ref="toolbar"
-      class="my-2"
-      :createRowBtnLabel="`上架商品`"
-      @handleAddNewRow="handleShowDrawer"
-      @handleDeleteRows="handleDeleteGoods"
-      @handleAddRowsByExcel="uploadFile"
-      @handleRefreshTable="getGoods"
-      @closeSearchBar="showSearchBar = !showSearchBar"
-      @closeShowTipBar="showTipBar = !showTipBar"
-    />
 
-    <!-- drawer抽屉 -->
-    <create-row-drawer
-      title="请填写商品信息"
-      ref="drawer"
-      :loading="loadingAddGoodDialog"
-      :formComs="addGoodFormItems"
-      @beforeCloseDrawer="beforeCloseAddGoodDialog"
-      @cancelForm="cancelForm"
-    >
-      <template v-slot:default>
-        <el-form-item class="py-2" label="商品图样" required>
-          <el-upload
-            style="width: 150px"
-            class="img-uploader"
-            with-credentials
-            accept=".jpg,.jpeg,.png,.JPG,.JPEG"
-            :limit="1"
-            :show-file-list="false"
-            action="#"
-            :before-upload="beforeImgUpload"
-          >
-            <img
-              slot="trigger"
-              v-if="imgPreviewUrl"
-              :src="imgPreviewUrl"
-              class="avatar object-cover object-center"
-            />
-            <i
-              v-else
-              slot="trigger"
-              class="el-upload el-icon-plus img-uploader-icon"
-            ></i>
-            <p class="el-upload__tip leading-5" slot="tip">
-              只能上传jpg/png文件，且不超过500kb
-            </p>
-          </el-upload>
-        </el-form-item>
-      </template>
-    </create-row-drawer>
-    <!-- Selected Tips -->
-    <div
-      v-show="showTipBar"
-      class="my-2.5 px-2 rounded-md"
-      style="border: 1px solid #abdcff; background-color: #f0faff"
-    >
-      <i class="el-icon-warning" style="color: #409eff"></i>
-      已选择
-      <span class="font-bold" style="color: #409eff">
-        {{ selectedGoods.length }}
-      </span>
-      项
-      <el-button type="text" @click="handleClearSelected">清空</el-button>
-    </div>
-    <!-- Table -->
-    <el-table
-      stripe
-      border
-      ref="goodsTable"
-      tooltip-effect="dark"
-      style="width: 100%"
-      header-align="center"
-      max-height="450"
-      row-key="G_id"
-      v-loading="loading"
-      :cell-style="{ padding: '5px 3px' }"
-      :header-cell-style="{
-        padding: '8px 3px',
-        background: '#f4f3f9',
-        color: '#515a6e',
-      }"
-      :data="tableData"
-      @selection-change="handleSelectionChange"
-      @filter-change="filterChange"
-    >
-      <el-table-column type="selection" width="50" align="center">
-      </el-table-column>
-      <el-table-column type="index" label="#" width="50" align="center">
-      </el-table-column>
-      <el-table-column
-        prop="G_id"
-        label="uid"
-        width="300"
-        align="center"
-        sortable
-      ></el-table-column>
-      <el-table-column
-        prop="G_category"
-        label="分类"
-        width="160"
-        align="center"
-        sortable
-        column-key="G_category"
-        :filters="selectOptions"
-        :filter-method="() => true"
-        filter-placement="bottom-end"
+      <!-- drawer抽屉 -->
+      <create-row-drawer
+        title="请填写商品信息"
+        ref="drawer"
+        :loading="loadingAddGoodDialog"
+        :formComs="addGoodFormItems"
+        @beforeCloseDrawer="beforeCloseAddGoodDialog"
+        @cancelForm="cancelForm"
       >
-        <template slot-scope="scope">
-          <el-tag disable-transitions>
-            {{ scope.row.G_category }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="G_thumb" label="样图" width="120" align="center">
-        <template slot-scope="scope">
-          <el-image
-            lazy
-            class="h-10 w-10"
-            :preview-src-list="[scope.row.G_thumb]"
-            :src="scope.row.G_thumb"
-          ></el-image>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="G_info"
-        label="介绍"
-        width="350"
-        align="center"
-        sortable
-      >
-        <template slot-scope="scope">
-          <el-popover
-            trigger="click"
-            placement="top"
-            :disabled="!scope.row.G_info"
-          >
-            <p>
-              {{ scope.row.G_info }}
-            </p>
-            <el-tag
-              slot="reference"
-              type="primary"
-              size="medium"
-              style="max-width: 335px; width: fix-content"
-              class="cursor-pointer truncate"
+        <template v-slot:default>
+          <el-form-item class="py-2" label="商品图样" required>
+            <el-upload
+              style="width: 150px"
+              class="img-uploader"
+              with-credentials
+              accept=".jpg,.jpeg,.png,.JPG,.JPEG"
+              :limit="1"
+              :show-file-list="false"
+              action="#"
+              :before-upload="beforeImgUpload"
             >
-              {{ scope.row.G_info }}
+              <img
+                slot="trigger"
+                v-if="imgPreviewUrl"
+                :src="imgPreviewUrl"
+                class="avatar object-cover object-center"
+              />
+              <i
+                v-else
+                slot="trigger"
+                class="el-upload el-icon-plus img-uploader-icon"
+              ></i>
+              <p class="el-upload__tip leading-5" slot="tip">
+                只能上传jpg/png文件，且不超过500kb
+              </p>
+            </el-upload>
+          </el-form-item>
+        </template>
+      </create-row-drawer>
+      <!-- Selected Tips -->
+      <div
+        v-show="showTipBar"
+        class="my-2.5 px-2 rounded-md"
+        style="border: 1px solid #abdcff; background-color: #f0faff"
+      >
+        <i class="el-icon-warning" style="color: #409eff"></i>
+        已选择
+        <span class="font-bold" style="color: #409eff">
+          {{ selectedGoods.length }}
+        </span>
+        项
+        <el-button type="text" @click="handleClearSelected">清空</el-button>
+      </div>
+      <!-- Table -->
+      <el-table
+        stripe
+        border
+        ref="goodsTable"
+        tooltip-effect="dark"
+        style="width: 100%"
+        header-align="center"
+        max-height="450"
+        row-key="G_id"
+        v-loading="loading"
+        :cell-style="{ padding: '5px 3px' }"
+        :header-cell-style="{
+          padding: '8px 3px',
+          background: '#f4f3f9',
+          color: '#515a6e',
+        }"
+        :data="tableData"
+        @selection-change="handleSelectionChange"
+        @filter-change="filterChange"
+      >
+        <el-table-column type="selection" width="50" align="center">
+        </el-table-column>
+        <el-table-column type="index" label="#" width="50" align="center">
+        </el-table-column>
+        <el-table-column
+          prop="G_id"
+          label="uid"
+          width="300"
+          align="center"
+          sortable
+        ></el-table-column>
+        <el-table-column
+          prop="G_category"
+          label="分类"
+          width="160"
+          align="center"
+          sortable
+          column-key="G_category"
+          :filters="selectOptions"
+          :filter-method="() => true"
+          filter-placement="bottom-end"
+        >
+          <template slot-scope="scope">
+            <el-tag disable-transitions>
+              {{ scope.row.G_category }}
             </el-tag>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="G_price"
-        label="价格"
-        width="80"
-        show-overflow-tooltip
-        align="center"
-        sortable
-      ></el-table-column>
-      <el-table-column
-        prop="G_stock"
-        label="库存"
-        width="80"
-        align="center"
-        sortable
-      ></el-table-column>
-      <el-table-column fixed="right" align="center" width="150" label="操作">
-        <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">
-            编辑
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDeleteGood(scope.$index, scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页器 -->
-    <el-pagination
-      class="mt-2"
-      background
-      @size-change="
-        () => {
-          chunk(1);
-        }
-      "
-      @current-change="chunk"
-      :current-page="currentPage"
-      :page-sizes="chunkSizes"
-      :page-size.sync="chunkSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="pageCounts"
-    >
-    </el-pagination>
-  </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="G_thumb" label="样图" width="120" align="center">
+          <template slot-scope="scope">
+            <el-image
+              lazy
+              class="h-10 w-10"
+              :preview-src-list="[scope.row.G_thumb]"
+              :src="scope.row.G_thumb"
+            ></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="G_info"
+          label="介绍"
+          width="350"
+          align="center"
+          sortable
+        >
+          <template slot-scope="scope">
+            <el-popover
+              trigger="click"
+              placement="top"
+              :disabled="!scope.row.G_info"
+            >
+              <p>
+                {{ scope.row.G_info }}
+              </p>
+              <el-tag
+                slot="reference"
+                type="primary"
+                size="medium"
+                style="max-width: 335px; width: fix-content"
+                class="cursor-pointer truncate"
+              >
+                {{ scope.row.G_info }}
+              </el-tag>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="G_price"
+          label="价格"
+          width="80"
+          show-overflow-tooltip
+          align="center"
+          sortable
+        ></el-table-column>
+        <el-table-column
+          prop="G_stock"
+          label="库存"
+          width="80"
+          align="center"
+          sortable
+        ></el-table-column>
+        <el-table-column fixed="right" align="center" width="150" label="操作">
+          <template slot-scope="scope">
+            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">
+              编辑
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDeleteGood(scope.$index, scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页器 -->
+      <el-pagination
+        class="mt-2"
+        background
+        @size-change="
+          () => {
+            chunk(1);
+          }
+        "
+        @current-change="chunk"
+        :current-page="currentPage"
+        :page-sizes="chunkSizes"
+        :page-size.sync="chunkSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="pageCounts"
+      >
+      </el-pagination>
+    </div>
+  </el-card>
 </template>
 <script lang="ts">
 import { Component, Vue, Ref } from 'vue-property-decorator';

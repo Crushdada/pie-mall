@@ -1,186 +1,191 @@
 <template>
-  <div class="orders">
-    <!-- Search Tool Bar -->
-    <div
-      v-show="showSearchBar"
-      class="serch-bar py-2 flex flex-row flex-nowrap justify-center items-center"
-    >
-      订单号：
-      <el-input
-        class="mr-5"
-        v-model="searchKeyWord.key"
-        type="text"
-        clearable
-        placeholder="输入订单号搜索"
-        style="font-size: 17px; width: 200px"
+  <el-card class="p-2" shadow="hover">
+    <div class="orders">
+      <!-- Search Tool Bar -->
+      <div
+        v-show="showSearchBar"
+        class="serch-bar py-2 flex flex-row flex-nowrap justify-center items-center"
+      >
+        订单号：
+        <el-input
+          class="mr-5"
+          v-model="searchKeyWord.key"
+          type="text"
+          clearable
+          placeholder="输入订单号搜索"
+          style="font-size: 17px; width: 200px"
+        />
+        <!-- 搜索按钮 -->
+        <el-button
+          icon="el-icon-search"
+          type="primary"
+          size="medium"
+          @click="searchedTableData"
+          >搜 索</el-button
+        >
+        <!-- 重置按钮 -->
+        <el-button size="medium" @click="handleResetSearch">重 置</el-button>
+      </div>
+      <!-- Table Tool Bar -->
+      <table-tool-bar
+        ref="toolbar"
+        class="my-2"
+        createRowBtnLabel="添加订单"
+        @handleRefreshTable="getOriginalData"
+        @closeSearchBar="showSearchBar = !showSearchBar"
+        @closeShowTipBar="showTipBar = !showTipBar"
       />
-      <!-- 搜索按钮 -->
-      <el-button
-        icon="el-icon-search"
-        type="primary"
-        size="medium"
-        @click="searchedTableData"
-        >搜 索</el-button
+      <!-- Selected Tips -->
+      <div
+        v-show="showTipBar"
+        class="my-2.5 px-2 rounded-md"
+        style="border: 1px solid #abdcff; background-color: #f0faff"
       >
-      <!-- 重置按钮 -->
-      <el-button size="medium" @click="handleResetSearch">重 置</el-button>
-    </div>
-    <!-- Table Tool Bar -->
-    <table-tool-bar
-      ref="toolbar"
-      class="my-2"
-      createRowBtnLabel="添加订单"
-      @handleRefreshTable="getOriginalData"
-      @closeSearchBar="showSearchBar = !showSearchBar"
-      @closeShowTipBar="showTipBar = !showTipBar"
-    />
-    <!-- Selected Tips -->
-    <div
-      v-show="showTipBar"
-      class="my-2.5 px-2 rounded-md"
-      style="border: 1px solid #abdcff; background-color: #f0faff"
-    >
-      <i class="el-icon-warning" style="color: #409eff"></i>
-      已选择
-      <span class="font-bold" style="color: #409eff">
-        {{ selectedRows.length }}
-      </span>
-      项
-      <el-button type="text" @click="handleClearSelected">清空</el-button>
-    </div>
-    <!-- Table -->
-    <el-table
-      stripe
-      border
-      ref="orderTable"
-      tooltip-effect="dark"
-      style="width: 100%"
-      header-align="center"
-      max-height="450"
-      row-key="id"
-      v-loading="loading"
-      :cell-style="{ padding: '5px 3px' }"
-      :header-cell-style="{
-        padding: '8px 3px',
-        background: '#f4f3f9',
-        color: '#515a6e',
-      }"
-      :data="tableData"
-      @selection-change="handleSelectionChange"
-      @filter-change="filterChange"
-    >
-      <el-table-column type="selection" width="50" align="center">
-      </el-table-column>
-      <!-- id -->
-      <el-table-column
-        prop="id"
-        label="uid"
-        width="300"
-        align="center"
-        sortable
-      ></el-table-column>
-      <!-- 用户名 -->
-      <el-table-column
-        prop="guestName"
-        label="用户名"
-        width="150"
-        align="center"
-        sortable
+        <i class="el-icon-warning" style="color: #409eff"></i>
+        已选择
+        <span class="font-bold" style="color: #409eff">
+          {{ selectedRows.length }}
+        </span>
+        项
+        <el-button type="text" @click="handleClearSelected">清空</el-button>
+      </div>
+      <!-- Table -->
+      <el-table
+        stripe
+        border
+        ref="orderTable"
+        tooltip-effect="dark"
+        style="width: 100%"
+        header-align="center"
+        max-height="450"
+        row-key="id"
+        v-loading="loading"
+        :cell-style="{ padding: '5px 3px' }"
+        :header-cell-style="{
+          padding: '8px 3px',
+          background: '#f4f3f9',
+          color: '#515a6e',
+        }"
+        :data="tableData"
+        @selection-change="handleSelectionChange"
+        @filter-change="filterChange"
       >
-      </el-table-column>
-      <!-- 订单总价 -->
-      <el-table-column
-        prop="totalPrice"
-        label="订单总额"
-        width="110"
-        align="center"
-        sortable
-      >
-      </el-table-column>
-      <!-- 收货信息  -->
-      <el-table-column label="收货信息" width="300" align="center">
-        <template slot-scope="scope">
-          <el-popover trigger="click" placement="top">
-            <div>
-              <span> 收货人： {{ scope.row.address.consignee_name }}</span
-              ><br />
-              <span> 联系方式： {{ scope.row.address.phone }}</span
-              ><br />
-              <span> 收货地址： {{ scope.row.address.address }}</span
-              ><br />
-            </div>
+        <el-table-column type="selection" width="50" align="center">
+        </el-table-column>
+        <!-- id -->
+        <el-table-column
+          prop="id"
+          label="uid"
+          width="300"
+          align="center"
+          sortable
+        ></el-table-column>
+        <!-- 用户名 -->
+        <el-table-column
+          prop="guestName"
+          label="用户名"
+          width="150"
+          align="center"
+          sortable
+        >
+        </el-table-column>
+        <!-- 订单总价 -->
+        <el-table-column
+          prop="totalPrice"
+          label="订单总额"
+          width="110"
+          align="center"
+          sortable
+        >
+        </el-table-column>
+        <!-- 收货信息  -->
+        <el-table-column label="收货信息" width="300" align="center">
+          <template slot-scope="scope">
+            <el-popover trigger="click" placement="top">
+              <div>
+                <span> 收货人： {{ scope.row.address.consignee_name }}</span
+                ><br />
+                <span> 联系方式： {{ scope.row.address.phone }}</span
+                ><br />
+                <span> 收货地址： {{ scope.row.address.address }}</span
+                ><br />
+              </div>
 
+              <el-tag
+                slot="reference"
+                type="primary"
+                size="medium"
+                style="max-width: 335px; width: fix-content"
+                class="cursor-pointer truncate"
+              >
+                {{ scope.row.address.address }}
+              </el-tag>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <!-- 订单状态 -->
+        <el-table-column
+          label="订单状态"
+          width="110"
+          align="center"
+          column-key="status"
+          :filters="selectOptions"
+          :filter-method="() => true"
+          filter-placement="bottom-end"
+        >
+          <template slot-scope="scope">
             <el-tag
-              slot="reference"
-              type="primary"
-              size="medium"
-              style="max-width: 335px; width: fix-content"
-              class="cursor-pointer truncate"
+              disable-transitions
+              :type="scope.row.status === 'to_pay' ? 'danger' : 'primary'"
             >
-              {{ scope.row.address.address }}
+              {{ statusDict[scope.row.status] }}
             </el-tag>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <!-- 订单状态 -->
-      <el-table-column
-        label="订单状态"
-        width="110"
-        align="center"
-        column-key="status"
-        :filters="selectOptions"
-        :filter-method="() => true"
-        filter-placement="bottom-end"
+          </template>
+        </el-table-column>
+        <!-- 下单时间 -->
+        <el-table-column label="下单时间" width="160" align="center" sortable>
+          <template slot-scope="scope">
+            {{ format(new Date(scope.row.timeStamp), 'yyyy-MM-dd hh:mm:ss') }}
+          </template>
+        </el-table-column>
+        <!-- 操作栏 -->
+        <el-table-column fixed="right" align="center" width="180" label="操作">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              @click="checkDetails(scope.$index, scope.row)"
+            >
+              查看详情
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDeleteRow(scope.$index, scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页器 -->
+      <el-pagination
+        class="mt-2"
+        background
+        @size-change="
+          () => {
+            chunk(1);
+          }
+        "
+        @current-change="chunk"
+        :current-page="currentPage"
+        :page-sizes="chunkSizes"
+        :page-size.sync="chunkSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="pageCounts"
       >
-        <template slot-scope="scope">
-          <el-tag
-            disable-transitions
-            :type="scope.row.status === 'to_pay' ? 'danger' : 'primary'"
-          >
-            {{ statusDict[scope.row.status] }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <!-- 下单时间 -->
-      <el-table-column label="下单时间" width="160" align="center" sortable>
-        <template slot-scope="scope">
-          {{ format(new Date(scope.row.timeStamp), 'yyyy-MM-dd hh:mm:ss') }}
-        </template>
-      </el-table-column>
-      <!-- 操作栏 -->
-      <el-table-column fixed="right" align="center" width="180" label="操作">
-        <template slot-scope="scope">
-          <el-button size="mini" @click="checkDetails(scope.$index, scope.row)">
-            查看详情
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDeleteRow(scope.$index, scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页器 -->
-    <el-pagination
-      class="mt-2"
-      background
-      @size-change="
-        () => {
-          chunk(1);
-        }
-      "
-      @current-change="chunk"
-      :current-page="currentPage"
-      :page-sizes="chunkSizes"
-      :page-size.sync="chunkSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="pageCounts"
-    >
-    </el-pagination>
-  </div>
+      </el-pagination>
+    </div>
+  </el-card>
 </template>
 <script lang="ts">
 import { Component, Vue, Ref } from 'vue-property-decorator';

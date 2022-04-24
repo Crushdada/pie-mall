@@ -64,15 +64,9 @@ export const moduleMenu = [
     children: [
       {
         childPageName: '商品数据分析',
-        path: '/goods',
-        name: '',
-        component: 'GoodsDataAnalysis',
-      },
-      {
-        childPageName: '用户画像分析',
-        path: '/userPortrait',
-        name: '',
-        component: 'UserPortraitAnalysis',
+        path: '/',
+        name: 'data-visualization',
+        component: 'DataVisualization',
       },
     ],
   },
@@ -82,8 +76,8 @@ export const moduleMenu = [
  * 初始页面(初始视图路由)
  */
 export const initComRoute = {
-  PagePath: '/order',
-  component: 'OrderList',
+  PagePath: '/dataAnalysis',
+  component: 'DataVisualization',
 };
 
 /**
