@@ -21,6 +21,24 @@ export class OrderService {
   ) {}
 
   /**
+   * admin端订单数据分析
+   * @param recentDays
+   */
+  getOrderAnalysisData(recentDays: number) {
+    const tryExecution = async () => {
+      const recentOrders = await this._orderRepo.query(
+        `select DATE_FORMAT(timeStamp, '%Y-%m-%d') as create_at,COUNT(DATE_FORMAT(timeStamp, '%Y-%m-%d')) as orderCounts from piemall.order where TO_DAYS(NOW()) - TO_DAYS(timeStamp) <= ${recentDays} group by create_at ORDER BY create_at;`,
+      );
+      const exeResult = await this._orderRepo.query(
+        'SELECT COUNT(*) as totalOrderCounts FROM piemall.order;',
+      );
+      const totalOrderCounts = exeResult[0].totalOrderCounts;
+      return this._responseSrv.success({ recentOrders, totalOrderCounts });
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
    * 更新order状态
    * @param orderId
    * @param status

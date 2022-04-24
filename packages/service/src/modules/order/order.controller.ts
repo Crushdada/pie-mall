@@ -16,6 +16,16 @@ import { OrderStatus } from '../../../../types/order/order-status.enum';
 export class OrderController {
   constructor(private readonly _orderSrv: OrderService) {}
 
+  @Get('test')
+  test() {
+    return this._orderSrv.getOrderAnalysisData(17);
+  }
+
+  @Get('analysis/:recentDays')
+  getOrderAnalysisData(@Param('recentDays') recentDays: number) {
+    return this._orderSrv.getOrderAnalysisData(recentDays);
+  }
+
   @Post()
   create(
     @Body() goodsMapIds: Array<string>,
@@ -24,7 +34,6 @@ export class OrderController {
     const { userId } = session.userProfile;
     return this._orderSrv.create(userId, goodsMapIds);
   }
-
   @Get()
   findAll() {
     return this._orderSrv.findAll();

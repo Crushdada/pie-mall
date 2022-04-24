@@ -29,7 +29,6 @@ export default class ChartInitMixin extends Vue {
    */
   renderChart(baseOpts: ChartOptions, processor: Processor): void {
     const opts = processor(baseOpts);
-    console.log("opts=",JSON.stringify(opts));
     (this.echartsInstance as any).setOption(opts);
   }
 }
