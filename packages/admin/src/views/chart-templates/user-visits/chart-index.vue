@@ -2,7 +2,7 @@
   <div>
     <small-chart-tpl title="访问量" subTitle="今日访问量 33" totalCount="755">
       <div
-        id="user-nums"
+        id="user-visits"
         style="
           width: 266px;
           height: 45px;
@@ -21,11 +21,11 @@ import SmallChartTpl from '../small-chart-tpl.vue';
 @Component({
   components: { SmallChartTpl },
 })
-export default class UserNums extends Mixins(ChartInitMixin) {
+export default class UserVisits extends Mixins(ChartInitMixin) {
   /** Hooks*/
   // ===================================================================
   mounted() {
-    this.getEchartsInstance('#user-nums');
+    this.getEchartsInstance('#user-visits');
     this.renderChart({
       baseOpts: baseOptions,
       processor: processChartData,
