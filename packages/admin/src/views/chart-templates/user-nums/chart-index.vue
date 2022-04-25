@@ -2,7 +2,7 @@
   <div>
     <small-chart-tpl title="访问量" subTitle="今日访问量 33" totalCount="755">
       <div
-        class="chart-slot"
+        id="user-nums"
         style="
           width: 266px;
           height: 45px;
@@ -25,7 +25,11 @@ export default class UserNums extends Mixins(ChartInitMixin) {
   /** Hooks*/
   // ===================================================================
   mounted() {
-    this.renderChart(baseOptions, processChartData);
+    this.getEchartsInstance('#user-nums');
+    this.renderChart({
+      baseOpts: baseOptions,
+      processor: processChartData,
+    });
   }
   // Methods
   // ===================================================================

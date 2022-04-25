@@ -6,12 +6,8 @@
       :totalCount="totalCount"
     >
       <div
-        class="chart-slot"
-        style="
-          width: 266px;
-          height: 45px;
-          transform: scaleX(1.05) translateX(-5px);
-        "
+        id="order-chart"
+        style="width: 266px; height: 45px; transform: scaleX(1.25)"
       ></div>
     </small-chart-tpl>
   </div>
@@ -23,37 +19,43 @@ import ChartInitMixin from '@/mixins/chart-init.mixin.ts';
 import { processChartData } from './processor';
 import SmallChartTpl from '../small-chart-tpl.vue';
 import { getOrderAnalysisData } from '@/api/order/get-order-analysis-data';
+
 @Component({
   components: { SmallChartTpl },
 })
 export default class OrderStatistics extends Mixins(ChartInitMixin) {
   private dailyOrderCount = '';
   private totalCount = '';
+  private recentDays = 17;
   /** Hooks*/
   // ===================================================================
-  mounted() {
-    this.getOriginalData();
-    this.renderChart(baseOptions, processChartData);
+  async mounted() {
+    // 初始化echarts实例
+    this.getEchartsInstance('#order-chart');
+    // 获取数据
+    const chartData = await this.getOriChartData(this.recentDays);
+    const { recentOrders, totalOrderCounts } = chartData;
+    // 挂载状态
+    this.dailyOrderCount = recentOrders[recentOrders.length - 1]?.orderCounts;
+    this.totalCount = totalOrderCounts;
+    // 渲染图表
+    this.renderChart({
+      baseOpts: baseOptions,
+      oriData: recentOrders,
+      processor: processChartData,
+    });
   }
   // Methods
   // ===================================================================
-  async getOriginalData() {
+  async getOriChartData(recentDays) {
     try {
-      const res = await getOrderAnalysisData(17);
+      const res = await getOrderAnalysisData(recentDays);
       if (!res) {
         throw Error(JSON.stringify(res));
       }
-      const { recentOrders, totalOrderCounts } = res.data;
-      console.log(totalOrderCounts);
-      console.log(recentOrders);
+      return res.data;
     } catch (err) {
       console.log(err);
-      this.$message({
-        showClose: true,
-        message: '请求订单数据失败,请稍后重试',
-        type: 'error',
-        center: true,
-      });
     }
   }
 }
