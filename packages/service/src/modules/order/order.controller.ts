@@ -21,6 +21,11 @@ export class OrderController {
     return this._orderSrv.getConsumptionAnalysisData();
   }
 
+  @Get('sale-volume/analysis')
+  getSaleVolumeData() {
+    return this._orderSrv.getSaleVolumeData();
+  }
+
   @Get('analysis/:recentDays')
   getOrderAnalysisData(@Param('recentDays') recentDays: number) {
     return this._orderSrv.getOrderAnalysisData(recentDays);
