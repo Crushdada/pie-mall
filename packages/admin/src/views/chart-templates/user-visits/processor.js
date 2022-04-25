@@ -5,11 +5,11 @@ const originalData = [15, 33, 2, 17, 36, 44, 29, 0, 23, 38, 19, 57];
  * @param {*} baseOpts
  * @returns
  */
-export const processChartData = baseOpts => {
+export const processChartData = (baseOpts, oriData) => {
   const primary = '#FF455F';
   const series = {
     type: 'line',
-    showSymbol:false,
+    showSymbol: false,
     lineStyle: {
       color: primary,
     },

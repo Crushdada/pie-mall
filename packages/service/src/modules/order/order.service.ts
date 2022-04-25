@@ -21,6 +21,19 @@ export class OrderService {
   ) {}
 
   /**
+   * admin端消费水平数据分析
+   */
+  getConsumptionAnalysisData() {
+    const tryExecution = async () => {
+      const exeResult = await this._orderRepo.query(
+        `SELECT piemall.guest.name as userName,SUM(quantity * G_price) as consumption FROM piemall.order LEFT JOIN piemall.cart_goods_map ON piemall.order.id = piemall.cart_goods_map.orderId LEFT JOIN piemall.goods ON goods.G_id = piemall.cart_goods_map.goodGId LEFT JOIN piemall.guest ON guest.id = piemall.order.guestId WHERE status != 'to_pay' GROUP BY guestId ORDER BY SUM(quantity * G_price);`,
+      );
+      return this._responseSrv.success(exeResult);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
    * admin端订单数据分析
    * @param recentDays
    */

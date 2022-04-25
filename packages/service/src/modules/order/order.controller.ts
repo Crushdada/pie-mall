@@ -18,12 +18,17 @@ export class OrderController {
 
   @Get('test')
   test() {
-    return this._orderSrv.getOrderAnalysisData(17);
+    return this._orderSrv.getConsumptionAnalysisData();
   }
 
   @Get('analysis/:recentDays')
   getOrderAnalysisData(@Param('recentDays') recentDays: number) {
     return this._orderSrv.getOrderAnalysisData(recentDays);
+  }
+
+  @Get('consumption/analysis')
+  getConsumptionAnalysisData() {
+    return this._orderSrv.getConsumptionAnalysisData();
   }
 
   @Post()

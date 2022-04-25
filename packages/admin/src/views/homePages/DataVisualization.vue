@@ -1,17 +1,19 @@
 <template>
   <div class="visualization">
     <div class="flex justify-around pt-4">
-      <user-nums />
+      <UserVisits />
       <OrderStatistics />
+      <UserConsumptionLevel />
     </div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import UserNums from '../chart-templates/user-nums/chart-index.vue';
+import UserVisits from '../chart-templates/user-visits/chart-index.vue';
 import OrderStatistics from '../chart-templates/order-statistics/chart-index.vue';
+import UserConsumptionLevel from '../chart-templates/user-consumption-level/chart-index.vue';
 @Component({
-  components: { UserNums, OrderStatistics },
+  components: { UserVisits, OrderStatistics, UserConsumptionLevel },
 })
 export default class DataVisualization extends Vue {
   /** Computed*/
