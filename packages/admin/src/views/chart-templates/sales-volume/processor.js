@@ -18,6 +18,7 @@ export const processChartData = (baseOpts, oriData) => {
     '#c4ebad',
     '#96dee8',
   ];
+  const seriesArr = [];
   for (let i = 0; i < seriesNums; i++) {
     const seriesData = oriData.map(row => row[i + 1]);
     const colorIdx = (i % colorList.length) - 1;
@@ -31,7 +32,8 @@ export const processChartData = (baseOpts, oriData) => {
       data: seriesData,
     };
     baseOpts.xAxis.data = xAxisData;
-    baseOpts.series.push(series);
+    seriesArr.push(series);
   }
+  baseOpts.series = seriesArr;
   return baseOpts;
 };

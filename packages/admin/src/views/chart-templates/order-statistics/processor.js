@@ -25,6 +25,6 @@ export const processChartData = (baseOpts, oriData) => {
     },
     data: seriesData,
   };
-  baseOpts.series.push(series);
+  baseOpts.series = series;
   return baseOpts;
 };
