@@ -47,6 +47,6 @@ export const processChartData = (baseOpts, oriData) => {
       position: 'center',
     },
   };
-  baseOpts.series.push(series);
+  baseOpts.series = series;
   return baseOpts;
 };
