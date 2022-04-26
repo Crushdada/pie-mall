@@ -12264,6 +12264,13 @@ shelljs@0.8.5:
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
+shifty@^2.0.2:
+  version "2.17.1"
+  resolved "https://registry.yarnpkg.com/shifty/-/shifty-2.17.1.tgz#b24f78efcec5030b830bcedf3fb474ea8570e996"
+  integrity sha512-ime0aar6UX4OHG8WjC84ThqLU6PWf/6UdSLCMJFvWmeYx1PmuxvRNwiJom4py7GVLv10xRfDKt0MssotIxkYhQ==
+  optionalDependencies:
+    fsevents "^2.3.2"
+
 side-channel@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/side-channel/-/side-channel-1.0.4.tgz#efce5c8fdc104ee751b25c58d4290011fa5ea2cf"
@@ -13788,6 +13795,13 @@ vm-browserify@^1.0.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
+
+vue-animate-number@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/vue-animate-number/-/vue-animate-number-0.4.2.tgz#fa8901de4c758fa844a0442ff72dbe329decc471"
+  integrity sha1-+okB3kx1j6hEoEQv9y2+Mp3sxHE=
+  dependencies:
+    shifty "^2.0.2"
 
 vue-class-component@^7.2.3:
   version "7.2.6"

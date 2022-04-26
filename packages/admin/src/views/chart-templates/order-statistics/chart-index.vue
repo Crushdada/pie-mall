@@ -25,7 +25,7 @@ import { getOrderAnalysisData } from '@/api/order/get-order-analysis-data';
 })
 export default class OrderStatistics extends Mixins(ChartInitMixin) {
   private dailyOrderCount = '';
-  private totalCount = '';
+  private totalCount = 0;
   private recentDays = 17;
   /** Hooks*/
   // ===================================================================
@@ -37,7 +37,7 @@ export default class OrderStatistics extends Mixins(ChartInitMixin) {
     const { recentOrders, totalOrderCounts } = chartData;
     // 挂载状态
     this.dailyOrderCount = recentOrders[recentOrders.length - 1]?.orderCounts;
-    this.totalCount = totalOrderCounts;
+    this.totalCount = parseInt(totalOrderCounts);
     // 渲染图表
     this.renderChart({
       baseOpts: baseOptions,

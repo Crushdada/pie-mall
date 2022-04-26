@@ -1,6 +1,6 @@
 <template>
   <div>
-    <small-chart-tpl title="访问量" subTitle="今日访问量 33" totalCount="755">
+    <small-chart-tpl title="访问量" subTitle="今日访问量 33" :totalCount="755">
       <div
         id="user-visits"
         style="

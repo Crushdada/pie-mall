@@ -29,7 +29,7 @@ import { getUserNumsAnalysisData } from '@/api/user/get-uesr-nums-analysis-data'
 })
 export default class UserNums extends Mixins(ChartInitMixin) {
   private dailyNewNums = '';
-  private totalUserNums = '';
+  private totalUserNums = 0;
   /** Hooks*/
   // ===================================================================
   async mounted() {
@@ -39,11 +39,11 @@ export default class UserNums extends Mixins(ChartInitMixin) {
     const chartData = await this.getOriChartData();
     const { diffRoleUserNums, dailyNewNums } = chartData;
     // 挂载状态
-    this.totalUserNums = diffRoleUserNums
-      .reduce((sum, cur) => {
+    this.totalUserNums = parseInt(
+      diffRoleUserNums.reduce((sum, cur) => {
         return (sum += parseInt(cur.userNums));
-      }, 0)
-      .toString();
+      }, 0),
+    );
     this.dailyNewNums = dailyNewNums;
     // 渲染图表
     this.renderChart({

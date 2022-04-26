@@ -9,7 +9,14 @@
       </el-dropdown-menu>
     </el-dropdown>
     <br />
-    <h2 class="text-3xl pb-1.5">{{ totalCount }}</h2>
+    <h2 class="text-3xl pb-1.5" v-if="totalCount">
+      <animate-number
+        from="1"
+        :to="totalCount"
+        duration="1500"
+        easing="easeOutQuad"
+      ></animate-number>
+    </h2>
     <!-- 图表视图出口 -->
     <slot></slot>
     <div class="my-2" style="border-bottom: 1px solid #eee"></div>
@@ -23,7 +30,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 export default class SmallChartTpl extends Vue {
   @Prop({ type: String }) readonly title!: string;
   @Prop({ type: String }) readonly subTitle!: string;
-  @Prop({ type: String }) readonly totalCount!: string;
+  @Prop({ type: Number }) readonly totalCount!: number;
 
   /** Hooks*/
   // ===================================================================
