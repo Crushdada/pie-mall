@@ -20,6 +20,33 @@ export class OrderService {
     private readonly _guestRepo: Repository<Guest>,
   ) {}
   /**
+   * admin端商品分类销售额统计
+   */
+  getDiffGoodsKindsSalesData() {
+    const tryExecution = async () => {
+      const exeResult = await this._orderRepo.query(
+        `SELECT G_category as category,SUM(quantity * G_price) as consumption FROM piemall.order LEFT JOIN piemall.cart_goods_map ON piemall.order.id = piemall.cart_goods_map.orderId LEFT JOIN piemall.goods ON goods.G_id = piemall.cart_goods_map.goodGId WHERE status != 'to_pay' AND G_category != '' GROUP BY category ORDER BY consumption;`,
+      );
+      return this._responseSrv.success(exeResult);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
+   * admin端热销商品排行榜
+   */
+  getSaleRankingData() {
+    const tryExecution = async () => {
+      const limit = 5; // 查询销售额最多的前几条？数据
+      const exeResult = await this._orderRepo.query(
+        `SELECT G_info as goodsName,SUM(quantity * G_price) as consumption FROM piemall.order LEFT JOIN piemall.cart_goods_map ON piemall.order.id = piemall.cart_goods_map.orderId LEFT JOIN piemall.goods ON goods.G_id = piemall.cart_goods_map.goodGId WHERE status != 'to_pay' AND G_category != '' GROUP BY goodsName ORDER BY consumption DESC LIMIT ${limit};`,
+      );
+      return this._responseSrv.success(exeResult);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
    * admin端销售额数据分析
    */
   getSaleVolumeData() {

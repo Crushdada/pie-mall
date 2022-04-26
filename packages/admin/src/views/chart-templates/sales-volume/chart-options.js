@@ -3,27 +3,26 @@
  */
 export const baseOptions = {
   tooltip: {
+    trigger: 'item',
   },
+  legend: {},
   grid: {
-    width: '100%',
-    height: '100%',
-    x: 0,
-    y: 0,
-    x2: 0,
-    y2: 0,
+    top: 80,
+    left:'auto',
+    bottom: 20,
+    width: '80%',
+    height: '75%',
     containLabel: false,
   },
-  splitLine: {
-    show: false,
-  },
-  legend: {
-    show: false,
+  axisLine: { show: true },
+  axisTick: {
+    show: true,
   },
   xAxis: {
-    show: false,
-    type: 'value',
+    show: true,
+    type: 'category',
     data: [],
   },
-  yAxis: { show: false, type: 'category' },
+  yAxis: { show: true, type: 'value' },
   series: [],
 };

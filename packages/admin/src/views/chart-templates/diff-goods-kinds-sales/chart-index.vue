@@ -1,11 +1,7 @@
 <template>
-  <el-card
-    class="flex items-center justify-center"
-    shadow="hover"
-    style="width: 760px; height: 548px"
-  >
-    <div class="px-6 pt-8">
-      <span class="text-gray-400">销售额统计</span>
+  <el-card class="flex items-center" shadow="hover" style="overflow: visible">
+    <div class="px-4" style="width: 420px">
+      <span class="text-gray-400">商品类别销量统计</span>
       <el-dropdown class="float-right" trigger="click">
         <i class="el-icon-more pt-1 text-gray-400 cursor-pointer"></i>
         <el-dropdown-menu slot="dropdown">
@@ -14,13 +10,8 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <br />
     <!-- 图表视图出口 -->
-    <div
-      id="sales-volume"
-      class="pl-5"
-      style="width: 700px; height: 480px"
-    ></div>
+    <div id="diff-goods-kinds-sales" style="width: 350px; height: 200px"></div>
   </el-card>
 </template>
 <script lang="ts">
@@ -28,15 +19,15 @@ import { Component, Mixins } from 'vue-property-decorator';
 import { baseOptions } from './chart-options';
 import ChartInitMixin from '@/mixins/chart-init.mixin.ts';
 import { processChartData } from './processor';
-import { getSalesVolumeAnalysisData } from '../../../api/order/get-sales-volume-data';
+import { getDiffGoodsKindsSalesData } from '../../../api/order/get-diff-goods-kinds-sales-data';
 
 @Component
-export default class SalesVolume extends Mixins(ChartInitMixin) {
+export default class DiffGoodsKindsSales extends Mixins(ChartInitMixin) {
   /** Hooks*/
   // ===================================================================
   async mounted() {
     // 初始化echarts实例
-    this.getEchartsInstance('#sales-volume');
+    this.getEchartsInstance('#diff-goods-kinds-sales');
     // 获取数据
     const chartData = await this.getOriChartData();
     // 渲染图表
@@ -50,7 +41,7 @@ export default class SalesVolume extends Mixins(ChartInitMixin) {
   // ===================================================================
   async getOriChartData() {
     try {
-      const res = await getSalesVolumeAnalysisData();
+      const res = await getDiffGoodsKindsSalesData();
       if (!res) {
         throw Error(JSON.stringify(res));
       }

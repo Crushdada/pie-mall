@@ -21,6 +21,16 @@ export class OrderController {
     return this._orderSrv.getConsumptionAnalysisData();
   }
 
+  @Get('diff-kinds-goods-sales/analysis')
+  getDiffGoodsKindsSalesData() {
+    return this._orderSrv.getDiffGoodsKindsSalesData();
+  }
+
+  @Get('sale-ranking/analysis')
+  getSaleRankingData() {
+    return this._orderSrv.getSaleRankingData();
+  }
+
   @Get('sale-volume/analysis')
   getSaleVolumeData() {
     return this._orderSrv.getSaleVolumeData();

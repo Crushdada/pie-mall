@@ -245,6 +245,7 @@ import { SET_GOODS_DATASET } from '@/store/goods.module/mutations/set-goods-data
 import { VuexModuleName } from '@types/vuex/enums/module-name.enum';
 import { uint8Array2JSON } from '@/utils/data-utils';
 import { addGoods } from '@/api/goods/add-goods';
+import { GoodsCategory } from '../../../../types/goods/goods-categories.enum.ts';
 @Component({
   components: { TableToolBar, CreateRowDrawer },
 })
@@ -265,18 +266,7 @@ export default class GoodsInfo extends Vue {
   private showSearchBar = true; // 是否展示搜索栏
   private showTipBar = true; // 是否展示提示栏
   private clickedSearchBtn = false;
-  private categoryDict = {
-    // 用于转换商品类别label
-    headset: '耳机',
-    router: '路由器',
-    television: '数码电视',
-    tablet_PC: '平板电脑',
-    notebook_computer: '笔记本电脑',
-    smart_home: '智能家居',
-    mobile_phone: '智能手机',
-    intelligent_watch: '智能手表',
-    intelligent_speaker: '智能语音',
-  };
+
   // drawer抽屉 (form提交表单)
   private loadingAddGoodDialog = false; // 抽屉卡片加载状态
   private timer = null;
@@ -517,8 +507,8 @@ export default class GoodsInfo extends Vue {
       }
       const { goodsCategories } = res.data;
       this.selectOptions = goodsCategories.map(item => ({
-        text: this.categoryDict[item],
-        label: this.categoryDict[item],
+        text: GoodsCategory[item],
+        label: GoodsCategory[item],
         value: item,
       }));
       this.addGoodFormItems[0].options = this.selectOptions;
