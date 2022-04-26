@@ -16,6 +16,36 @@ import { OrderStatus } from '../../../../types/order/order-status.enum';
 export class OrderController {
   constructor(private readonly _orderSrv: OrderService) {}
 
+  @Get('test')
+  test() {
+    return this._orderSrv.getConsumptionAnalysisData();
+  }
+
+  @Get('diff-kinds-goods-sales/analysis')
+  getDiffGoodsKindsSalesData() {
+    return this._orderSrv.getDiffGoodsKindsSalesData();
+  }
+
+  @Get('sale-ranking/analysis')
+  getSaleRankingData() {
+    return this._orderSrv.getSaleRankingData();
+  }
+
+  @Get('sale-volume/analysis')
+  getSaleVolumeData() {
+    return this._orderSrv.getSaleVolumeData();
+  }
+
+  @Get('analysis/:recentDays')
+  getOrderAnalysisData(@Param('recentDays') recentDays: number) {
+    return this._orderSrv.getOrderAnalysisData(recentDays);
+  }
+
+  @Get('consumption/analysis')
+  getConsumptionAnalysisData() {
+    return this._orderSrv.getConsumptionAnalysisData();
+  }
+
   @Post()
   create(
     @Body() goodsMapIds: Array<string>,
@@ -24,7 +54,6 @@ export class OrderController {
     const { userId } = session.userProfile;
     return this._orderSrv.create(userId, goodsMapIds);
   }
-
   @Get()
   findAll() {
     return this._orderSrv.findAll();

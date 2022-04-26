@@ -1,165 +1,167 @@
 <template>
-  <div class="user">
-    <!-- Search Tool Bar -->
-    <div
-      v-show="showSearchBar"
-      class="serch-bar py-2 flex flex-row flex-nowrap justify-center items-center"
-    >
-      用户名：
-      <el-input
-        class="mr-5"
-        v-model="searchKeyWord.name"
-        type="text"
-        clearable
-        placeholder="输入关键字搜索"
-        style="font-size: 17px; width: 200px"
+  <el-card class="p-2" shadow="hover">
+    <div class="user">
+      <!-- Search Tool Bar -->
+      <div
+        v-show="showSearchBar"
+        class="serch-bar py-2 flex flex-row flex-nowrap justify-center items-center"
+      >
+        用户名：
+        <el-input
+          class="mr-5"
+          v-model="searchKeyWord.name"
+          type="text"
+          clearable
+          placeholder="输入关键字搜索"
+          style="font-size: 17px; width: 200px"
+        />
+        <!-- 搜索按钮 -->
+        <el-button
+          icon="el-icon-search"
+          type="primary"
+          size="medium"
+          @click="filterTableData"
+          >搜 索</el-button
+        >
+        <!-- 重置按钮 -->
+        <el-button size="medium" @click="tableData = userList">重 置</el-button>
+      </div>
+      <!-- Table Tool Bar -->
+      <table-tool-bar
+        class="my-2"
+        :createRowBtnLabel="`新增用户`"
+        @handleAddNewRow="handleShowDrawer"
+        @handleDeleteRows="handleDeleteGuests"
+        @handleRefreshTable="getGuests"
+        @closeSearchBar="showSearchBar = !showSearchBar"
+        @closeShowTipBar="showTipBar = !showTipBar"
       />
-      <!-- 搜索按钮 -->
-      <el-button
-        icon="el-icon-search"
-        type="primary"
-        size="medium"
-        @click="filterTableData"
-        >搜 索</el-button
+      <!-- drawer抽屉       :showDrawer="showAddUserDialog"-->
+      <create-row-drawer
+        title="请填写用户信息"
+        ref="drawer"
+        :loading="loadingAddUserDialog"
+        :formComs="addUserFormItems"
+        @beforeCloseDrawer="beforeCloseAddUserDialog"
+        @cancelForm="cancelForm"
+      />
+      <!-- Selected Tips -->
+      <div
+        v-show="showTipBar"
+        class="my-2.5 px-2 rounded-md"
+        style="border: 1px solid #abdcff; background-color: #f0faff"
       >
-      <!-- 重置按钮 -->
-      <el-button size="medium" @click="tableData = userList">重 置</el-button>
-    </div>
-    <!-- Table Tool Bar -->
-    <table-tool-bar
-      class="my-2"
-      :createRowBtnLabel="`新增用户`"
-      @handleAddNewRow="handleShowDrawer"
-      @handleDeleteRows="handleDeleteGuests"
-      @handleRefreshTable="getGuests"
-      @closeSearchBar="showSearchBar = !showSearchBar"
-      @closeShowTipBar="showTipBar = !showTipBar"
-    />
-    <!-- drawer抽屉       :showDrawer="showAddUserDialog"-->
-    <create-row-drawer
-      title="请填写用户信息"
-      ref="drawer"
-      :loading="loadingAddUserDialog"
-      :formComs="addUserFormItems"
-      @beforeCloseDrawer="beforeCloseAddUserDialog"
-      @cancelForm="cancelForm"
-    />
-    <!-- Selected Tips -->
-    <div
-      v-show="showTipBar"
-      class="my-2.5 px-2 rounded-md"
-      style="border: 1px solid #abdcff; background-color: #f0faff"
-    >
-      <i class="el-icon-warning" style="color: #409eff"></i>
-      已选择
-      <span class="font-bold" style="color: #409eff">
-        {{ selectedUsers.length }}
-      </span>
-      项
-      <el-button type="text" @click="handleClearSelected">清空</el-button>
-    </div>
-    <!-- Table -->
-    <el-table
-      stripe
-      border
-      ref="userTable"
-      tooltip-effect="dark"
-      style="width: 100%"
-      header-align="center"
-      max-height="450"
-      row-key="id"
-      v-loading="loading"
-      :header-cell-style="{ background: '#f4f3f9', color: '#515a6e' }"
-      :data="tableData"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="50" align="center">
-      </el-table-column>
-      <el-table-column type="index" label="#" width="50" align="center">
-      </el-table-column>
-      <el-table-column
-        prop="id"
-        label="uid"
-        width="280"
-        align="center"
-        sortable
-      ></el-table-column>
-      <el-table-column
-        prop="name"
-        label="昵称"
-        width="120"
-        align="center"
-        sortable
-      ></el-table-column>
-      <el-table-column
-        prop="account"
-        label="账号"
-        width="120"
-        align="center"
-        sortable
-      ></el-table-column>
-      <el-table-column
-        label="权限"
-        width="80"
-        align="center"
-        :filters="[
-          { text: '普通用户', value: 'guest' },
-          { text: 'vip', value: 'vip' },
-        ]"
-        :filter-method="filterRole"
-        filter-placement="bottom-end"
+        <i class="el-icon-warning" style="color: #409eff"></i>
+        已选择
+        <span class="font-bold" style="color: #409eff">
+          {{ selectedUsers.length }}
+        </span>
+        项
+        <el-button type="text" @click="handleClearSelected">清空</el-button>
+      </div>
+      <!-- Table -->
+      <el-table
+        stripe
+        border
+        ref="userTable"
+        tooltip-effect="dark"
+        style="width: 100%"
+        header-align="center"
+        max-height="450"
+        row-key="id"
+        v-loading="loading"
+        :header-cell-style="{ background: '#f4f3f9', color: '#515a6e' }"
+        :data="tableData"
+        @selection-change="handleSelectionChange"
       >
-        <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.role === 'vip' ? 'danger' : 'primary'"
-            disable-transitions
-          >
-            {{ scope.row.role }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="地址"
-        show-overflow-tooltip
-        align="center"
-        sortable
-      >
-        <template slot-scope="scope">
-          <el-popover
-            trigger="hover"
-            placement="top"
-            :disabled="!scope.row.receiving_address.length"
-          >
-            <p
-              v-for="addressRow in scope.row.receiving_address || []"
-              :key="addressRow.id"
+        <el-table-column type="selection" width="50" align="center">
+        </el-table-column>
+        <el-table-column type="index" label="#" width="50" align="center">
+        </el-table-column>
+        <el-table-column
+          prop="id"
+          label="uid"
+          width="280"
+          align="center"
+          sortable
+        ></el-table-column>
+        <el-table-column
+          prop="name"
+          label="昵称"
+          width="120"
+          align="center"
+          sortable
+        ></el-table-column>
+        <el-table-column
+          prop="account"
+          label="账号"
+          width="120"
+          align="center"
+          sortable
+        ></el-table-column>
+        <el-table-column
+          label="权限"
+          width="80"
+          align="center"
+          :filters="[
+            { text: '普通用户', value: 'guest' },
+            { text: 'vip', value: 'vip' },
+          ]"
+          :filter-method="filterRole"
+          filter-placement="bottom-end"
+        >
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.role === 'vip' ? 'danger' : 'primary'"
+              disable-transitions
             >
-              {{ addressRow.address }}
-            </p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{
-                scope.row.receiving_address.length
-              }}</el-tag>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column fixed="right" align="center" width="150" label="操作">
-        <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">
-            编辑
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDeleteGuest(scope.$index, scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-  </div>
+              {{ scope.row.role }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="地址"
+          show-overflow-tooltip
+          align="center"
+          sortable
+        >
+          <template slot-scope="scope">
+            <el-popover
+              trigger="hover"
+              placement="top"
+              :disabled="!scope.row.receiving_address.length"
+            >
+              <p
+                v-for="addressRow in scope.row.receiving_address || []"
+                :key="addressRow.id"
+              >
+                {{ addressRow.address }}
+              </p>
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">{{
+                  scope.row.receiving_address.length
+                }}</el-tag>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" align="center" width="150" label="操作">
+          <template slot-scope="scope">
+            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">
+              编辑
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDeleteGuest(scope.$index, scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </el-card>
 </template>
 <script lang="ts">
 import { Component, Vue, Ref } from 'vue-property-decorator';

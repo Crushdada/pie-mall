@@ -1,1 +1,0 @@
-DELETE FROM receiving_address WHERE address = '爱仕达多所多撒所';

@@ -13,9 +13,7 @@
         <header-bar />
         <!-- body -->
         <el-main class="bg-gray-100" style="padding: 10px">
-          <el-card class="p-2" shadow="hover">
-            <router-view></router-view>
-          </el-card>
+          <router-view></router-view>
         </el-main>
       </el-container>
     </el-container>

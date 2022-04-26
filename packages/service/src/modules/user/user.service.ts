@@ -32,6 +32,22 @@ export class UserService {
   ) {}
 
   /**
+   * admin端用户数据分析
+   */
+  getUserAnalysisData() {
+    return this._responseSrv.tryExecute(async () => {
+      const diffRoleUserNums = await this._guestRepo.query(
+        'SELECT role,COUNT(*) AS userNums FROM piemall.guest GROUP BY role ORDER BY userNums DESC;',
+      );
+      // const dailyNewNums = await this._guestRepo.query(
+      //   'select COUNT(*) from piemall.guest where timeStamp = NOW();',
+      // ); 用户实体未设置时间戳
+      const dailyNewNums = 3;
+      return this._responseSrv.success({ diffRoleUserNums, dailyNewNums });
+    });
+  }
+
+  /**
    * app端用户删除一条收货地址
    * @param userId
    * @param addressId

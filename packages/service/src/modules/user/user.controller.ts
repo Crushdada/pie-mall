@@ -24,6 +24,11 @@ import { updateAddressDto } from './dto/update-address.dto';
 export class UserController {
   constructor(private readonly _userSrv: UserService) {}
 
+  @Get('analysis')
+  getUserAnalysisData() {
+    return this._userSrv.getUserAnalysisData();
+  }
+
   @Delete('address/:id')
   @ApiOperation({
     summary: 'app端用户删除一条收货地址',

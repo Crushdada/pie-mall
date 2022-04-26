@@ -19,6 +19,134 @@ export class OrderService {
     @InjectRepository(Guest)
     private readonly _guestRepo: Repository<Guest>,
   ) {}
+  /**
+   * admin端商品分类销售额统计
+   */
+  getDiffGoodsKindsSalesData() {
+    const tryExecution = async () => {
+      const exeResult = await this._orderRepo.query(
+        `SELECT G_category as category,SUM(quantity * G_price) as consumption FROM piemall.order LEFT JOIN piemall.cart_goods_map ON piemall.order.id = piemall.cart_goods_map.orderId LEFT JOIN piemall.goods ON goods.G_id = piemall.cart_goods_map.goodGId WHERE status != 'to_pay' AND G_category != '' GROUP BY category ORDER BY consumption;`,
+      );
+      return this._responseSrv.success(exeResult);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
+   * admin端热销商品排行榜
+   */
+  getSaleRankingData() {
+    const tryExecution = async () => {
+      const limit = 5; // 查询销售额最多的前几条？数据
+      const exeResult = await this._orderRepo.query(
+        `SELECT G_info as goodsName,SUM(quantity * G_price) as consumption FROM piemall.order LEFT JOIN piemall.cart_goods_map ON piemall.order.id = piemall.cart_goods_map.orderId LEFT JOIN piemall.goods ON goods.G_id = piemall.cart_goods_map.goodGId WHERE status != 'to_pay' AND G_category != '' GROUP BY goodsName ORDER BY consumption DESC LIMIT ${limit};`,
+      );
+      return this._responseSrv.success(exeResult);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
+   * admin端销售额数据分析
+   */
+  getSaleVolumeData() {
+    const tryExecution = async () => {
+      const exeResult = await this._orderRepo
+        .createQueryBuilder('order')
+        .innerJoin('order.goods_maps', 'cart_goods_map')
+        .innerJoin('cart_goods_map.good', 'good')
+        .where('order.status != :status', { status: 'to_pay' })
+        .select([
+          'order.timeStamp',
+          'good.G_category',
+          'good.G_price',
+          'cart_goods_map.quantity',
+        ])
+        .getMany();
+      const r1 = exeResult.reduce((dict, cur) => {
+        const t = cur.timeStamp.toISOString().slice(0, 10);
+        if (!dict[t]) dict[t] = cur.goods_maps;
+        else dict[t] = dict[t].concat(cur.goods_maps);
+        return dict;
+      }, {});
+
+      for (const t of Object.keys(r1)) {
+        const maps = r1[t];
+        const o2 = {
+          intelligent_speaker: 0,
+          intelligent_watch: 0,
+          mobile_phone: 0,
+          smart_home: 0,
+          headset: 0,
+          router: 0,
+          tablet_PC: 0,
+          television: 0,
+          notebook_computer: 0,
+        }; // 记录 category => total映射
+        for (let i = 0; i < maps.length; i++) {
+          const map = maps[i];
+          const { quantity } = map;
+          const { G_price, G_category } = map.good;
+          const salesVolume = parseInt(quantity) * parseInt(G_price);
+          o2[G_category] += salesVolume;
+        }
+        r1[t] = Object.values(o2);
+      }
+      const res = [];
+      const header = [
+        't',
+        'intelligent_speaker',
+        'intelligent_watch',
+        'mobile_phone',
+        'smart_home',
+        'headset',
+        'router',
+        'tablet_PC',
+        'television',
+        'notebook_computer',
+      ];
+      res.push(header);
+
+      for (const t of Object.keys(r1)) {
+        const volumes = r1[t];
+        volumes.unshift(t);
+        res.push(volumes);
+      }
+      return this._responseSrv.success(res);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
+   * admin端消费水平数据分析
+   */
+  getConsumptionAnalysisData() {
+    const tryExecution = async () => {
+      const exeResult = await this._orderRepo.query(
+        `SELECT piemall.guest.name as userName,SUM(quantity * G_price) as consumption FROM piemall.order LEFT JOIN piemall.cart_goods_map ON piemall.order.id = piemall.cart_goods_map.orderId LEFT JOIN piemall.goods ON goods.G_id = piemall.cart_goods_map.goodGId LEFT JOIN piemall.guest ON guest.id = piemall.order.guestId WHERE status != 'to_pay' GROUP BY guestId ORDER BY SUM(quantity * G_price);`,
+      );
+      return this._responseSrv.success(exeResult);
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
+
+  /**
+   * admin端订单数据分析
+   * @param recentDays
+   */
+  getOrderAnalysisData(recentDays: number) {
+    const tryExecution = async () => {
+      const recentOrders = await this._orderRepo.query(
+        `select DATE_FORMAT(timeStamp, '%Y.%m.%d') as create_at,COUNT(DATE_FORMAT(timeStamp, '%Y-%m-%d')) as orderCounts from piemall.order where TO_DAYS(NOW()) - TO_DAYS(timeStamp) <= ${recentDays} group by create_at ORDER BY create_at;`,
+      );
+      const exeResult = await this._orderRepo.query(
+        'SELECT COUNT(*) as totalOrderCounts FROM piemall.order;',
+      );
+      const totalOrderCounts = exeResult[0].totalOrderCounts;
+      return this._responseSrv.success({ recentOrders, totalOrderCounts });
+    };
+    return this._responseSrv.tryExecute(tryExecution);
+  }
 
   /**
    * 更新order状态
