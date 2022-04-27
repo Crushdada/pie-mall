@@ -6,7 +6,7 @@
 export const processChartData = (baseOpts, oriData) => {
   const colorList = ['#30a8e8', '#7D3AC1'];
   const stackName = 'role-stack';
-  oriData.forEach(({ role, userNums }, idx) => {
+  const seriesArr = oriData.reduce((dict, { role, userNums }, idx) => {
     const seriesData = [{ name: role, value: userNums }];
     const borderRadius = {
       0: [25, 0, 0, 25],
@@ -24,8 +24,9 @@ export const processChartData = (baseOpts, oriData) => {
       stack: stackName,
       data: seriesData,
     };
-    baseOpts.series = series;
-  });
-
+    dict.push(series);
+    return dict;
+  }, []);
+  baseOpts.series = seriesArr;
   return baseOpts;
 };
