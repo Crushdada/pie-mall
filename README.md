@@ -6,7 +6,7 @@
 #### 技术栈
 ⚡️Vue2、NestJS、TypeScript、TypeORM、Python 3、Scss、Element-ui、tailwind-css、sql etc.
 
-#### 其他
+#### repo管理
 🦾 基于mono-repo、yarn管理依赖
 
 #### 软件架构
