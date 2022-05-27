@@ -50,7 +50,7 @@ export default class Home extends Vue {
 
   mounted() {
     //暂定数据分析页面为初始页面
-    this.homeMenu.naviPage(initComRoute.PagePath, initComRoute.component);
+    this.homeMenu.naviPage(initComRoute.pageName, initComRoute.component);
   }
   // Methods
   // ===================================================================

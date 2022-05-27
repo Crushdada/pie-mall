@@ -4,7 +4,13 @@
       <!-- Search Tool Bar -->
       <div
         v-show="showSearchBar"
-        class="serch-bar py-2 flex flex-row flex-nowrap justify-center items-center"
+        class="
+          serch-bar
+          py-2
+          flex flex-row flex-nowrap
+          justify-center
+          items-center
+        "
       >
         订单号：
         <el-input
@@ -200,7 +206,7 @@ import { format } from '../../utils/formatDate.ts';
 @Component({
   components: { TableToolBar },
 })
-export default class GoodsInfo extends Vue {
+export default class OrderList extends Vue {
   /** Setup */
   // ===================================================================
   // 表格
@@ -299,7 +305,7 @@ export default class GoodsInfo extends Vue {
   // ===================================================================
   init() {
     // 如果本地没有数据存留，再请求
-    if (this.orderList.length === 0) {
+    if (!this.orderList || (this.orderList || []).length === 0) {
       // 获取全部表格源数据
       this.getOriginalData();
     }

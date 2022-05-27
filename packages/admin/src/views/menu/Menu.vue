@@ -17,7 +17,7 @@
           :class="{ 'active-menu-item': activeMenuItem === page.component }"
           v-for="(page, j) in menuItem.children"
           :key="j"
-          @click="naviPage(`${(menuItem.path || '') + page.path}`, page.component)"
+          @click="naviPage(page.name, page.component)"
         >
           {{ page.childPageName }}
         </el-menu-item>
@@ -43,11 +43,12 @@ export default class HomeMenu extends Vue {
 
   // Methods
   // ===================================================================
-  private naviPage(targetPath, component) {
+  private naviPage(targetComName, component) {
     // 切换路由
     this.$router.push({
-      path: targetPath,
+      name: targetComName,
     });
+    console.log('targetComName', targetComName);
     this.activeMenuItem = component;
   }
 }
