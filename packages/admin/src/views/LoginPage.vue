@@ -24,7 +24,13 @@
           </span>
         </div>
         <div
-          class="login-nav-bar float-right h-full flex flex-row flex-nowrap items-center"
+          class="
+            login-nav-bar
+            float-right
+            h-full
+            flex flex-row flex-nowrap
+            items-center
+          "
         >
           <a
             class="hover-primary"
@@ -37,7 +43,14 @@
       </div>
       <!-- Middle Card -->
       <div
-        class="login-card py-5 my-5 mx-auto flex-grow flex flex-col flex-nowrap items-center"
+        class="
+          login-card
+          py-5
+          my-5
+          mx-auto
+          flex-grow flex flex-col flex-nowrap
+          items-center
+        "
         style="min-width: 450px"
       >
         <!-- tab栏 -->
@@ -243,8 +256,6 @@ export default class LoginPage extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
-
 .login-nav-about {
   color: #838383;
 }

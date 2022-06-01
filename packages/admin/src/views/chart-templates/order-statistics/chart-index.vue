@@ -61,5 +61,4 @@ export default class OrderStatistics extends Mixins(ChartInitMixin) {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 </style>

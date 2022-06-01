@@ -68,5 +68,4 @@ export default class UserNums extends Mixins(ChartInitMixin) {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 </style>

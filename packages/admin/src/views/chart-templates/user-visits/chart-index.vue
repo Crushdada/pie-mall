@@ -36,5 +36,4 @@ export default class UserVisits extends Mixins(ChartInitMixin) {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 </style>

@@ -27,6 +27,15 @@ export default defineConfig({
   publicDir: 'public', // 作为静态资源服务的文件夹.该值可以是文件系统的绝对路径，也可以是相对于项目的根目录的相对路径。
   base: './', // 公共基础路径。改值可以是绝对路径或空字符串
   mode: 'development',
+  css: {
+    // css预处理器
+    preprocessorOptions: {
+      scss: {
+        charset: false,
+        additionalData: '@import "@/styles/base.scss";',
+      },
+    },
+  },
   optimizeDeps: {
     // 要预构建的第三方依赖
     include: [],

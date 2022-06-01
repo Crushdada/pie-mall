@@ -62,5 +62,4 @@ export default class SalesVolume extends Mixins(ChartInitMixin) {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 </style>
