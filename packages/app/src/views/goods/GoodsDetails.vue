@@ -192,5 +192,4 @@ export default class GoodsDetails extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 </style>

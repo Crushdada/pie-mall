@@ -295,7 +295,6 @@ export default class ShopCart extends Mixins(ShopCartMixin) {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 .divider {
   color: $gray-text1;
 }

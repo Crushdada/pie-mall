@@ -56,10 +56,7 @@ export default class PInputPure extends Vue {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
-
 ::v-deep .el-input__inner {
   padding-right: 0 !important;
 }
-
 </style>

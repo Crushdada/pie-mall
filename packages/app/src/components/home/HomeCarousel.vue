@@ -21,5 +21,4 @@ export default class HomeCaroucel extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 </style>

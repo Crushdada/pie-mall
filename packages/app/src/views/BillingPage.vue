@@ -551,8 +551,7 @@ export default class BillingPage extends Vue {
   }
 }
 </script>
-<style lang="scss" scoped>
-@import '@/styles/base.scss';
+<style lang="scss">
 b {
   display: block;
   position: absolute;

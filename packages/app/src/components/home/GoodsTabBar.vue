@@ -68,5 +68,4 @@ export default class GoodsTabBar extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 </style>

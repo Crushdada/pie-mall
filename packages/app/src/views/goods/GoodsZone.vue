@@ -1,6 +1,6 @@
 <template>
   <div class="">
-  <!-- 商品专区 -->
+    <!-- 商品专区 -->
   </div>
 </template>
 <script lang="ts">
@@ -13,8 +13,7 @@ import HomeCaroucel from '../../components/home/HomeCarousel.vue';
 import PersonalRecoGoods from '../../components/home/PersonalRecoGoods.vue';
 import GoodZones from '../../components/home/GoodZones.vue';
 @Component({
-  components: {
-  },
+  components: {},
 })
 export default class GoodsZone extends Vue {
   /** Computed*/
@@ -23,9 +22,7 @@ export default class GoodsZone extends Vue {
   // ===================================================================
   // Methods
   // ===================================================================
-
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 </style>

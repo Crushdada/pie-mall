@@ -14,7 +14,7 @@
       />
       <h1 style="font-size: 28px">{{ title }}</h1>
       <span class="text-xs self-end pb-3">
-        {{desc}}
+        {{ desc }}
       </span>
     </div>
 
@@ -48,7 +48,6 @@ export default class ProcessingHeader extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 h1 {
   color: $dark-text;
 }

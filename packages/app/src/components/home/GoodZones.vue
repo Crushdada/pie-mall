@@ -56,7 +56,6 @@ export default class GoodZones extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 .goods-zone {
   color: $dark-text;
   .goods-thumb {

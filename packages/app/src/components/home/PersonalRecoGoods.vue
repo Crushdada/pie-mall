@@ -31,7 +31,6 @@ export default class PersonalRecoGoods extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 .reco-goods-thumb {
   cursor: pointer;
   box-shadow: 0 5px 5px 0 hsl(0deg 0% 24% / 10%);
@@ -42,6 +41,6 @@ export default class PersonalRecoGoods extends Vue {
     transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
     -webkit-box-shadow: $card-shadow1;
     box-shadow: $card-shadow1;
-    }
+  }
 }
 </style>

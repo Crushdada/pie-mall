@@ -2,7 +2,12 @@
   <el-dropdown :show-timeout="20">
     <!-- 展示部分 -->
     <a
-      class="personal-center flex flex-row flex-nowrap justify-center items-center"
+      class="
+        personal-center
+        flex flex-row flex-nowrap
+        justify-center
+        items-center
+      "
       @click="() => $router.push({ name: 'PersonalCenter' })"
     >
       <a class="link-hover px-2">
@@ -77,8 +82,6 @@ export default class PersonalDropdownMenu extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
-
 .header {
   box-shadow: 0 2px 5px 0 hsl(0deg 0% 24% / 10%);
 }

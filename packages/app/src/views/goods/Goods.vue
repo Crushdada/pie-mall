@@ -34,15 +34,11 @@ import GoodsTabBar from '../../components/home/GoodsTabBar.vue';
 export default class Goods extends Vue {
   /** Computed*/
   // ===================================================================
-
   /** Hooks */
   // ===================================================================
-
   // Methods
   // ===================================================================
-
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 </style>

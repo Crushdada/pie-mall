@@ -290,7 +290,6 @@ export default class BillingPage extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 ::v-deep .el-divider--vertical {
   margin: 0 20px;
 }

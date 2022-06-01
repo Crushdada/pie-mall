@@ -35,7 +35,13 @@
       <el-dropdown :show-timeout="20" trigger="hover">
         <!-- 展示部分 -->
         <a
-          class="shop-cart-btn space-x-2 flex flex-row flex-nowrap justify-center items-center"
+          class="
+            shop-cart-btn
+            space-x-2
+            flex flex-row flex-nowrap
+            justify-center
+            items-center
+          "
           style="width: 120px; height: 40px; font-size: 12px"
           @click="handleOpenCart"
         >
@@ -53,7 +59,12 @@
               <!-- 购物车商品列表 -->
               <div class="text-xs overflow-hidden" style="max-height: 250px">
                 <div
-                  class="flex flex-row flex-nowrap justify-around items-center py-2"
+                  class="
+                    flex flex-row flex-nowrap
+                    justify-around
+                    items-center
+                    py-2
+                  "
                   v-for="(goodsMap, i) in shopcart"
                   :key="i"
                 >
@@ -73,7 +84,12 @@
             </div>
             <!-- 购物车统计信息 -->
             <div
-              class="px-8 flex flex-row flex-nowrap justify-between items-center"
+              class="
+                px-8
+                flex flex-row flex-nowrap
+                justify-between
+                items-center
+              "
               style="background: #fafafa"
             >
               <div class="left-total">
@@ -134,7 +150,6 @@ export default class HeaderBar extends Mixins(ShopCartMixin) {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 .goods-total-text {
   font-size: 12px;
   color: $gray-text2;

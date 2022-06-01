@@ -12,7 +12,11 @@
         <h1 class="text-2xl">已成功加入购物车！</h1>
       </div>
       <div class="space-x-4">
-        <el-button class="w-40 h-12" plain @click="() => $router.push({ name: 'home' })">
+        <el-button
+          class="w-40 h-12"
+          plain
+          @click="() => $router.push({ name: 'home' })"
+        >
           继续购物
         </el-button>
         <el-button
@@ -34,5 +38,4 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class AddGoodsSuccessTip extends Vue {}
 </script>
 <style lang="scss" scoped>
-@import '@/styles/base.scss';
 </style>
